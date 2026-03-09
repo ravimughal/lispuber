@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Activity — DASH</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  body{font-family:'DM Sans',sans-serif;margin:0;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+  .sora{font-family:'Sora',sans-serif}
+  header,nav,button,a{transition:background-color .2s,border-color .18s,color .15s}
+  #toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;background:#0f172a;color:#f8fafc;padding:7px 18px;border-radius:99px;font-size:12px;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s}
+  #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .dark #toast{background:#f1f5f9;color:#0f172a}
+  .scroll-area{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#e2e8f0 transparent}
+  .dark .scroll-area{scrollbar-color:#334155 transparent}
+</style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+<div id="toast"></div>
+
+<!-- TOP BAR -->
+<header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-20 flex-shrink-0" style="height:54px">
+  <a href="../info/index.html" class="flex items-center gap-2 no-underline">
+    <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">D</div>
+    <span class="sora font-semibold text-slate-900 dark:text-white text-sm">DASH</span>
+  </a>
+  <div class="flex items-center gap-2">
+    <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
+    <div class="relative w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base">
+      🔔<span class="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-sky-500 text-white text-[9px] flex items-center justify-center font-bold border-2 border-white dark:border-slate-900">2</span>
+    </div>
+  </div>
+</header>
+
+<!-- CONTENT -->
+<div class="scroll-area px-4 py-4">
+
+  <div class="flex items-center gap-3 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 rounded-2xl p-3 mb-4">
+    <div class="w-9 h-9 rounded-xl bg-white dark:bg-sky-900/40 border border-sky-200 dark:border-sky-700 flex items-center justify-center text-base flex-shrink-0">🎁</div>
+    <div>
+      <div class="sora font-semibold text-sm text-slate-900 dark:text-white">€5 credit ready</div>
+      <div class="text-xs text-slate-400 mt-0.5">Referral bonus — use on your next ride</div>
+    </div>
+  </div>
+
+  <div class="flex gap-2 mb-4">
+    <button class="px-4 py-1.5 rounded-full bg-sky-500 text-white text-xs font-semibold sora">Rides</button>
+    <button onclick="toast('💳 Payments coming soon')" class="px-4 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 hover:border-sky-400 hover:text-sky-500 sora">Payments</button>
+  </div>
+
+  <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">This week</p>
+  <div class="space-y-1.5 mb-5">
+    <button onclick="toast('📋 Receipt sent')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700">
+      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">🚗</div>
+      <div class="flex-1 min-w-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">City Centre → Airport</div><div class="text-xs text-slate-400 mt-0.5">Today 09:42 · Economy · 12.3 km</div></div>
+      <div class="text-right flex-shrink-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">€17.80</div><div class="text-xs text-sky-500">★ 5.0</div></div>
+    </button>
+    <button onclick="toast('📋 Receipt sent')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700">
+      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">🛋️</div>
+      <div class="flex-1 min-w-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">Home → Office</div><div class="text-xs text-slate-400 mt-0.5">Yesterday 08:15 · Comfort · 4.2 km</div></div>
+      <div class="text-right flex-shrink-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">€9.56</div><div class="text-xs text-sky-500">★ 4.8</div></div>
+    </button>
+    <button onclick="toast('📋 Receipt sent')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700">
+      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">👑</div>
+      <div class="flex-1 min-w-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">Hotel Marquis → Restaurant</div><div class="text-xs text-slate-400 mt-0.5">Mon 20:30 · Premium · 2.1 km</div></div>
+      <div class="text-right flex-shrink-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">€10.88</div><div class="text-xs text-sky-500">★ 5.0</div></div>
+    </button>
+    <button onclick="toast('📋 Receipt sent')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700">
+      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">🚗</div>
+      <div class="flex-1 min-w-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">Train Station → Suburbs</div><div class="text-xs text-slate-400 mt-0.5">Sun 14:12 · Economy · 8.7 km</div></div>
+      <div class="text-right flex-shrink-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">€12.44</div><div class="text-xs text-sky-500">★ 4.6</div></div>
+    </button>
+  </div>
+
+  <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">March 2025</p>
+  <div class="space-y-1.5 mb-6">
+    <button onclick="toast('📋 Receipt sent')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700">
+      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">🚗</div>
+      <div class="flex-1 min-w-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">Mall → Home</div><div class="text-xs text-slate-400 mt-0.5">Mar 5 18:44 · Economy · 5.5 km</div></div>
+      <div class="text-right flex-shrink-0"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">€8.60</div><div class="text-xs text-sky-500">★ 5.0</div></div>
+    </button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="flex-shrink-0 grid grid-cols-3 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20" style="height:56px">
+  <a href="index.html"    class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-sky-500 no-underline">
+    <span class="text-xl leading-none">🏠</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Home</span>
+  </a>
+  <a href="activity.html" class="flex flex-col items-center justify-center gap-0.5 text-sky-500 no-underline">
+    <span class="text-xl leading-none">📋</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Activity</span>
+  </a>
+  <a href="profile.html"  class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-sky-500 no-underline">
+    <span class="text-xl leading-none">👤</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Profile</span>
+  </a>
+</nav>
+
+<script>
+function applyTheme(t){document.documentElement.classList.toggle('dark',t==='dark');document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙';}
+function toggleTheme(){var t=localStorage.getItem('dash-theme')==='dark'?'light':'dark';localStorage.setItem('dash-theme',t);applyTheme(t);}
+applyTheme(localStorage.getItem('dash-theme')||'light');
+var _toastT;
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_toastT);_toastT=setTimeout(function(){el.classList.remove('show');},2500);}
+</script>
+</body>
+</html>
