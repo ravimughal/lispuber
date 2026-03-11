@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Utilizador {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(unique = true,nullable=false)
@@ -24,7 +24,6 @@ public abstract class Utilizador {
     @Column(nullable=false)
     private Genero genero;
 
-
     public Utilizador(){}
 
     public Utilizador(Integer nif, String email, String senha, String nome, Genero genero){
@@ -36,13 +35,14 @@ public abstract class Utilizador {
         
     }
 
-
     public Long getId() {
         return this.id;
     }
+
     public Integer getNif() {
         return this.nif;
     }
+
     public String getEmail(){
         return this.email;
     }
@@ -58,7 +58,6 @@ public abstract class Utilizador {
     public Genero getGenero(){
         return this.genero;
     }
-
 
     public void setId(Long id) {
         this.id=id;

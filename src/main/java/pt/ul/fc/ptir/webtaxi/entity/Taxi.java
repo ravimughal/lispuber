@@ -9,10 +9,10 @@ import java.util.Set;
 public class Taxi {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String matricula;
 
     @Column(nullable = false)
@@ -27,7 +27,7 @@ public class Taxi {
     @Column(nullable = false)
     private Integer anoCompra;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "conforto_id")
     private Conforto conforto;
 

@@ -8,10 +8,13 @@ import java.time.LocalDateTime;
 public class Fatura {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private Long numSequencial;
+
+    @Column(nullable = false)
     private LocalDateTime data;
 
     @OneToOne
@@ -20,9 +23,10 @@ public class Fatura {
 
     public Fatura(){}
 
-    public Fatura(Long numSequencial, LocalDateTime data) {
+    public Fatura(Long numSequencial, LocalDateTime data, Viagem viagem) {
         this.numSequencial = numSequencial;
         this.data = data;
+        this.viagem = viagem;
     }
 
     public Long getId() {

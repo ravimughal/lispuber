@@ -20,7 +20,7 @@ public class Motorista extends Utilizador {
     @Column(nullable = false)
     private String morada;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String numCartaConducao;
 
     @Column(nullable = false)

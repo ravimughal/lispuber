@@ -1,15 +1,12 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
-// import jakarta.persistence.JoinColumn;
-// import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 @Entity
 public class Reabastecimento {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
