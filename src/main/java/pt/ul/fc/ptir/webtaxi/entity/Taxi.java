@@ -1,12 +1,9 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Taxi {
@@ -18,17 +15,24 @@ public class Taxi {
     @Column(nullable = false)
     private String matricula;
 
+    @Column(nullable = false)
     private String modelo;
 
+    @Column(nullable = false)
     private String marca;
 
+    @Column(nullable = false)
     private String tipoMotor;
 
+    @Column(nullable = false)
     private Integer anoCompra;
 
     @OneToOne
     @JoinColumn(name = "conforto_id")
     private Conforto conforto;
+
+    @OneToMany(mappedBy = "taxi")
+    private Set<Turno> turnos;
 
     public Taxi() {}
 
@@ -39,6 +43,7 @@ public class Taxi {
         this.tipoMotor = tipoMotor;
         this.anoCompra = anoCompra;
         this.conforto = conforto;
+        this.turnos = new HashSet<>();
     }
 
     public Long getId() {
@@ -95,5 +100,13 @@ public class Taxi {
 
     public void setConforto(Conforto conforto) {
         this.conforto = conforto;
+    }
+
+    public Set<Turno> getTurnos() {
+        return turnos;
+    }
+
+    public void setTurnos(Set<Turno> turnos) {
+        this.turnos = turnos;
     }
 }

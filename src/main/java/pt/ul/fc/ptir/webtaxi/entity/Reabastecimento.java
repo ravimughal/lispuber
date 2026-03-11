@@ -1,9 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 // import jakarta.persistence.JoinColumn;
 // import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
@@ -15,31 +12,31 @@ public class Reabastecimento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double qtdCombust;
+    @Column(nullable = false)
+    private Double qtdCombustivel;
 
-    private Double kmTaxi;
+    @Column(nullable = false)
+    private Double kmPercorridos;
 
+    @Column(nullable = false)
     private Double eurosPagos;
 
-    private LocalDateTime dataInicio;
+    @Column(nullable = false)
+    private Duracao duracao;
 
-    private LocalDateTime dataFim;
+    @ManyToOne
+    @JoinColumn(name = "turno_id")
+    private Turno turno;
 
-    // Prob isto
-    // @ManyToOne
-    // @JoinColumn(name = "turno_id")
-    // private Turno turno;
+    public Reabastecimento() {}
 
-    public Reabastecimento() {
-    }
-
-    public Reabastecimento(Double qtdCombust, Double kmTaxi, Double eurosPagos, LocalDateTime dataInicio, LocalDateTime dataFim) { // , Turno turno
-        this.qtdCombust = qtdCombust;
-        this.kmTaxi = kmTaxi;
+    public Reabastecimento(Long id, Double qtdCombustivel, Double kmPercorridos, Double eurosPagos, Duracao duracao, Turno turno) {
+        this.id = id;
+        this.qtdCombustivel = qtdCombustivel;
+        this.kmPercorridos = kmPercorridos;
         this.eurosPagos = eurosPagos;
-        this.dataInicio = dataInicio;
-        this.dataFim = dataFim;
-        // this.turno = turno;
+        this.duracao = duracao;
+        this.turno = turno;
     }
 
     public Long getId() {
@@ -50,20 +47,20 @@ public class Reabastecimento {
         this.id = id;
     }
 
-    public Double getQtdCombust() {
-        return qtdCombust;
+    public Double getQtdCombustivel() {
+        return qtdCombustivel;
     }
 
-    public void setQtdCombust(Double qtdCombust) {
-        this.qtdCombust = qtdCombust;
+    public void setQtdCombustivel(Double qtdCombustivel) {
+        this.qtdCombustivel = qtdCombustivel;
     }
 
-    public Double getKmTaxi() {
-        return kmTaxi;
+    public Double getKmPercorridos() {
+        return kmPercorridos;
     }
 
-    public void setKmTaxi(Double kmTaxi) {
-        this.kmTaxi = kmTaxi;
+    public void setKmPercorridos(Double kmPercorridos) {
+        this.kmPercorridos = kmPercorridos;
     }
 
     public Double getEurosPagos() {
@@ -74,27 +71,19 @@ public class Reabastecimento {
         this.eurosPagos = eurosPagos;
     }
 
-    public LocalDateTime getDataInicio() {
-        return dataInicio;
+    public Duracao getDuracao() {
+        return duracao;
     }
 
-    public void setDataInicio(LocalDateTime dataInicio) {
-        this.dataInicio = dataInicio;
+    public void setDuracao(Duracao duracao) {
+        this.duracao = duracao;
     }
 
-    public LocalDateTime getDataFim() {
-        return dataFim;
+    public Turno getTurno() {
+        return turno;
     }
 
-    public void setDataFim(LocalDateTime dataFim) {
-        this.dataFim = dataFim;
+    public void setTurno(Turno turno) {
+        this.turno = turno;
     }
-
-    // public Turno getTurno() {
-    //     return turno;
-    // }
-
-    // public void setTurno(Turno turno) {
-    //     this.turno = turno;
-    // }
 }

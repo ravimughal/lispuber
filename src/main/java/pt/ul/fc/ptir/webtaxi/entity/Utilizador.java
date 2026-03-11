@@ -1,8 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 import jakarta.persistence.*;
 
-
-
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Utilizador {

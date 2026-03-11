@@ -1,9 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Conforto {
@@ -12,15 +9,17 @@ public class Conforto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double price;
+    @Column
+    private Double preco;
 
-    private String confortLevel;
+    @Column
+    private String nivelConforto;
 
     private Conforto() {}
 
-    public Conforto(Double price, String confortLevel) {
-        this.price = price;
-        this.confortLevel = confortLevel;
+    public Conforto(Double preco, String nivelConforto) {
+        this.preco = preco;
+        this.nivelConforto = nivelConforto;
     }
 
     public Long getId() {
@@ -31,21 +30,19 @@ public class Conforto {
         this.id = id;
     }
 
-    public Double getPrice() {
-        return price;
+    public Double getPreco() {
+        return preco;
     }
 
-    public void setPrice(Double price) {
-        this.price = price;
+    public void setPreco(Double preco) {
+        this.preco = preco;
     }
 
-    public String getConfortLevel() {
-        return confortLevel;
+    public String getNivelConforto() {
+        return nivelConforto;
     }
 
-    public void setConfortLevel(String confortLevel) {
-        this.confortLevel = confortLevel;
+    public void setNivelConforto(String nivelConforto) {
+        this.nivelConforto = nivelConforto;
     }
-
-
 }
