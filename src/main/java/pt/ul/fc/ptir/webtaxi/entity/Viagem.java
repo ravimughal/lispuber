@@ -1,6 +1,8 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
 
 import java.time.LocalDateTime;
 
@@ -10,10 +12,11 @@ public class Viagem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private String moradaEntrada;
-    private String moradaSaida;
-    private LocalDateTime horaEntrada;
-    private LocalDateTime horaSaida;
+    private Morada moradaEntrada;
+    private Morada moradaSaida;
+
+    private Duracao duracao;
+
     private Double kmPercorridos;
     private Integer numPassageiro;
     private Double preco;
@@ -29,11 +32,10 @@ public class Viagem {
 
     public Viagem() {}
 
-    public Viagem(String moradaEntrada, String moradaSaida, LocalDateTime horaEntrada, LocalDateTime horaSaida,Double kmPercorridos, Integer numPassageiro, Double preco) {
+    public Viagem(Morada moradaEntrada, Morada moradaSaida, Duracao duracao,Double kmPercorridos, Integer numPassageiro, Double preco) {
         this.moradaEntrada = moradaEntrada;
         this.moradaSaida = moradaSaida;
-        this.horaEntrada = horaEntrada;
-        this.horaSaida = horaSaida;
+        this.duracao = duracao;
         this.kmPercorridos = kmPercorridos;
         this.numPassageiro = numPassageiro;
         this.preco = preco;
@@ -42,36 +44,20 @@ public class Viagem {
     public Long getId() {return id;}
 
     public void setId(Long id) {this.id = id;}
-    public String getMoradaEntrada() {
+    public Morada getMoradaEntrada() {
         return moradaEntrada;
     }
 
-    public void setMoradaEntrada(String moradaEntrada) {
+    public void setMoradaEntrada(Morada moradaEntrada) {
         this.moradaEntrada = moradaEntrada;
     }
 
-    public String getMoradaSaida() {
+    public Morada getMoradaSaida() {
         return moradaSaida;
     }
 
-    public void setMoradaSaida(String moradaSaida) {
+    public void setMoradaSaida(Morada moradaSaida) {
         this.moradaSaida = moradaSaida;
-    }
-
-    public LocalDateTime getHoraEntrada() {
-        return horaEntrada;
-    }
-
-    public void setHoraEntrada(LocalDateTime horaEntrada) {
-        this.horaEntrada = horaEntrada;
-    }
-
-    public LocalDateTime getHoraSaida() {
-        return horaSaida;
-    }
-
-    public void setHoraSaida(LocalDateTime horaSaida) {
-        this.horaSaida = horaSaida;
     }
 
     public Double getKmPercorridos() {
