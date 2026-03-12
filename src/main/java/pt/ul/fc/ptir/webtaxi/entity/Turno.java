@@ -1,6 +1,7 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
 import java.util.Set;
 

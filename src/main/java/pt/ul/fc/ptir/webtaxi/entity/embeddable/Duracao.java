@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.entity;
+package pt.ul.fc.ptir.webtaxi.entity.embeddable;
 
 import jakarta.persistence.Embeddable;
 

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Viagem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String moradaEntrada;
