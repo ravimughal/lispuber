@@ -99,4 +99,12 @@ public class Viagem {
     public void setFatura(Fatura fatura) {
         this.fatura = fatura;
     }
+
+    public Duracao getDuracao() {
+        return duracao;
+    }
+
+    public void setDuracao(Duracao duracao) {
+        this.duracao = duracao;
+    }
 }
