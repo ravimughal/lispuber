@@ -20,6 +20,10 @@ public class Duracao {
         this.fim = fim;
     }
 
+    public Duracao(LocalDateTime inicio) throws Exception {
+        this.inicio = inicio;
+    }
+
     public long getTotalEmMinutos() {
         return Duration.between(inicio, fim).toMinutes();
     }
