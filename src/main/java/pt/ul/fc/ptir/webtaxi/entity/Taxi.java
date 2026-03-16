@@ -21,8 +21,9 @@ public class Taxi {
     @Column(nullable = false)
     private String marca;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String tipoMotor;
+    private TipoMotor tipoMotor;
 
     @Column(nullable = false)
     private Integer anoCompra;
@@ -31,12 +32,13 @@ public class Taxi {
     @JoinColumn(name = "conforto_id")
     private Conforto conforto;
 
+    // TODO: ver se é necessário e/ou se faz sentido
     @OneToMany(mappedBy = "taxi")
     private Set<Turno> turnos;
 
     public Taxi() {}
 
-    public Taxi(String matricula, String modelo, String marca, String tipoMotor, Integer anoCompra, Conforto conforto) {
+    public Taxi(String matricula, String modelo, String marca, TipoMotor tipoMotor, Integer anoCompra, Conforto conforto) {
         this.matricula = matricula;
         this.modelo = modelo;
         this.marca = marca;
@@ -78,11 +80,11 @@ public class Taxi {
         this.marca = marca;
     }
 
-    public String getTipoMotor() {
+    public TipoMotor getTipoMotor() {
         return tipoMotor;
     }
 
-    public void setTipoMotor(String tipoMotor) {
+    public void setTipoMotor(TipoMotor tipoMotor) {
         this.tipoMotor = tipoMotor;
     }
 

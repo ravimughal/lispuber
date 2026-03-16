@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
 
-import java.time.LocalDateTime;
-
 @Entity
 public class Viagem {
     @Id
@@ -18,7 +16,9 @@ public class Viagem {
     private Duracao duracao;
 
     private Double kmPercorridos;
+
     private Integer numPassageiro;
+
     private Double preco;
 
     @ManyToOne

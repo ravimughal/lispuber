@@ -21,9 +21,11 @@ public class Turno {
     @ManyToOne @JoinColumn(nullable = false)
     private Taxi taxi;
 
+    // TODO: ver se é necessário e/ou se faz sentido
     @OneToMany(mappedBy = "turno")
     private Set<Reabastecimento> reabastecimentos;
 
+    // TODO: ver se é necessário e/ou se faz sentido
     @OneToMany(mappedBy = "turno")
     private Set<Viagem> viagens;
 

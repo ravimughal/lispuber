@@ -10,6 +10,7 @@ import java.util.Set;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
 
 @Entity
 public class Motorista extends Utilizador {
@@ -18,7 +19,7 @@ public class Motorista extends Utilizador {
     private LocalDate dataNascimento;
 
     @Column(nullable = false)
-    private String morada;
+    private Morada morada;
 
     @Column(nullable = false, unique = true)
     private String numCartaConducao;
@@ -26,13 +27,14 @@ public class Motorista extends Utilizador {
     @Column(nullable = false)
     private LocalDate validadeCartaConducao;
 
+    // TODO: ver se é necessário e/ou se faz sentido
     @OneToMany(mappedBy = "motorista")
     private Set<Turno> turnos;
 
     public Motorista(){}
 
     public Motorista(Integer nif, String email, String senha, String nome, Genero genero,
-                     LocalDate dataNasc, String morada, String numCarta, LocalDate validadeCarta){
+                     LocalDate dataNasc, Morada morada, String numCarta, LocalDate validadeCarta){
         super(nif, email, senha, nome, genero);
 
         this.dataNascimento = dataNasc;
@@ -50,11 +52,11 @@ public class Motorista extends Utilizador {
         this.dataNascimento = dataNascimento;
     }
 
-    public String getMorada() {
+    public Morada getMorada() {
         return morada;
     }
 
-    public void setMorada(String morada) {
+    public void setMorada(Morada morada) {
         this.morada = morada;
     }
 
