@@ -28,7 +28,8 @@ public class Viagem {
     @OneToOne(mappedBy = "viagem")
     private Fatura fatura;
 
-    // TODO: 1 viagem deriva de 1 pedido.
+    @ManyToOne @JoinColumn
+    private Pedido pedido;
 
     public Viagem() {}
 
@@ -106,5 +107,13 @@ public class Viagem {
 
     public void setDuracao(Duracao duracao) {
         this.duracao = duracao;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
     }
 }
