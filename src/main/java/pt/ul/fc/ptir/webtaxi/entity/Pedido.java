@@ -12,16 +12,28 @@ public class Pedido {
 
     @Column(nullable = false)
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="rua", column=@Column(name="origem_rua")),
+            @AttributeOverride(name="numero", column=@Column(name="origem_numero")),
+            @AttributeOverride(name="complemento", column=@Column(name="origem_complemento")),
+            @AttributeOverride(name="codigoPostal", column=@Column(name="origem_codigo_postal")),
+    })
     private Morada moradaInicial;
 
     @Column(nullable = false)
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="rua", column=@Column(name="destino_rua")),
+            @AttributeOverride(name="numero", column=@Column(name="destino_numero")),
+            @AttributeOverride(name="complemento", column=@Column(name="destino_complemento")),
+            @AttributeOverride(name="codigoPostal", column=@Column(name="destino_codigo_postal")),
+    })
     private Morada moradaFinal;
 
     @Column(nullable = false)
     private Integer numPassageiros;
 
-    @Column(nullable = false)
+    @ManyToOne @JoinColumn(nullable = false)
     private Conforto conforto;
 
     @ManyToOne @JoinColumn

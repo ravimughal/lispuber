@@ -10,7 +10,22 @@ public class Viagem {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="rua", column=@Column(name="origem_rua")),
+            @AttributeOverride(name="numero", column=@Column(name="origem_numero")),
+            @AttributeOverride(name="complemento", column=@Column(name="origem_complemento")),
+            @AttributeOverride(name="codigoPostal", column=@Column(name="origem_codigo_postal")),
+    })
     private Morada moradaEntrada;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name="rua", column=@Column(name="destino_rua")),
+            @AttributeOverride(name="numero", column=@Column(name="destino_numero")),
+            @AttributeOverride(name="complemento", column=@Column(name="destino_complemento")),
+            @AttributeOverride(name="codigoPostal", column=@Column(name="destino_codigo_postal")),
+    })
     private Morada moradaSaida;
 
     private Duracao duracao;
