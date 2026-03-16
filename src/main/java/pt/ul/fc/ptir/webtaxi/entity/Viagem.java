@@ -31,6 +31,10 @@ public class Viagem {
     @ManyToOne @JoinColumn
     private Pedido pedido;
 
+    @ManyToOne
+    @JoinColumn(name = "turno_id")
+    private Turno turno;
+
     public Viagem() {}
 
     public Viagem(Morada moradaEntrada, Morada moradaSaida, Duracao duracao,Double kmPercorridos, Integer numPassageiro, Double preco) {
@@ -115,5 +119,13 @@ public class Viagem {
 
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
+    }
+
+    public Turno getTurno() {
+        return turno;
+    }
+
+    public void setTurno(Turno turno) {
+        this.turno = turno;
     }
 }
