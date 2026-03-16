@@ -28,7 +28,12 @@ public class Viagem {
     @OneToOne(mappedBy = "viagem")
     private Fatura fatura;
 
-    // TODO: 1 viagem deriva de 1 pedido.
+    @ManyToOne @JoinColumn
+    private Pedido pedido;
+
+    @ManyToOne
+    @JoinColumn(name = "turno_id")
+    private Turno turno;
 
     public Viagem() {}
 
@@ -106,5 +111,21 @@ public class Viagem {
 
     public void setDuracao(Duracao duracao) {
         this.duracao = duracao;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
+
+    public Turno getTurno() {
+        return turno;
+    }
+
+    public void setTurno(Turno turno) {
+        this.turno = turno;
     }
 }
