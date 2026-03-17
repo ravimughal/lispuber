@@ -7,9 +7,9 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copia todo o resto e builda
+# Copia o resto e builda
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn clean package
 
 # Stage 2: Runtime
 FROM docker.io/eclipse-temurin:21
