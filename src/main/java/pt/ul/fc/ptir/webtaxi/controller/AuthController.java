@@ -18,8 +18,8 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register") 
-        public ResponseEntity<Void> registerNewClient(@RequestBody ClienteDto clienteDto) {
-            authService.registerNewClient(clienteDto);
+        public ResponseEntity<Void> registerNewClient(@RequestBody ClienteDTO clienteDTO) {
+            authService.registerNewClient(clienteDTO);
             return new ResponseEntity<>(HttpStatus.CREATED);
         }
 

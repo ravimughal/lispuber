@@ -1,12 +1,13 @@
 package pt.ul.fc.ptir.webtaxi.mapper;
 
-import pt.ul.fc.ptir.webtaxi.dto.ViagemDto;
+import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
+import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 
 public class Mapper {
 
-    public static ViagemDto converterParaViagemDto(Viagem viagem) {
-        return new ViagemDto(
+    public static ViagemDTO converterParaViagemDTO(Viagem viagem) {
+        return new ViagemDTO(
                 viagem.getId(),
                 viagem.getMoradaEntrada(),
                 viagem.getMoradaSaida(),
@@ -16,6 +17,18 @@ public class Mapper {
                 viagem.getPreco(),
                 viagem.getCliente(),
                 viagem.getFatura()
+        );
+    }
+
+    public static TaxiDTO converterParaTaxiDTO(Taxi taxi) {
+        return new TaxiDTO(
+                taxi.getId(),
+                taxi.getMatricula(),
+                taxi.getModelo(),
+                taxi.getMarca(),
+                taxi.getTipoMotor().name(),
+                taxi.getAnoCompra(),
+                taxi.getConforto().getNivelConforto().name()
         );
     }
 }

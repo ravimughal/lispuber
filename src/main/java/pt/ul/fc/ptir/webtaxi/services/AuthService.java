@@ -13,13 +13,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class AuthService {
     
+    private final ClienteRepository clienteRep;
 
     @Autowired
-    private ClienteRepository clienteRep;
-
+    public AuthService(ClienteRepository clienteRep) {
+        this.clienteRep = clienteRep;
+    }
 
     @Transactional
-    public Integer registerNewClient(ClienteDto clienteDto){
+    public Integer registerNewClient(ClienteDTO clienteDto){
         if(clienteDto.email()!=null || clienteDto.email().isBlank()){
             throw new IllegalArgumentException("Erro: O email do cliente não pode ser null/vazio");
         }  //fazer uma melhor verificação do email
