@@ -30,9 +30,7 @@ public class AuthController {
     ) {
         try {
             Integer sessionId = authService.login(email, password);
-            
             return new ResponseEntity<>(sessionId, HttpStatus.OK);
-            
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }

@@ -20,29 +20,29 @@ public class AuthService {
 
     @Transactional
     public Integer registerNewClient(ClienteDto clienteDto){
-        if(clienteDto.getEmail()!=null || clienteDto.getEmail().isBlank()){
+        if(clienteDto.email()!=null || clienteDto.email().isBlank()){
             throw new IllegalArgumentException("Erro: O email do cliente não pode ser null/vazio");
         }  //fazer uma melhor verificação do email
 
-        if(clienteDto.getNome()!=null || clienteDto.getNome().isBlank()){
+        if(clienteDto.nome()!=null || clienteDto.nome().isBlank()){
             throw new IllegalArgumentException("Erro: O nome do cliente não pode ser null/vazio");
         }
-        if(clienteDto.getGenero()!=null){
+        if(clienteDto.genero()!=null){
             throw new IllegalArgumentException("Erro: O género do cliente não pode ser null");
         }
-        if(!isNIFValid(clienteDto.getNif())){
+        if(!isNIFValid(clienteDto.nif())){
             throw new IllegalArgumentException("Erro: O NIF do cliente é inválido");
         }
-        if(!isPasswordValid(clienteDto.getSenha())){
+        if(!isPasswordValid(clienteDto.senha())){
             throw new IllegalArgumentException("Erro: A password do cliente é invalida.");
         }
 
         Cliente cliente = new Cliente();
-        cliente.setGenero(clienteDto.getGenero());
-        cliente.setName(clienteDto.getNome());
-        cliente.setNif(clienteDto.getNif());
-        cliente.setSenha(clienteDto.getSenha());
-        cliente.setEmail(clienteDto.getEmail());
+        cliente.setGenero(clienteDto.genero());
+        cliente.setName(clienteDto.nome());
+        cliente.setNif(clienteDto.nif());
+        cliente.setSenha(clienteDto.senha());
+        cliente.setEmail(clienteDto.email());
 
         clienteRep.save(cliente);
         return this.generateSessionCode();  //implementar isto com o HTTPSESSION 
