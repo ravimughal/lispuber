@@ -1,6 +1,7 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.enums.NivelConforto;
 
 @Entity
 public class Conforto {
@@ -12,12 +13,13 @@ public class Conforto {
     @Column(nullable = false)
     private Double preco;
 
-    @Column(nullable = false)
-    private String nivelConforto;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, unique = true)
+    private NivelConforto nivelConforto;
 
     private Conforto() {}
 
-    public Conforto(Double preco, String nivelConforto) {
+    public Conforto(Double preco, NivelConforto nivelConforto) {
         this.preco = preco;
         this.nivelConforto = nivelConforto;
     }
@@ -38,11 +40,11 @@ public class Conforto {
         this.preco = preco;
     }
 
-    public String getNivelConforto() {
+    public NivelConforto getNivelConforto() {
         return nivelConforto;
     }
 
-    public void setNivelConforto(String nivelConforto) {
+    public void setNivelConforto(NivelConforto nivelConforto) {
         this.nivelConforto = nivelConforto;
     }
 }

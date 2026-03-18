@@ -1,5 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

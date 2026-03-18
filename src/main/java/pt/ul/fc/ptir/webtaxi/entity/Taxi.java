@@ -1,6 +1,7 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -2,15 +2,14 @@ package pt.ul.fc.ptir.webtaxi.entity;
 
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
+import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
 @Entity
 public class Motorista extends Utilizador {

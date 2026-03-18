@@ -1,6 +1,7 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.Entity;
+import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
 @Entity
 public class Gestor extends Utilizador{
