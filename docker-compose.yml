@@ -1,0 +1,41 @@
+services:
+  pgserver:
+    image: postgres:latest
+    container_name: pgserver
+    volumes:
+      - postgres-data:/var/lib/postgresql-data
+    networks:
+      - dbnet
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    restart: unless-stopped
+
+  # APP*****************************************
+  webtaxi:
+    image: webtaxi:latest
+    build:
+      context: .
+    container_name: webtaxi
+    networks:
+      - dbnet
+    expose:
+      - 8080
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - pgserver
+
+volumes:
+  postgres-data:
+
+networks:
+  dbnet:
+    driver: bridge
+
