@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+
+  <script src="js/ui.js"></script>
+
+  <script>
+    tailwind.config={darkMode:'class',theme:{extend:{
+      fontFamily:{sans:['DM Sans','sans-serif'],
+      heading:['Sora','sans-serif']}
+    }}};
+
+    let selectedRole = null;
+ 
+    function selectRole(role, el) {
+      selectedRole = role;
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('role-error').classList.add('hidden');
+    }
+  
+    function setProgress(step, total) {
+      const pct = Math.round((step / total) * 100);
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('step-label').textContent = `Step ${step} of ${total}`;
+      document.getElementById('step-pct').textContent = pct + '%';
+    }
+  
+    function showStep(id) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+  
+    function goStep2() {
+      if (!selectedRole) { document.getElementById('role-error').classList.remove('hidden'); return; }
+      setProgress(2, 3);
+      showStep('step-2-' + selectedRole);
+    }
+  
+    function goStep3(role) {
+      setProgress(3, 3);
+      showStep('step-3-' + role);
+    }
+  
+    function goBack(step, role) {
+      if (step === 1) { setProgress(1, 3); showStep('step-1'); }
+      else if (step === 2) { setProgress(2, 3); showStep('step-2-' + role); }
+    }
+  
+    function togglePass() {
+      const p = document.getElementById('password');
+      p.type = p.type === 'password' ? 'text' : 'password';
+    }
+  
+    function showFileName(inputId, labelId) {
+      const file = document.getElementById(inputId).files[0];
+      if (file) {
+        const el = document.getElementById(labelId);
+        el.textContent = '✓ ' + file.name.slice(0, 28);
+        el.classList.remove('hidden');
+      }
+    }
+  
+    function submitForm(role) {
+      document.getElementById('progress-wrap').style.display = 'none';
+      if (role === 'driver') {
+        document.getElementById('success-title').textContent = 'Application submitted!';
+        document.getElementById('success-msg').textContent = "We're reviewing your documents. You'll hear from us within 24 hours.";
+        document.getElementById('success-note').innerHTML = '<p>📧 Confirmation sent to your email</p><p>🕐 Verification takes up to 24 hours</p><p>📱 SMS notification when approved</p>';
+      } else {
+        document.getElementById('success-title').textContent = 'Welcome aboard! 🚕';
+        document.getElementById('success-msg').textContent = 'Your rider account is ready. Book your first ride now.';
+        document.getElementById('success-note').innerHTML = '<p>📧 Confirmation sent to your email</p><p>💳 Add a payment method in the app</p><p>📍 Enable location for faster pickups</p>';
+      }
+      showStep('step-success');
+    }
+  
+    function resetForm() {
+      selectedRole = null;
+      document.getElementById('progress-wrap').style.display = 'block';
+      setProgress(1, 3);
+      showStep('step-1');
+      window.location.href = "app";
+    }
+  </script>
+  
+  <style>
+    body{font-family:'DM Sans',sans-serif;} .font-heading,h1,h2,h3{font-family:'Sora',sans-serif;}
+    *,*::before,*::after{transition:background-color .2s,border-color .2s,color .15s;}
+    .step { display: none; }
+    .step.active { display: block; }
+    .role-card.selected { border-color: #20bcf5; background-color: rgba(32, 199, 245, 0.08); }
+    .upload-box { border: 2px dashed rgba(255,255,255,0.12); transition: border-color 0.2s; cursor: pointer; }
+    .upload-box:hover { border-color: #20bcf5; }
+    input[type="file"] { display: none; }
+    .progress-bar { transition: width 0.4s ease; }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+
+  <nav class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-5 h-14 flex items-center justify-between">
+    <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+      <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+    </a>
+    <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
+  </nav>
+
+  <div class="flex-1 flex items-center justify-center p-5">
+    <div class="w-full max-w-md">
+      <div class="bg-slate-900 border border-white/[0.07] rounded-3xl shadow-2xl shadow-black/60 p-8">      
+  
+        <!-- Progress -->
+        <div class="mb-6" id="progress-wrap">
+          <div class="flex justify-between text-xs text-slate-500 mb-2">
+            <span id="step-label">Step 1 of 3</span>
+            <span id="step-pct">33%</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-1.5">
+            <div id="progress-bar" class="progress-bar h-1.5 rounded-full" style="width:33%; background:linear-gradient(90deg,#20abf5,#05b7f8);"></div>
+          </div>
+        </div>
+  
+        <!-- STEP 1 -->
+        <div class="step active" id="step-1">
+          <h1 class="font-heading font-bold text-xl text-white mb-1">Create your account</h1>
+          <p class="text-sm text-slate-400 mb-6">How will you use Lisp?</p>
+  
+          <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="role-card border border-white/10 rounded-2xl p-4 cursor-pointer text-center transition-all duration-200 hover:border-blue-400/50" onclick="selectRole('rider', this)">
+              <div class="text-3xl mb-2">🧍</div>
+              <p class="font-semibold text-sm text-white">Rider</p>
+              <p class="text-xs text-slate-500 mt-1">I need a ride</p>
+            </div>
+            <div class="role-card border border-white/10 rounded-2xl p-4 cursor-pointer text-center transition-all duration-200 hover:border-blue-400/50" onclick="selectRole('driver', this)">
+              <div class="text-3xl mb-2">🚗</div>
+              <p class="font-semibold text-sm text-white">Driver</p>
+              <p class="text-xs text-slate-500 mt-1">I want to drive</p>
+            </div>
+          </div>
+  
+          <p id="role-error" class="text-xs text-red-400 mb-3 hidden">Please select a role to continue.</p>
+  
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Full name</label>
+              <input type="text" placeholder="Jane Doe" class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Email or phone</label>
+              <input type="text" placeholder="you@email.com" class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+              <div class="relative">
+                <input id="password" type="password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition pr-10" />
+                <button type="button" onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs">👁</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Confirm Password</label>
+              <div class="relative">
+                <input id="confirm_password" type="password" placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition pr-10" />
+                <button type="button" onclick="togglePass()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs">👁</button>
+              </div>
+            </div>
+          </div>
+  
+          <button onclick="goStep2()" class="mt-5 w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90 active:scale-95" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">
+            Continue →
+          </button>
+          <p class="text-center text-sm text-slate-400 mt-5">
+            Already have an account? <a href="signup" class="text-sky-500 hover:text-sky-600 font-medium">Sign in</a>
+          </p>
+        </div>
+
+        <!-- STEP 2: RIDER -->
+        <div class="step" id="step-2-rider">
+          <button onclick="goBack(1)" class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-5 transition">← Back</button>
+          <h1 class="font-heading font-bold text-xl text-white mb-1">Personal details</h1>
+          <p class="text-sm text-slate-400 mb-6">Just a few more things to get you riding.</p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date of birth</label>
+              <input type="date" class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-400 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Phone number</label>
+              <div class="flex gap-2">
+                <select class="px-3 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-300 text-sm outline-none focus:border-blue-400 transition">
+                  <option>🇵🇹 +351</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option><option>🇫🇷 +33</option>
+                </select>
+                <input type="tel" placeholder="912 345 678" class="flex-1 px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Home address <span class="normal-case font-normal text-slate-600">(optional)</span></label>
+              <input type="text" placeholder="Rua da Nazaré, 12..." class="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Profile photo <span class="normal-case font-normal text-slate-600">(optional)</span></label>
+              <label for="rider-photo" class="upload-box rounded-xl flex flex-col items-center justify-center py-5 gap-1.5">
+                <span class="text-2xl">📷</span>
+                <span class="text-xs text-slate-400">Click to upload</span>
+                <span id="rider-photo-name" class="text-xs text-blue-400 hidden"></span>
+                <input type="file" id="rider-photo" accept="image/*" onchange="showFileName('rider-photo','rider-photo-name')" />
+              </label>
+            </div>
+          </div>
+          <button onclick="goStep3('rider')" class="mt-5 w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90 active:scale-95" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">Continue →</button>
+        </div>
+  
+        <!-- STEP 2: DRIVER -->
+        <div class="step" id="step-2-driver">
+          <button onclick="goBack(1)" class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-5 transition">← Back</button>
+          <h1 class="font-heading font-bold text-xl text-white mb-1">Driver details</h1>
+          <p class="text-sm text-slate-400 mb-6">We'll verify your info before your first ride.</p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Phone number</label>
+              <div class="flex gap-2">
+                <select class="px-3 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-300 text-sm outline-none focus:border-blue-400 transition">
+                  <option>🇵🇹 +351</option><option>🇺🇸 +1</option><option>🇬🇧 +44</option>
+                </select>
+                <input type="tel" placeholder="912 345 678" class="flex-1 px-3.5 py-2.5 rounded-xl border border-white/10 bg-slate-800 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+              </div>
+            </div>
+            <div class="bg-slate-800/50 rounded-2xl p-4 border border-white/5 space-y-3">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vehicle info</p>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">License plate</label>
+                  <input type="text" placeholder="AA-00-BB" class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition uppercase" />
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">Year</label>
+                  <input type="number" placeholder="2020" min="2000" max="2026" class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">Make</label>
+                  <input type="text" placeholder="Toyota" class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">Model</label>
+                  <input type="text" placeholder="Corolla" class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">Color</label>
+                  <input type="text" placeholder="Silver" class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-100 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 placeholder-slate-500 transition" />
+                </div>
+                <div>
+                  <label class="block text-xs text-slate-500 mb-1.5">Type</label>
+                  <select class="w-full px-3 py-2.5 rounded-xl border border-white/10 bg-slate-900 text-slate-300 text-sm outline-none focus:border-blue-400 transition">
+                    <option value="">Select…</option>
+                    <option>Sedan</option><option>SUV</option><option>Hatchback</option><option>Minivan</option><option>Electric</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onclick="goStep3('driver')" class="mt-5 w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90 active:scale-95" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">Continue →</button>
+        </div>
+  
+        <!-- STEP 3: RIDER confirm -->
+        <div class="step" id="step-3-rider">
+          <button onclick="goBack(2,'rider')" class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-5 transition">← Back</button>
+          <h1 class="font-heading font-bold text-xl text-white mb-1">Almost there! 🎉</h1>
+          <p class="text-sm text-slate-400 mb-6">Review and accept to start riding.</p>
+          <div class="bg-slate-800/50 border border-white/5 rounded-2xl p-4 space-y-2.5 mb-5">
+            <div class="flex items-center gap-2 text-sm">
+              <span class="text-xl">🧍</span>
+              <div><p class="text-white font-medium">Rider account</p><p class="text-slate-500 text-xs">Personal use</p></div>
+            </div>
+            <div class="border-t border-white/5 pt-2.5 space-y-1.5 text-xs text-slate-400">
+              <div class="flex justify-between"><span>Safety rating visible to drivers</span><span class="text-green-400">✓</span></div>
+              <div class="flex justify-between"><span>Real-time trip tracking</span><span class="text-green-400">✓</span></div>
+              <div class="flex justify-between"><span>In-app payments</span><span class="text-green-400">✓</span></div>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer mb-3">
+            <input type="checkbox" class="mt-0.5 accent-blue-400 w-4 h-4 rounded" />
+            <span class="text-xs text-slate-400">I agree to the <a href="#" class="text-blue-400 hover:underline">Terms of Service</a> and <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a></span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer mb-5">
+            <input type="checkbox" class="mt-0.5 accent-blue-400 w-4 h-4 rounded" />
+            <span class="text-xs text-slate-400">Send me promotions and offers via email/SMS</span>
+          </label>
+          <button onclick="submitForm('rider')" class="w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90 active:scale-95" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">Create Rider Account</button>
+        </div>
+  
+        <!-- STEP 3: DRIVER docs -->
+        <div class="step" id="step-3-driver">
+          <button onclick="goBack(2,'driver')" class="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 mb-5 transition">← Back</button>
+          <h1 class="font-heading font-bold text-xl text-white mb-1">Upload documents</h1>
+          <p class="text-sm text-slate-400 mb-6">Required for verification. Accepted within 24 h.</p>
+          <div class="space-y-3 mb-5">
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Driver's license <span class="text-red-400">*</span></label>
+              <label for="doc-license" class="upload-box rounded-xl flex items-center justify-between px-4 py-3 gap-3">
+                <div class="flex items-center gap-2.5"><span class="text-xl">🪪</span><div><p class="text-xs font-medium text-slate-300">Front &amp; back photo</p><p id="doc-license-name" class="text-xs text-blue-400">Click to upload</p></div></div>
+                <span class="text-slate-600 text-lg">＋</span>
+                <input type="file" id="doc-license" accept="image/*,application/pdf" onchange="showFileName('doc-license','doc-license-name')" />
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">National ID / Passport <span class="text-red-400">*</span></label>
+              <label for="doc-id" class="upload-box rounded-xl flex items-center justify-between px-4 py-3 gap-3">
+                <div class="flex items-center gap-2.5"><span class="text-xl">📄</span><div><p class="text-xs font-medium text-slate-300">Government-issued ID</p><p id="doc-id-name" class="text-xs text-blue-400">Click to upload</p></div></div>
+                <span class="text-slate-600 text-lg">＋</span>
+                <input type="file" id="doc-id" accept="image/*,application/pdf" onchange="showFileName('doc-id','doc-id-name')" />
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Vehicle registration <span class="text-red-400">*</span></label>
+              <label for="doc-reg" class="upload-box rounded-xl flex items-center justify-between px-4 py-3 gap-3">
+                <div class="flex items-center gap-2.5"><span class="text-xl">🚗</span><div><p class="text-xs font-medium text-slate-300">Registration certificate</p><p id="doc-reg-name" class="text-xs text-blue-400">Click to upload</p></div></div>
+                <span class="text-slate-600 text-lg">＋</span>
+                <input type="file" id="doc-reg" accept="image/*,application/pdf" onchange="showFileName('doc-reg','doc-reg-name')" />
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Insurance <span class="normal-case font-normal text-slate-600">(optional)</span></label>
+              <label for="doc-insurance" class="upload-box rounded-xl flex items-center justify-between px-4 py-3 gap-3">
+                <div class="flex items-center gap-2.5"><span class="text-xl">🛡️</span><div><p class="text-xs font-medium text-slate-300">Vehicle insurance</p><p id="doc-insurance-name" class="text-xs text-blue-400">Click to upload</p></div></div>
+                <span class="text-slate-600 text-lg">＋</span>
+                <input type="file" id="doc-insurance" accept="image/*,application/pdf" onchange="showFileName('doc-insurance','doc-insurance-name')" />
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Profile photo <span class="text-red-400">*</span></label>
+              <label for="doc-selfie" class="upload-box rounded-xl flex items-center justify-between px-4 py-3 gap-3">
+                <div class="flex items-center gap-2.5"><span class="text-xl">🤳</span><div><p class="text-xs font-medium text-slate-300">Clear face photo</p><p id="doc-selfie-name" class="text-xs text-blue-400">Click to upload</p></div></div>
+                <span class="text-slate-600 text-lg">＋</span>
+                <input type="file" id="doc-selfie" accept="image/*" onchange="showFileName('doc-selfie','doc-selfie-name')" />
+              </label>
+            </div>
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer mb-5">
+            <input type="checkbox" class="mt-0.5 accent-blue-400 w-4 h-4 rounded" />
+            <span class="text-xs text-slate-400">I agree to the <a href="#" class="text-blue-400 hover:underline">Terms of Service</a>, <a href="#" class="text-blue-400 hover:underline">Privacy Policy</a> and <a href="#" class="text-blue-400 hover:underline">Driver Agreement</a></span>
+          </label>
+          <button onclick="submitForm('driver')" class="w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90 active:scale-95" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">Submit &amp; Apply as Driver</button>
+        </div>
+  
+        <!-- SUCCESS -->
+        <div class="step text-center" id="step-success">
+          <div class="text-5xl mb-4">🎉</div>
+          <h1 class="font-heading font-bold text-xl text-white mb-2" id="success-title">You're all set!</h1>
+          <p class="text-sm text-slate-400" id="success-msg">Welcome to Lisp.</p>
+          <div class="mt-5 p-4 bg-slate-800/50 border border-white/5 rounded-2xl text-xs text-slate-400 text-left space-y-1.5" id="success-note"></div>
+          <button onclick="resetForm()" class="mt-6 w-full py-2.5 rounded-xl font-semibold text-sm text-slate-900 transition hover:opacity-90" style="background:linear-gradient(90deg,#20bcf5,#05b7f8);">Open App →</button>
+        </div>
+  
+      </div>
+
+      <p class="text-center mt-4">
+        <a href="index" class="text-xs text-slate-400 hover:text-sky-500">← Back to home</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
