@@ -1,9 +1,8 @@
 package pt.ul.fc.ptir.webtaxi.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pt.ul.fc.ptir.webtaxi.dto.CriarTaxiDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
 import pt.ul.fc.ptir.webtaxi.services.TaxiService;
 
@@ -24,4 +23,8 @@ public class TaxiController {
         return ResponseEntity.ok(taxiService.listarTaxis());
     }
 
+    @PostMapping
+    public ResponseEntity<TaxiDTO> criarTaxi(@RequestBody CriarTaxiDTO criarTaxiDTO) {
+        return ResponseEntity.ok(taxiService.criarTaxi(criarTaxiDTO));
+    }
 }

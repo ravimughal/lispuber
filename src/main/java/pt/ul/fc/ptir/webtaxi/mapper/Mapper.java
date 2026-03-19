@@ -1,5 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.mapper;
 
+import pt.ul.fc.ptir.webtaxi.dto.CriarTaxiDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
 import pt.ul.fc.ptir.webtaxi.entity.*;
@@ -30,5 +31,17 @@ public class Mapper {
                 taxi.getAnoCompra(),
                 taxi.getConforto().getNivelConforto().name()
         );
+    }
+
+    public static Taxi converterParaTaxi(CriarTaxiDTO criarTaxiDTO) {
+        Taxi taxi = new Taxi();
+        taxi.setMatricula(criarTaxiDTO.matricula());
+        taxi.setMarca(criarTaxiDTO.marca());
+        taxi.setModelo(criarTaxiDTO.modelo());
+        taxi.setAnoCompra(criarTaxiDTO.anoCompra());
+        taxi.setConforto(criarTaxiDTO.conforto());
+        taxi.setTipoMotor(criarTaxiDTO.tipoMotor());
+
+        return taxi;
     }
 }
