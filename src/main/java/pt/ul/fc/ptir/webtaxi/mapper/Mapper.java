@@ -51,6 +51,7 @@ public class Mapper {
     public static MotoristaDTO converterParaMotoristaDTO(Motorista motorista) {
         Morada m = motorista.getMorada();
         return new MotoristaDTO(
+            motorista.getId(),
             motorista.getNif(),
             motorista.getEmail(),
             null, // n expor a senha
