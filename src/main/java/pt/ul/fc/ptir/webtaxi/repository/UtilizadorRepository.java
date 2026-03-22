@@ -10,5 +10,5 @@ import pt.ul.fc.ptir.webtaxi.entity.*;
 @Repository
 public interface UtilizadorRepository extends JpaRepository<Utilizador,Long>{
 
-
+    Optional<Utilizador> findByEmail(String email);
 }

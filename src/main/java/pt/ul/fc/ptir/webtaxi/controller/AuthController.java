@@ -17,20 +17,35 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/register") 
-        public ResponseEntity<Void> registerNewClient(@RequestBody ClienteDTO clienteDTO) {
-            authService.registerNewClient(clienteDTO);
-            return new ResponseEntity<>(HttpStatus.CREATED);
+    @PostMapping("/register/client") 
+    public ResponseEntity<String> registerNewClient(@RequestBody ClienteDTO clienteDTO) {
+        try{
+            String token=authService.registerNewClient(clienteDTO);
+            return new ResponseEntity<>(token,HttpStatus.CREATED);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
 
+    }
+
+    @PostMapping("/register/motorista")
+    public ResponseEntity<String> registerNewMotorista(@RequestBody MotoristaDTO motoristaDto){
+        try{
+        String token= authService.registerNewMotorista(motoristaDto);
+        return new ResponseEntity<>(token,HttpStatus.CREATED);
+        }catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<Integer> login(
+    public ResponseEntity<String> login(
         @RequestParam String email, 
         @RequestParam String password
     ) {
         try {
-            Integer sessionId = authService.login(email, password);
-            return new ResponseEntity<>(sessionId, HttpStatus.OK);
+            String token = authService.login(email, password);
+            return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
