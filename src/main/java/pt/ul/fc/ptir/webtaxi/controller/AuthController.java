@@ -35,6 +35,7 @@ public class AuthController {
         return new ResponseEntity<>(token,HttpStatus.CREATED);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            // return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
