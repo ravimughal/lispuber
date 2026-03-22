@@ -9,7 +9,8 @@ RUN mvn dependency:go-offline
 
 # Copia o resto e builda
 COPY . .
-RUN mvn clean package
+RUN mvn clean package -DskipTests
+# -DskipTests pq supostamente o postgres ainda n iniciou nessa latura ent n dá para testar nesse ponto
 
 # Stage 2: Runtime
 FROM docker.io/eclipse-temurin:21
