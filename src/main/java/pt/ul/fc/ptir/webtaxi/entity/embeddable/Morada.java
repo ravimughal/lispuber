@@ -13,6 +13,8 @@ public class Morada {
 
     private String codigoPostal;
 
+    public Morada() {} // Preciso para hibernate conseguir instanciar
+
     public Morada(String rua, String numero, String codigoPostal) {
         this.rua = rua;
         this.numero = numero;
