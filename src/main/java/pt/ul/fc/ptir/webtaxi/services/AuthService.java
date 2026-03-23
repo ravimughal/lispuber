@@ -163,9 +163,8 @@ public class AuthService {
         return jwtUtility.generateToken(new java.util.HashMap<>(), utilizador.getEmail(), seteDias);
     }
     
-    private boolean isNIFValid(Integer nif_number) {
+    private boolean isNIFValid(String nif) {
 
-        String nif = nif_number.toString();
         if (nif == null || nif.length() != 9 || !nif.matches("\\d{9}")) {
             return false;
         }

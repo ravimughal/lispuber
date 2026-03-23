@@ -32,7 +32,7 @@ public class Motorista extends Utilizador {
 
     public Motorista(){}
 
-    public Motorista(Integer nif, String email, String senha, String nome, Genero genero,
+    public Motorista(String nif, String email, String senha, String nome, Genero genero,
                      LocalDate dataNasc, Morada morada, String numCarta, LocalDate validadeCarta){
         super(nif, email, senha, nome, genero);
 

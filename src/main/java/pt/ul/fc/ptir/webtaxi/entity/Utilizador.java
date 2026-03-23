@@ -10,7 +10,7 @@ public abstract class Utilizador {
     private Long id;
 
     @Column(unique = true,nullable=false)
-    private Integer nif;
+    private String nif;
 
     @Column(unique = true, nullable=false)
     private String email;
@@ -27,7 +27,7 @@ public abstract class Utilizador {
 
     public Utilizador(){}
 
-    public Utilizador(Integer nif, String email, String senha, String nome, Genero genero){
+    public Utilizador(String nif, String email, String senha, String nome, Genero genero){
         this.nif=nif;
         this.email=email;
         this.senha=senha;
@@ -40,7 +40,7 @@ public abstract class Utilizador {
         return this.id;
     }
 
-    public Integer getNif() {
+    public String getNif() {
         return this.nif;
     }
 
@@ -64,7 +64,7 @@ public abstract class Utilizador {
         this.id=id;
     }
 
-    public void setNif(Integer newNif) {
+    public void setNif(String newNif) {
         this.nif = newNif;
     }
 
