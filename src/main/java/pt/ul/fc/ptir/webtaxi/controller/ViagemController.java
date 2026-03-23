@@ -2,10 +2,8 @@ package pt.ul.fc.ptir.webtaxi.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pt.ul.fc.ptir.webtaxi.dto.CriarViagemDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
 import pt.ul.fc.ptir.webtaxi.services.ViagemService;
 
@@ -33,5 +31,10 @@ public class ViagemController {
        } catch (RuntimeException e) {
            return ResponseEntity.notFound().build();
        }
+    }
+
+    @PostMapping
+    public ResponseEntity<ViagemDTO> criarViagem(@RequestBody CriarViagemDTO dto) {
+       return ResponseEntity.ok(viagemService.criarViagem(dto));
     }
 }

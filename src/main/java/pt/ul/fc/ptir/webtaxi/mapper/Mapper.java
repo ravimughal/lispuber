@@ -4,6 +4,7 @@ import pt.ul.fc.ptir.webtaxi.dto.CriarTaxiDTO;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
+import pt.ul.fc.ptir.webtaxi.dto.CriarViagemDTO;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
 
@@ -22,6 +23,22 @@ public class Mapper {
                 viagem.getFatura()
         );
     }
+
+    public static Viagem converterParaViagem(CriarViagemDTO criarViagemDTO) {
+        Viagem viagem = new Viagem();
+
+        viagem.setMoradaEntrada(criarViagemDTO.moradaEntrada());
+        viagem.setMoradaSaida(criarViagemDTO.moradaSaida());
+        viagem.setDuracao(criarViagemDTO.duracao());
+        viagem.setKmPercorridos(criarViagemDTO.kmPercorridos());
+        viagem.setNumPassageiro(criarViagemDTO.numPassageiro());
+        viagem.setPreco(criarViagemDTO.preco());
+        viagem.setCliente(criarViagemDTO.cliente());
+        viagem.setFatura(criarViagemDTO.fatura());
+
+        return viagem;
+    }
+
 
     public static TaxiDTO converterParaTaxiDTO(Taxi taxi) {
         return new TaxiDTO(
