@@ -3,6 +3,7 @@ package pt.ul.fc.ptir.webtaxi.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
@@ -24,4 +25,13 @@ public class ViagemController {
     public ResponseEntity<List<ViagemDTO>> listarViagens() {
        return ResponseEntity.ok(viagemService.listarViagens());
    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ViagemDTO> obterViagem(@PathVariable Long id) {
+       try {
+           return ResponseEntity.ok(viagemService.obterViagemPorId(id));
+       } catch (RuntimeException e) {
+           return ResponseEntity.notFound().build();
+       }
+    }
 }

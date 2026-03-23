@@ -26,4 +26,10 @@ public class ViagemService {
         return viagens.stream().map(Mapper::converterParaViagemDTO).toList();
     }
 
+    public ViagemDTO obterViagemPorId(Long id) {
+        Viagem viagem = viagemRepository.findById(id).orElseThrow(() -> new RuntimeException("Viagem não encontrada com id " + id));
+        return Mapper.converterParaViagemDTO(viagem);
+
+    }
+
 }
