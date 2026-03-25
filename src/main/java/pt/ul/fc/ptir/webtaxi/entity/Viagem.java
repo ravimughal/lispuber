@@ -143,4 +143,6 @@ public class Viagem {
     public void setTurno(Turno turno) {
         this.turno = turno;
     }
+
+
 }

@@ -1,10 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.mapper;
 
-import pt.ul.fc.ptir.webtaxi.dto.CriarTaxiDTO;
-import pt.ul.fc.ptir.webtaxi.dto.MotoristaDTO;
-import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
-import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
-import pt.ul.fc.ptir.webtaxi.dto.CriarViagemDTO;
+import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Morada;
 
@@ -38,6 +34,28 @@ public class Mapper {
 
         return viagem;
     }
+
+    /**
+     * Atualiza os dados finais de uma viagem existente com base nas informações
+     * fornecidas no DTO de finalização.
+     *
+     * Este método NÃO cria uma nova instância de Viagem. Em vez disso, modifica
+     * diretamente a entidade existente, preenchendo campos que só são conhecidos
+     * no momento da finalização da viagem.
+     *
+     * Campos atualizados:
+     * - kmPercorridos
+     * - preco
+     *
+     * @param viagem a entidade Viagem existente que será atualizada
+     * @param dto o DTO contendo os dados de finalização da viagem
+     */
+    public static void atualizarComFinalizacao(Viagem viagem, FinalizarViagemDTO dto) {
+        viagem.setKmPercorridos(dto.kmPercorridos());
+        viagem.setPreco(dto.preco());
+    }
+
+
 
 
     public static TaxiDTO converterParaTaxiDTO(Taxi taxi) {

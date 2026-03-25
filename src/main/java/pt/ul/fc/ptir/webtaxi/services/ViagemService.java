@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pt.ul.fc.ptir.webtaxi.dto.CriarViagemDTO;
+import pt.ul.fc.ptir.webtaxi.dto.FinalizarViagemDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
@@ -43,6 +44,21 @@ public class ViagemService {
         return Mapper.converterParaViagemDTO(viagem);
     }
 
+    @Transactional
+    public ViagemDTO finalizarViagem(Long id, FinalizarViagemDTO dto) {
+
+        Viagem viagem = viagemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Viagem não encontrada"));
+
+        validarViagemParaFinalizar(viagem, dto);
+
+        Mapper.atualizarComFinalizacao(viagem, dto);
+
+        viagem = viagemRepository.save(viagem);
+
+        return Mapper.converterParaViagemDTO(viagem);
+    }
+
     private void validarViagemParaCriacao(CriarViagemDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("O DTO da viagem não pode ser null.");
@@ -62,6 +78,16 @@ public class ViagemService {
 
         if (dto.cliente() == null) {
             throw new IllegalArgumentException("O cliente é obrigatório.");
+        }
+    }
+
+    private void validarViagemParaFinalizar(Viagem viagem, FinalizarViagemDTO dto) {
+        if (dto.kmPercorridos() == null || dto.kmPercorridos() <= 0) {
+            throw new IllegalArgumentException("Distância inválida.");
+        }
+
+        if (dto.preco() == null || dto.preco() < 0) {
+            throw new IllegalArgumentException("Preço inválido.");
         }
     }
 
