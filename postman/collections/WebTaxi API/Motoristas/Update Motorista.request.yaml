@@ -1,0 +1,24 @@
+$kind: http-request
+name: Update Motorista
+method: PUT
+url: "{{baseUrl}}/motoristas/{{motoristaId}}"
+order: 4000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nif": "121212121",
+      "email": "carlosferreira@example.com",
+      "senha": "password123",
+      "nome": "Carlos Ferreira",
+      "genero": "MASCULINO",
+      "dataNascimento": "1985-06-15",
+      "rua": "Rua das Flores",
+      "numero": "10",
+      "complemento": "2º Esq",
+      "codigoPostal": "1000-001",
+      "numCartaConducao": "C123456",
+      "validadeCarta": "2028-12-31"
+    }

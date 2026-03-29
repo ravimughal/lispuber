@@ -1,0 +1,14 @@
+name: WebTaxi
+values:
+  - key: baseUrl
+    value: 'http://localhost:8080'
+    enabled: true
+  - key: authToken
+    value: ''
+    enabled: true
+  - key: motoristaId
+    value: ''
+    enabled: true
+  - key: viagemId
+    value: ''
+    enabled: true

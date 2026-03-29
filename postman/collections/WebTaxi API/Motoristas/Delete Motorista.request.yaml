@@ -1,0 +1,5 @@
+$kind: http-request
+name: Delete Motorista
+method: DELETE
+url: '{{baseUrl}}/motoristas/{{motoristaId}}'
+order: 6000

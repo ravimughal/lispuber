@@ -1,0 +1,5 @@
+$kind: http-request
+name: Create Session
+method: GET
+url: '{{baseUrl}}/session/create'
+order: 1000

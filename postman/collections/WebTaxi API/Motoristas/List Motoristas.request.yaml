@@ -1,0 +1,5 @@
+$kind: http-request
+name: List Motoristas
+method: GET
+url: '{{baseUrl}}/motoristas'
+order: 1000

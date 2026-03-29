@@ -1,0 +1,5 @@
+$kind: http-request
+name: Invalidate Session
+method: GET
+url: '{{baseUrl}}/session/invalidate'
+order: 3000

@@ -1,0 +1,19 @@
+$kind: http-request
+name: Finalizar Viagem
+method: POST
+url: '{{baseUrl}}/viagens/{{viagemId}}/finalizar'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "duracao": {
+        "inicio": "2024-01-15T10:00:00",
+        "fim": "2024-01-15T10:30:00"
+      },
+      "kmPercorridos": 12.5,
+      "preco": 18.75
+    }
