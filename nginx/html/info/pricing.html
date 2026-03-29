@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing - Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+  
+  <script src="js/ui.js"></script>
+
+  <script>
+    tailwind.config={darkMode:'class',theme:{extend:{
+    fontFamily:{sans:['DM Sans','sans-serif'],
+    heading:['Sora','sans-serif']}
+    }}};
+
+    function toggleFaq(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+
+    function estimateFare() {
+      const km   = parseFloat(document.getElementById('calc-km').value);
+      const type = document.getElementById('calc-type').value;
+      if (!km || km <= 0) { showToast('Please enter a distance'); return; }
+      const fares = { economy:{base:2,km:1.2}, comfort:{base:3,km:1.8}, premium:{base:5,km:2.8} };
+      const f     = fares[type];
+      const total = (f.base + f.km * km).toFixed(2);
+      const names = { economy:'Economy', comfort:'Comfort', premium:'Premium' };
+      document.getElementById('result-fare').textContent = '€' + total;
+      document.getElementById('result-note').textContent = names[type] + ' · ' + km + ' km · Upfront price';
+      document.getElementById('calc-result').classList.remove('hidden');
+    }
+  </script>
+  
+  <style>
+    body{font-family:'DM Sans',sans-serif;} .font-heading,h1,h2,h3{font-family:'Sora',sans-serif;}
+    *,*::before,*::after{transition:background-color .2s,border-color .2s,color .15s;}
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:#0f172a;color:#f1f5f9;padding:.5rem 1.25rem;border-radius:999px;font-size:.82rem;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1) !important;pointer-events:none;white-space:nowrap;}
+    .dark #toast{background:#f1f5f9;color:#0f172a;} #toast.show{transform:translateX(-50%) translateY(0);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease,margin .3s ease;}
+    .faq-item.open .faq-answer{max-height:200px;margin-top:.75rem;}
+    .faq-item.open .chevron{transform:rotate(180deg);}
+    .chevron{transition:transform .2s;}
+  </style>
+</head>
+
+<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+  <div id="toast"></div>
+
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+      </a>
+      <div class="hidden md:flex items-center gap-1 text-sm">
+        <a href="index"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Home</a>
+        <a href="about"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">About</a>
+        <a href="how"     class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">How it works</a>
+        <a href="pricing" class="px-3 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-medium">Pricing</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
+        <a href="signin" class="hidden sm:block text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">Sign in</a>
+        <a href="app" class="text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">Open app</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="max-w-5xl mx-auto px-5 pt-16 pb-10 border-b border-slate-100 dark:border-slate-800">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-3">Transparent fares</p>
+    <h1 class="font-heading text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight mb-4">
+      One price. <span class="text-sky-500">No games.</span>
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-lg max-w-xl">Your fare is locked before you confirm. Always.</p>
+  </div>
+
+
+  <div class="max-w-5xl mx-auto px-5 py-14">
+    <div class="grid md:grid-cols-3 gap-4 mb-12">
+
+      <div class="rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-6 transition-all">
+        <div class="text-2xl mb-4">🚗</div>
+        <h3 class="font-heading font-bold text-slate-900 dark:text-white text-lg mb-1">Economy</h3>
+        <p class="text-sm text-slate-400 mb-5">Everyday rides, best price</p>
+        <div class="mb-5 pb-5 border-b border-slate-200 dark:border-slate-700">
+          <span class="font-heading text-3xl font-bold text-slate-900 dark:text-white">€1.20</span>
+          <span class="text-slate-400 text-sm"> / km</span>
+          <div class="text-xs text-slate-400 mt-1">Base fare €2.00</div>
+        </div>
+        <ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Standard sedan</li>
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Up to 4 passengers</li>
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Avg. 4 min pickup</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl bg-sky-500 dark:bg-sky-600 p-6 relative transition-all shadow-xl shadow-sky-500/20">
+        <div class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider bg-white/20 text-white px-2 py-0.5 rounded-full">Popular</div>
+        <div class="text-2xl mb-4">🛋</div>
+        <h3 class="font-heading font-bold text-white text-lg mb-1">Comfort</h3>
+        <p class="text-sm text-sky-100 mb-5">More space, newer cars</p>
+        <div class="mb-5 pb-5 border-b border-white/20">
+          <span class="font-heading text-3xl font-bold text-white">€1.80</span>
+          <span class="text-sky-100 text-sm"> / km</span>
+          <div class="text-xs text-sky-100 mt-1">Base fare €3.00</div>
+        </div>
+        <ul class="space-y-2 text-sm text-sky-100">
+          <li class="flex items-center gap-2"><span class="text-white">✓</span> Newer, roomier vehicles</li>
+          <li class="flex items-center gap-2"><span class="text-white">✓</span> Up to 4 passengers</li>
+          <li class="flex items-center gap-2"><span class="text-white">✓</span> Avg. 6 min pickup</li>
+        </ul>
+      </div>
+
+      <div class="rounded-2xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-6 transition-all">
+        <div class="text-2xl mb-4">👑</div>
+        <h3 class="font-heading font-bold text-slate-900 dark:text-white text-lg mb-1">Premium</h3>
+        <p class="text-sm text-slate-400 mb-5">Luxury travel experience</p>
+        <div class="mb-5 pb-5 border-b border-slate-200 dark:border-slate-700">
+          <span class="font-heading text-3xl font-bold text-slate-900 dark:text-white">€2.80</span>
+          <span class="text-slate-400 text-sm"> / km</span>
+          <div class="text-xs text-slate-400 mt-1">Base fare €5.00</div>
+        </div>
+        <ul class="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Premium vehicles only</li>
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Up to 4 passengers</li>
+          <li class="flex items-center gap-2"><span class="text-sky-400">✓</span> Priority matching</li>
+        </ul>
+      </div>
+    </div>
+
+
+    <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-6 mb-12">
+      <h3 class="font-heading font-semibold text-slate-900 dark:text-white mb-5">Estimate your fare</h3>
+      <div class="grid sm:grid-cols-3 gap-3 items-end">
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Distance (km)</label>
+          <input id="calc-km" type="number" min="0.5" step="0.5" placeholder="e.g. 5"
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm outline-none focus:border-sky-400 dark:focus:border-sky-500 focus:ring-2 focus:ring-sky-500/10" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Ride type</label>
+          <select id="calc-type"
+            class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm outline-none focus:border-sky-400 dark:focus:border-sky-500">
+            <option value="economy">Economy</option>
+            <option value="comfort" selected>Comfort</option>
+            <option value="premium">Premium</option>
+          </select>
+        </div>
+        <button onclick="estimateFare()" class="px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-sm font-medium transition-colors">
+          Calculate
+        </button>
+      </div>
+      <div id="calc-result" class="hidden mt-4 p-4 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800">
+        <div class="font-heading text-2xl font-bold text-sky-600 dark:text-sky-400" id="result-fare">—</div>
+        <div class="text-xs text-slate-400 mt-1" id="result-note"></div>
+      </div>
+    </div>
+
+
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-5">Pricing questions</p>
+    <div class="space-y-px">
+      <div class="faq-item border-b border-slate-100 dark:border-slate-800 py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          Is there surge pricing? <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">During high demand we may apply a small multiplier, but you always see the full price before confirming. Never any post-ride surprises.</div>
+      </div>
+      <div class="faq-item border-b border-slate-100 dark:border-slate-800 py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          What payment methods? <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">All transactions are powered by Stripe.</div>
+      </div>
+      <div class="faq-item py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          Can I get a receipt? <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Yes, when your ride ends you automatically receive a file on your menu with the route map, fare breakdown, driver details, and duration.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-sm text-slate-700 dark:text-slate-300">
+        <div class="w-5 h-5 rounded bg-sky-500 flex items-center justify-center text-white text-[10px] font-bold">L</div>Lisp
+      </a>
+      <div class="flex gap-5 text-xs text-slate-400">
+        <a href="about" class="hover:text-sky-500">About</a>
+        <a href="how" class="hover:text-sky-500">How it works</a>
+        <a href="pricing" class="hover:text-sky-500">Pricing</a>
+      </div>
+      <div class="text-xs text-slate-400">© 2026 Lisp</div>
+    </div>
+  </footer>
+</body>
+</html>
