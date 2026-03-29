@@ -26,7 +26,7 @@ public class Motorista extends Utilizador {
     @Column(nullable = false)
     private LocalDate validadeCartaConducao;
 
-    // TODO: ver se é necessário e/ou se faz sentido
+    // TODO: ver se é necessário e/ou se faz sentio
     @OneToMany(mappedBy = "motorista")
     private Set<Turno> turnos;
 
