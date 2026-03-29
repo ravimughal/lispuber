@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: "{{baseUrl}}/auth/register/gestor"
+examples: .resources/Register Gestor.resources/examples
+order: 4000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nif": "111222333",
+      "email": "jino@gmail.com",
+      "senha": "password123",
+      "nome": "Jino",
+      "genero": "MASCULINO",
+      "dataNascimento": "1999-03-29"
+    }

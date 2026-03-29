@@ -20,5 +20,6 @@ body:
       "email": "joaosilva@example.com",
       "senha": "password123",
       "nome": "João Silva",
-      "genero": "MASCULINO"
+      "genero": "MASCULINO",
+      "dataNascimento": "1999-03-29"
     }
