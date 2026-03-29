@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In - Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+
+  <script src="js/ui.js"></script>
+
+  <script>
+    tailwind.config={darkMode:'class',theme:{extend:{
+      fontFamily:{sans:['DM Sans','sans-serif'],
+      heading:['Sora','sans-serif']}
+    }}};
+  </script>
+  
+  <style>
+    body{font-family:'DM Sans',sans-serif;} .font-heading,h1,h2,h3{font-family:'Sora',sans-serif;}
+    *,*::before,*::after{transition:background-color .2s,border-color .2s,color .15s;}
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:#0f172a;color:#f1f5f9;padding:.5rem 1.25rem;border-radius:999px;font-size:.82rem;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1) !important;pointer-events:none;white-space:nowrap;}
+    .dark #toast{background:#f1f5f9;color:#0f172a;} #toast.show{transform:translateX(-50%) translateY(0);}
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased min-h-screen flex flex-col">
+  <div id="toast"></div>
+
+  <nav class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-5 h-14 flex items-center justify-between">
+    <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+      <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+    </a>
+    <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
+  </nav>
+
+  <div class="flex-1 flex items-center justify-center p-5">
+    <div class="w-full max-w-sm">
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-7">
+
+        <div class="text-center mb-7">
+          <h1 class="font-heading font-bold text-xl text-slate-900 dark:text-white">Welcome back</h1>
+          <p class="text-sm text-slate-400 mt-1">Sign in to your Lisp account</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Email or phone</label>
+            <input id="login-email" type="text" placeholder="you@email.com"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/10 placeholder-slate-400" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Password</label>
+            <input id="login-pass" type="password" placeholder="••••••••"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 text-sm outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-500/10" />
+          </div>
+          <!-- <div class="flex justify-end">
+            <button onclick="showToast('📧 Reset link sent')" class="text-xs text-sky-500 hover:text-sky-600">Forgot password?</button>
+          </div> -->
+          <button class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white text-sm font-semibold transition-colors shadow-lg shadow-sky-500/20">
+            Sign in
+          </button>
+        </div>
+
+        <p class="text-center text-sm text-slate-400 mt-5">
+          No account? <a href="signup" class="text-sky-500 hover:text-sky-600 font-medium">Sign up free</a>
+        </p>
+      </div>
+
+      <p class="text-center mt-4">
+        <a href="index" class="text-xs text-slate-400 hover:text-sky-500">← Back to home</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

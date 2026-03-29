@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+  
+  <script src="js/ui.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: {
+        fontFamily: { sans: ['DM Sans','sans-serif'], heading: ['Sora','sans-serif'] },
+        animation: {
+          'fade-up':   'fadeUp .5s ease both',
+          'fade-up-1': 'fadeUp .5s .1s ease both',
+          'fade-up-2': 'fadeUp .5s .2s ease both',
+          'fade-up-3': 'fadeUp .5s .3s ease both',
+          'marquee':   'marquee 26s linear infinite',
+        },
+        keyframes: {
+          fadeUp:  { from:{ opacity:'0', transform:'translateY(20px)' }, to:{ opacity:'1', transform:'translateY(0)' } },
+          marquee: { from:{ transform:'translateX(0)' }, to:{ transform:'translateX(-50%)' } },
+        },
+      }},
+    };
+  </script>
+
+  <style>
+    body { font-family: 'DM Sans', sans-serif; }
+    .font-heading, h1, h2, h3 { font-family: 'Sora', sans-serif; }
+    *, *::before, *::after { transition: background-color .2s, border-color .2s, color .15s; }
+    #toast {
+      position:fixed; bottom:1.5rem; left:50%;
+      transform:translateX(-50%) translateY(60px);
+      background:#0f172a; color:#f1f5f9;
+      padding:.5rem 1.25rem; border-radius:999px;
+      font-size:.82rem; z-index:9999;
+      transition:transform .3s cubic-bezier(.34,1.56,.64,1) !important;
+      pointer-events:none; white-space:nowrap;
+      box-shadow:0 4px 20px rgba(0,0,0,.2);
+    }
+    .dark #toast { background:#f1f5f9; color:#0f172a; }
+    #toast.show { transform:translateX(-50%) translateY(0); }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:99px; }
+    .dark ::-webkit-scrollbar-thumb { background:#334155; }
+  </style>
+</head>
+
+<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+  <div id="toast"></div>
+
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+      </a>
+      <div class="hidden md:flex items-center gap-1 text-sm">
+        <a href="index"   class="px-3 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-medium">Home</a>
+        <a href="about"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">About</a>
+        <a href="how"     class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">How it works</a>
+        <a href="pricing" class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">Pricing</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
+        <a href="signin" class="hidden sm:block text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">Sign in</a>      
+        <a href="app" class="text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">Open app</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <section class="max-w-5xl mx-auto px-5 pt-20 pb-16">
+    <div class="max-w-2xl">
+      <div class="inline-flex items-center gap-2 text-xs font-medium text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-3 py-1 rounded-full mb-6 animate-[fadeUp_.5s_ease_both]">
+        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse"></span>
+        Now live in 40+ cities
+      </div>
+
+      <h1 class="font-heading text-5xl md:text-6xl font-bold text-slate-900 dark:text-white leading-tight tracking-tight mb-5 animate-[fadeUp_.5s_.08s_ease_both]">
+        Your city,<br/>on demand.
+      </h1>
+
+      <p class="text-slate-500 dark:text-slate-400 text-lg leading-relaxed mb-8 max-w-lg animate-[fadeUp_.5s_.16s_ease_both]">
+        Real-time rides, upfront pricing, vetted drivers. Lisp gets you there in under 2 minutes.
+      </p>
+
+      <div class="flex flex-wrap gap-3 animate-[fadeUp_.5s_.24s_ease_both]">
+        <a href="app" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm shadow-lg shadow-sky-500/25 transition-all hover:-translate-y-0.5">
+          Book a ride
+        </a>
+        <a href="about" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-500 text-slate-600 dark:text-slate-300 font-medium text-sm transition-all hover:-translate-y-0.5">
+          Learn more →
+        </a>
+      </div>
+    </div>
+
+
+    <div class="grid grid-cols-3 gap-3 mt-14 max-w-sm animate-[fadeUp_.5s_.32s_ease_both]">
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-center border border-slate-100 dark:border-slate-700">
+        <div class="font-heading text-2xl font-bold text-sky-500">4.7</div>
+        <div class="text-xs text-slate-400 mt-0.5">Avg rating</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-center border border-slate-100 dark:border-slate-700">
+        <div class="font-heading text-2xl font-bold text-sky-500">5 min</div>
+        <div class="text-xs text-slate-400 mt-0.5">Avg pickup</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 text-center border border-slate-100 dark:border-slate-700">
+        <div class="font-heading text-2xl font-bold text-sky-500">12M</div>
+        <div class="text-xs text-slate-400 mt-0.5">Rides done</div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="border-y border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 overflow-hidden py-3">
+    <div class="flex w-max animate-[marquee_26s_linear_infinite]">
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Safe <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Fast <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Reliable <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Affordable <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">24/7 Support <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Verified Drivers <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Live Tracking <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Safe <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Fast <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Reliable <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Affordable <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">24/7 Support <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Verified Drivers <span class="text-sky-400 ml-5">·</span></span>
+      <span class="marquee-item px-6 text-[11px] font-semibold tracking-widest uppercase text-slate-400">Live Tracking <span class="text-sky-400 ml-5">·</span></span>
+    </div>
+  </div>
+
+
+  <section class="max-w-5xl mx-auto px-5 py-20">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-3">What sets us apart</p>
+    <h2 class="font-heading text-3xl font-bold text-slate-900 dark:text-white mb-10">Everything you need.</h2>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="group p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-700 transition-all hover:-translate-y-0.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center text-lg mb-4">🛡️</div>
+        <h3 class="font-heading font-semibold text-slate-900 dark:text-white mb-1">Verified drivers</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Background checks, license validation, and vehicle inspection on every driver before they ever take a trip.</p>
+      </div>
+      <div class="group p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-700 transition-all hover:-translate-y-0.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center text-lg mb-4">📍</div>
+        <h3 class="font-heading font-semibold text-slate-900 dark:text-white mb-1">Live GPS tracking</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Share your ride with loved ones. Every trip recorded, monitored, and stored end-to-end.</p>
+      </div>
+      <div class="group p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-700 transition-all hover:-translate-y-0.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center text-lg mb-4">💳</div>
+        <h3 class="font-heading font-semibold text-slate-900 dark:text-white mb-1">Upfront pricing</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Your fare is locked before you confirm. What you see is exactly what you pay - always.</p>
+      </div>
+      <div class="group p-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-sky-300 dark:hover:border-sky-700 transition-all hover:-translate-y-0.5">
+        <div class="w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center text-lg mb-4">⚡</div>
+        <h3 class="font-heading font-semibold text-slate-900 dark:text-white mb-1">4-minute pickups</h3>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Dense driver coverage means most pickups happen within 4 minutes of booking, city-wide.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="bg-sky-500 dark:bg-sky-600">
+    <div class="max-w-5xl mx-auto px-5 py-16 text-center">
+      <h2 class="font-heading text-3xl font-bold text-white mb-3">Ready to ride?</h2>
+      <p class="text-sky-100 mb-7 text-sm">Join over 2 million riders who trust Lisp every day.</p>
+      <a href="app" class="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-sky-600 font-semibold text-sm hover:bg-sky-50 transition-all shadow-lg">
+        Open the app →
+      </a>
+    </div>
+  </section>
+
+  <footer class="border-t border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-sm text-slate-700 dark:text-slate-300">
+        <div class="w-5 h-5 rounded bg-sky-500 flex items-center justify-center text-white text-[10px] font-bold">L</div>Lisp
+      </a>
+      <div class="flex gap-5 text-xs text-slate-400">
+        <a href="about" class="hover:text-sky-500">About</a>
+        <a href="how" class="hover:text-sky-500">How it works</a>
+        <a href="pricing" class="hover:text-sky-500">Pricing</a>
+      </div>
+      <div class="text-xs text-slate-400">© 2026 Lisp</div>
+    </div>
+  </footer>
+</body>
+</html>
