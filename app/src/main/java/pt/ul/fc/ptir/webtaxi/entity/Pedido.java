@@ -2,8 +2,6 @@ package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
 
-
-
 @Entity
 @Table(name = "pedido")
 public class Pedido {

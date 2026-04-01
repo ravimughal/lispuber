@@ -10,8 +10,6 @@ import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
 import pt.ul.fc.ptir.webtaxi.services.ViagemService;
 
-
-
 @RestController
 @RequestMapping("/viagens")
 public class ViagemController {
@@ -32,11 +30,7 @@ public class ViagemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> obterViagem(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(viagemService.obterViagemPorId(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(viagemService.obterViagemPorId(id));
     }
 
 

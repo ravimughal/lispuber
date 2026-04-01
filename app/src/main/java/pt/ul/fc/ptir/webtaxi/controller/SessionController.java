@@ -5,12 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
 @RestController
 @RequestMapping("/session")
 public class SessionController {
-
 
     @GetMapping("/create")
     public String createSession(HttpSession session) {
@@ -18,8 +15,6 @@ public class SessionController {
         String sessionId = session.getId();
         return "Session created with ID: " + sessionId;
     }
-
-
 
     @GetMapping("/get")
     public String getSession(HttpSession session) {
@@ -33,7 +28,6 @@ public class SessionController {
         return "Session found with username: " + username;
     }
 
-    
     @GetMapping("/invalidate")
     public String invalidateSession(HttpSession session) {
         session.invalidate();

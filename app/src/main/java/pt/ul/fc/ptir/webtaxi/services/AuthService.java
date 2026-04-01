@@ -11,10 +11,11 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
+import pt.ul.fc.ptir.webtaxi.exception.TipoDeUtilizadorInvalidoException;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
+import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
-
-
 
 @Service
 public class AuthService {
@@ -179,24 +180,13 @@ public class AuthService {
             throw new IllegalArgumentException("Erro: Este número de carta já existe no sistema.");
         }
 
-        Motorista motorista = new Motorista();
-        motorista.setName(motoristaCreateDto.nome());
-        motorista.setEmail(motoristaCreateDto.email());
-        motorista.setGenero(motoristaCreateDto.genero());
-        motorista.setNif(motoristaCreateDto.nif());
-        motorista.setDataNascimento(motoristaCreateDto.dataNascimento());
-        motorista.setNumCartaConducao(motoristaCreateDto.numCarta());
-        motorista.setValidadeCartaConducao(motoristaCreateDto.validadeCarta());
-        motorista.setRua(motoristaCreateDto.rua());
-        motorista.setRuaNumero(motoristaCreateDto.ruaNumero());
-        motorista.setCodigoPostal(motoristaCreateDto.codigoPostal());
-
+        Motorista motorista = Mapper.converterParaMotorista(motoristaCreateDto);
         String senhaEncriptada = passwordEncoder.encode(motoristaCreateDto.senha()); // encode à password
         motorista.setSenha(senhaEncriptada);
 
         motoristaRep.save(motorista);
 
-        long validade = 1 * 24 * 60 * 60 * 1000L;
+        long validade = 24 * 60 * 60 * 1000L;
         Map<String, String> claims = new HashMap<>();
         claims.put("role", "MOTORISTA");
         return jwtUtility.generateToken(claims, motorista.getEmail(), validade);
@@ -204,24 +194,26 @@ public class AuthService {
 
 
     @Transactional
-    public String login(String email, String password) throws Exception {
+    public String login(String email, String password) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Erro: O email não pode ser vazio.");
         }
 
         Optional<Utilizador> utilizadorOpt = utilizadorRep.findByEmail(email);
 
+        // não existe este email na db
         if (utilizadorOpt.isEmpty()) {
-            throw new Exception("Erro: Utilizador não encontrado.");
+            throw new RecursoNaoEncontradoException("Email ou senha inválidos");
         }
 
         Utilizador utilizador = utilizadorOpt.get();
 
+        // não existe esta senha na db
         if (!passwordEncoder.matches(password,utilizador.getSenha())) {
-            throw new Exception("Erro: A senha está incorreta.");
+            throw new RecursoNaoEncontradoException("Email ou senha inválidos");
         }
 
-        long validade = 1 * 24 * 60 * 60 * 1000L;
+        long validade = 24 * 60 * 60 * 1000L;
         Map<String, String> claims = new HashMap<>();
 
         if (utilizador instanceof Cliente) {
@@ -231,16 +223,13 @@ public class AuthService {
         } else if (utilizador instanceof Gestor) {
             claims.put("role", "GESTOR");
         } else {
-            throw new Exception("Erro: Tipo de utilizador desconhecido.");
+            throw new TipoDeUtilizadorInvalidoException();
         }
 
         return jwtUtility.generateToken(claims, utilizador.getEmail(), validade);
     }
     
-
-
     private boolean isNIFValid(String nif) {
-
         if (nif == null || nif.length() != 9 || !nif.matches("\\d{9}")) {
             return false;
         }
@@ -257,15 +246,15 @@ public class AuthService {
 
 
     private boolean isPasswordValid(String password){
-        if(password==null || password.isBlank()){
+        if(password == null || password.isBlank()){
             return false;
         }
 
         if(password.length()<6){
             return false;
         }
+
         return password.matches("^(?=.*[a-zA-Z])(?=.*[0-9]).+$");
-        
     }
 
 
@@ -273,6 +262,7 @@ public class AuthService {
         if (email == null || email.isBlank()) {
             return false;
         }
+
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" + 
                             "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 

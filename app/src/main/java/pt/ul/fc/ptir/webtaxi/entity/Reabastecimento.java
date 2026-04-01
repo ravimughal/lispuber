@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
-
-
 @Entity
 @Table(name = "reabastecimento")
 public class Reabastecimento {

@@ -8,8 +8,6 @@ import pt.ul.fc.ptir.webtaxi.dto.TaxiCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.services.TaxiService;
 
-
-
 @RestController
 @RequestMapping("/taxis")
 public class TaxiController {

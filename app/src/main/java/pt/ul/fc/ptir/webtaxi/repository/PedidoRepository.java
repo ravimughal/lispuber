@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 
-
-
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {}

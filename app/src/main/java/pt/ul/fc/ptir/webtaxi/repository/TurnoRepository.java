@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 
-
-
 @Repository
 public interface TurnoRepository extends JpaRepository<Turno, Long> {}

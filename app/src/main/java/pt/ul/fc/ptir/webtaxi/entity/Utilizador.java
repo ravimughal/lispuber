@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
-
-
 @Entity
 @Table(name = "utilizador")
 @Inheritance(strategy = InheritanceType.JOINED)

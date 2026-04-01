@@ -3,8 +3,6 @@ package pt.ul.fc.ptir.webtaxi.mapper;
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 
-
-
 public class Mapper {
 
     // CLIENTE
@@ -77,7 +75,7 @@ public class Mapper {
 
     // CONFORTO
     public static ConfortoDTO converterParaConfortoDTO(Conforto c) {
-        return new ConfortoDTO(c.getPreco(), c.getNivel());
+        return new ConfortoDTO(c.getPreco(), c.getNivelConforto());
     }
 
 

@@ -10,10 +10,9 @@ import java.util.List;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaCreateDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.MotoristaRepository;
-
-
 
 @Service
 public class MotoristaService {
@@ -38,7 +37,7 @@ public class MotoristaService {
 
     public MotoristaResponseDTO obterMotoristaPorId(Long id) {
         Motorista motorista = motoristaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado com id: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado com id: " + id));
         return Mapper.converterParaMotoristaDTO(motorista);
     }
 
@@ -57,7 +56,7 @@ public class MotoristaService {
     @Transactional
     public MotoristaResponseDTO atualizarMotorista(Long id, MotoristaCreateDTO dto) {
         Motorista motorista = motoristaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado com id: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado com id: " + id));
 
         validar(dto, motorista);
 
@@ -86,7 +85,7 @@ public class MotoristaService {
     @Transactional
     public void removerMotorista(Long id) {
         Motorista motorista = motoristaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado com id: " + id));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado com id: " + id));
 
         // Restrição da API: só pode remover se nunca tiver tido um turno
         // if (!motorista.getTurnos().isEmpty()) {

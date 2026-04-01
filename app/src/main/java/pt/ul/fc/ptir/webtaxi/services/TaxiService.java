@@ -12,8 +12,6 @@ import pt.ul.fc.ptir.webtaxi.entity.Taxi;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
 
-
-
 @Service
 public class TaxiService {
 

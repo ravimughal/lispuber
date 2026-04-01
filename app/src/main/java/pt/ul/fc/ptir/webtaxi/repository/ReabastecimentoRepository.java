@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Reabastecimento;
 
-
-
 @Repository
 public interface ReabastecimentoRepository extends JpaRepository<Reabastecimento, Long> {}

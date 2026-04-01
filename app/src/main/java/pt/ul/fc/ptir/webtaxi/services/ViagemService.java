@@ -11,13 +11,12 @@ import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.ViagemRepository;
 import pt.ul.fc.ptir.webtaxi.repository.ClienteRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
 import pt.ul.fc.ptir.webtaxi.repository.PedidoRepository;
-
-
 
 @Service
 @Transactional
@@ -45,9 +44,8 @@ public class ViagemService {
 
 
     public ViagemResponseDTO obterViagemPorId(Long id) {
-        Viagem viagem = viagemRepository.findById(id).orElseThrow(() -> new RuntimeException("Viagem não encontrada com id " + id));
+        Viagem viagem = viagemRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Viagem não encontrada com id " + id));
         return Mapper.converterParaViagemDTO(viagem);
-
     }
 
 
@@ -56,11 +54,11 @@ public class ViagemService {
         validarViagemParaCriacao(ViagemDTO);
 
         Cliente cliente = clienteRepository.findById(ViagemDTO.clienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado!"));
         Turno turno = turnoRepository.findById(ViagemDTO.turnoId())
-                .orElseThrow(() -> new RuntimeException("Turno não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado!"));
         Pedido pedido = pedidoRepository.findById(ViagemDTO.pedidoId())
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado!"));
 
         Viagem viagem = Mapper.converterParaViagem(ViagemDTO, cliente, turno, pedido);
 

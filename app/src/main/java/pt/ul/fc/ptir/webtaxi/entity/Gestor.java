@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
-
-
 @Entity
 @Table(name = "gestor")
 public class Gestor extends Utilizador{

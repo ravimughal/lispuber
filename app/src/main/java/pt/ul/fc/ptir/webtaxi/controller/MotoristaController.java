@@ -11,8 +11,6 @@ import pt.ul.fc.ptir.webtaxi.dto.MotoristaResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaCreateDTO;
 import pt.ul.fc.ptir.webtaxi.services.MotoristaService;
 
-
-
 @RestController
 @RequestMapping("/motoristas")
 public class MotoristaController {
@@ -34,55 +32,32 @@ public class MotoristaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MotoristaResponseDTO> obterMotorista(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(motoristaService.obterMotoristaPorId(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(motoristaService.obterMotoristaPorId(id));
     }
 
 
     @PostMapping
     public ResponseEntity<MotoristaResponseDTO> criarMotorista(@RequestBody MotoristaCreateDTO dto) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(motoristaService.criarMotorista(dto));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(motoristaService.criarMotorista(dto));
     }
-
 
     // PUT = atualização completa, PATCH = parcial — ambos usam o mesmo service
     // já que o service verifica null em cada campo
     @PutMapping("/{id}")
     public ResponseEntity<MotoristaResponseDTO> atualizarMotorista(@PathVariable Long id, @RequestBody MotoristaCreateDTO dto) {
-        try {
-            return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
     }
 
 
     @PatchMapping("/{id}")
     public ResponseEntity<MotoristaResponseDTO> atualizarParcialmente(@PathVariable Long id, @RequestBody MotoristaCreateDTO dto) {
-        try {
-            return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
     }
 
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> removerMotorista(@PathVariable Long id) {
-        try {
-            motoristaService.removerMotorista(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 409
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        motoristaService.removerMotorista(id);
+        return ResponseEntity.noContent().build();
     }
 }

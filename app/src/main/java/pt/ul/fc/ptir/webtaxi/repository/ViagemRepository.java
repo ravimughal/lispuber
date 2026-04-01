@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
 
-
-
 @Repository
 public interface ViagemRepository extends JpaRepository<Viagem, Long> {}

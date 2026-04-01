@@ -15,8 +15,6 @@ import java.util.List;
 import pt.ul.fc.ptir.webtaxi.entity.Utilizador;
 import pt.ul.fc.ptir.webtaxi.repository.UtilizadorRepository;
 
-
-
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 

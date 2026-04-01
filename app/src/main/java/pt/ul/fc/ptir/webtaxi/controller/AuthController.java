@@ -15,8 +15,6 @@ import java.util.Map;
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.services.AuthService;
 
-
-
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -24,38 +22,24 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    
     @PostMapping("/register/client") 
     public ResponseEntity<String> registerNewClient(@RequestBody ClienteCreateDTO clienteCreateDTO) {
-        try{
-            String token=authService.registerNewClient(clienteCreateDTO);
-            return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        String token = authService.registerNewClient(clienteCreateDTO);
+        return new ResponseEntity<>(token,HttpStatus.CREATED);
     }
 
     
     @PostMapping("/register/gestor") 
     public ResponseEntity<String> registerNewGestor(@RequestBody GestorCreateDTO gestorCreateDTO) {
-        try{
-            String token=authService.registerNewGestor(gestorCreateDTO);
-            return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        String token = authService.registerNewGestor(gestorCreateDTO);
+        return new ResponseEntity<>(token,HttpStatus.CREATED);
     }
 
 
     @PostMapping("/register/motorista")
     public ResponseEntity<String> registerNewMotorista(@RequestBody MotoristaCreateDTO motoristaCreateDTO){
-        try{
-        String token= authService.registerNewMotorista(motoristaCreateDTO);
+        String token = authService.registerNewMotorista(motoristaCreateDTO);
         return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            // return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 
@@ -64,12 +48,8 @@ public class AuthController {
         @RequestParam String email, 
         @RequestParam String password
     ) {
-        try {
-            String token = authService.login(email, password);
-            return new ResponseEntity<>(token, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        String token = authService.login(email, password);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @GetMapping("/debug")

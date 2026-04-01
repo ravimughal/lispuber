@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.beans;
+package pt.ul.fc.ptir.webtaxi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +11,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import pt.ul.fc.ptir.webtaxi.services.JwtAuthFilter;
-
-
 
 @Configuration
 @EnableWebSecurity

@@ -3,8 +3,6 @@ package pt.ul.fc.ptir.webtaxi.entity;
 import jakarta.persistence.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
-
-
 @Entity
 @Table(name = "viagem")
 public class Viagem {

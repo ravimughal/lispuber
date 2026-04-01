@@ -5,7 +5,5 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Conforto;
 
-
-
 @Repository
 public interface ConfortoRepository extends JpaRepository<Conforto, Long> {}
