@@ -167,15 +167,7 @@ public class AuthService {
         long validade = jwtUtility.TOKEN_EXPIRATION_INTERVAL;
         Map<String, String> claims = new HashMap<>();
 
-        if (utilizador instanceof Cliente) {
-            claims.put("role", UserRole.CLIENTE.name());
-        } else if (utilizador instanceof Motorista) {
-            claims.put("role", UserRole.MOTORISTA.name());
-        } else if (utilizador instanceof Gestor) {
-            claims.put("role", UserRole.GESTOR.name());
-        } else {
-            throw new TipoDeUtilizadorInvalidoException();
-        }
+        claims.put("role", utilizador.getRole().name());
 
         return jwtUtility.generateToken(claims, utilizador.getEmail(), validade);
     }
