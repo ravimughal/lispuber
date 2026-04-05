@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
+import pt.ul.fc.ptir.webtaxi.entity.enums.UserRole;
 
 @Entity
 @Table(name = "motorista")
@@ -32,7 +33,7 @@ public class Motorista extends Utilizador {
     public Motorista(String nif, String email, String senha, String nome,
                      Genero genero, LocalDate dataNascimento, String rua, Integer ruaNumero, 
                      String codigoPostal, String numCarta, LocalDate validadeCarta){
-        super(nif, email, senha, nome, genero, dataNascimento);
+        super(nif, email, senha, nome, genero, dataNascimento, UserRole.MOTORISTA);
 
         this.rua = rua;
         this.ruaNumero = ruaNumero;

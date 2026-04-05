@@ -5,14 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
+import pt.ul.fc.ptir.webtaxi.entity.enums.UserRole;
 
 @Entity
 @Table(name = "cliente")
-public class Cliente extends Utilizador{
+public class Cliente extends Utilizador {
 
     public Cliente(){}
 
     public Cliente(String nif, String email, String senha, String nome, Genero genero, LocalDate dataNascimento){
-        super(nif, email, senha, nome, genero, dataNascimento);
+        super(nif, email, senha, nome, genero, dataNascimento, UserRole.CLIENTE);
     }
 }
