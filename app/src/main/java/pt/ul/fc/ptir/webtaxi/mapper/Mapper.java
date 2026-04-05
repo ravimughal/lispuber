@@ -208,4 +208,38 @@ public class Mapper {
             r.getDuracao()
         );
     }
+
+    // UTILIZADOR
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(MotoristaCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
+        );
+    }
+
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(ClienteCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
+        );
+    }
+
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(GestorCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
+        );
+    }
 }

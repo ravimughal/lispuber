@@ -14,32 +14,30 @@ public class JwtUtility {
 
     @Value("${com.secapp.jwt.secret}")
     private String SECRET_KEY;
-    
 
-    public String generateToken(Map<String, String> extraClaims, String userName, long expireInterval) {
+    public final long TOKEN_EXPIRATION_INTERVAL = 24 * 60 * 60 * 1000L;
+
+    public String generateToken(Map<String, String> extraClaims, String username, long expireInterval) {
         return Jwts
             .builder()
             .claims().add(extraClaims)
             .and()
-            .subject(userName)
+            .subject(username)
             .issuedAt(new Date(System.currentTimeMillis()))
             .expiration(new Date(System.currentTimeMillis() + expireInterval))
             .signWith(getSignInKey())
             .compact();
     }
-    
 
     public String getUserName(String token) {
         Claims claims = extractAllClaims(token);
         return claims.getSubject();
     }
-    
 
     public boolean isTokenExpired(String token) {
         Claims claims = extractAllClaims(token);
         return claims.getExpiration().before(new java.util.Date());
     }
-    
 
     private Claims extractAllClaims(String token) {
         return Jwts
@@ -49,20 +47,17 @@ public class JwtUtility {
             .parseSignedClaims(token)
             .getPayload();
     }
-    
 
     private SecretKey getSignInKey() {
-    byte[] keyBytes = SECRET_KEY.getBytes();
+        byte[] keyBytes = SECRET_KEY.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 
     public String getRoleFromToken(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("role", String.class);
     }
 
-    
     public boolean isTokenValid(String token) {
         return !isTokenExpired(token);
     }
