@@ -18,7 +18,7 @@ CREATE TABLE utilizador (
     data_nascimento DATE         NOT NULL,
     role            VARCHAR(255) NOT NULL,
 
-    CONSTRAINT utilizador_genero_check CHECK (genero IN ('MASCULINO', 'FEMININO', 'NAO_INDICADO')),
+    CONSTRAINT utilizador_genero_check CHECK (genero IN ('MASCULINO', 'FEMININO', 'NAO_INDICADO'))
     CONSTRAINT utilizador_role_check CHECK (role IN ('CLIENTE', 'GESTOR', 'MOTORISTA'))
 );
 
