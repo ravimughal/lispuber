@@ -13,6 +13,6 @@ public class Gestor extends Utilizador{
     public Gestor(){}
 
     public Gestor(String nif, String email, String senha, String nome, Genero genero, LocalDate dataNascimento){
-        super(nif, email, senha, nome, genero, dataNascimento, UserRole.GESTOR);
+        super(nif, email, senha, nome, genero, dataNascimento);
     }
 }

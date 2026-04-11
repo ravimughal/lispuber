@@ -1,6 +1,12 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.springframework.cglib.core.Local;
+
 import jakarta.persistence.*;
+import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 
 @Entity
 @Table(name = "pedido")
@@ -9,6 +15,9 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "data_solicitacao", nullable = false, updatable = false)
+    private LocalDateTime dataSolicitacao;
 
     @ManyToOne 
     @JoinColumn(name = "cliente_id", nullable = false)
@@ -42,7 +51,13 @@ public class Pedido {
     @Column(name = "longitude_destino", nullable = false)
     private Double longitudeDestino;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado_pedido", nullable = false)
+    private EstadoPedido estadoPedido;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "motorista_id")
+    private Motorista motoristaQueAceitou;
 
     public Pedido() {}
 
@@ -59,6 +74,9 @@ public class Pedido {
         this.ruaDestino = ruaDestino;
         this.latitudeDestino = latitudeDestino;
         this.longitudeDestino = longitudeDestino;
+        this.estadoPedido=EstadoPedido.PENDENTE;
+        this.motoristaQueAceitou=null;
+        this.dataSolicitacao = LocalDateTime.now();
     }
 
 
@@ -108,6 +126,14 @@ public class Pedido {
     }
 
     
+    public EstadoPedido getEstadoPedido(){
+        return estadoPedido;
+    }
+
+    public void setEstadoPedido(EstadoPedido newEstado){
+        this.estadoPedido=newEstado;
+    }
+
     public String getRuaOrigem() {
         return ruaOrigem;
     }
@@ -159,5 +185,19 @@ public class Pedido {
 
     public void setLongitudeDestino(Double longitudeDestino) {
         this.longitudeDestino = longitudeDestino;
+    }
+
+    public Motorista getMotoristaQueAceitou(){
+        return motoristaQueAceitou;
+    }
+
+    public void setMotoristaQueAceitou(Motorista m){
+        this.motoristaQueAceitou=m;
+    }
+    public LocalDateTime getDataSolicitacao() {
+        return dataSolicitacao;
+    }
+    public void setDataSolicitacao(LocalDateTime timestamp) {
+        this.dataSolicitacao=timestamp;
     }
 }

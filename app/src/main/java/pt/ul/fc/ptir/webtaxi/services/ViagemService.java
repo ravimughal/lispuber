@@ -11,6 +11,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
+import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.ViagemRepository;
@@ -59,6 +60,14 @@ public class ViagemService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado!"));
         Pedido pedido = pedidoRepository.findById(ViagemDTO.pedidoId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado!"));
+
+        if(pedido.getCliente().getId()!=ViagemDTO.clienteId()){
+            throw new IllegalStateException("Erro: O cliente associado à viagem não é o mesmo associado ao pedido.");
+        }
+        if(pedido.getEstadoPedido()!=EstadoPedido.EM_CURSO || pedido.getMotoristaQueAceitou()==null){
+            throw new IllegalStateException("Erro: O pedido associado à viagem tem de estar com estado: EM_CURSO");
+        }
+
 
         Viagem viagem = Mapper.converterParaViagem(ViagemDTO, cliente, turno, pedido);
 

@@ -142,8 +142,12 @@ public class Mapper {
             p.getLongitudeOrigem(),
             p.getRuaDestino(),
             p.getLatitudeDestino(),
-            p.getLongitudeDestino()
+            p.getLongitudeDestino(),
+            p.getEstadoPedido(),
+            (p.getMotoristaQueAceitou() != null ? p.getMotoristaQueAceitou().getId() : null),
+            p.getDataSolicitacao()
         );
+
     }
 
 
