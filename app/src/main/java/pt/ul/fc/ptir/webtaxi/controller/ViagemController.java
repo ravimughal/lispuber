@@ -41,8 +41,9 @@ public class ViagemController {
     }
 
 
-    // @PostMapping("/{id}/finalizar")
-    // public ResponseEntity<ViagemDTO> finalizarViagem(@PathVariable Long id, @RequestBody ViagemDTO dto) {
-    //     return ResponseEntity.ok(viagemService.finalizarViagem(id, dto));
-    // }
+    @PatchMapping("/{id}/finalizar") 
+    public ResponseEntity<ViagemResponseDTO> finalizarViagem(@PathVariable Long id) {
+        ViagemResponseDTO viagemFinalizada = viagemService.finalizarViagem(id);
+        return ResponseEntity.ok(viagemFinalizada);
+    }
 }

@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoResponseDTO;
-import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
+import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.entity.Taxi;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
-import pt.ul.fc.ptir.webtaxi.entity.enums.Motor;
+import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.MotoristaRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
@@ -52,7 +52,7 @@ public class TurnoService {
         return Mapper.converterParaTurnoResponseDTO(turno);
     }
 
-    public List<TaxiDTO> listarTaxisDisponiveis(Long turnoId) {
+    public List<TaxiResponseDTO> listarTaxisDisponiveis(Long turnoId) {
         Turno turno = turnoRepository.findById(turnoId)
                 .orElseThrow(() -> new RuntimeException("Turno não encontrado: " + turnoId));
 
@@ -67,7 +67,7 @@ public class TurnoService {
                     if (taxiOcupado) return false;
 
                     // Restrição 11 — táxi elétrico a carregar no início do turno
-                    boolean eEletrico = taxi.getMotor() == Motor.ELETRICO;
+                    boolean eEletrico = taxi.getTipoMotor() == TipoMotor.ELETRICO;
                     if (eEletrico && turnoRepository.isTaxiACarregarEm(taxi.getId(), inicio)) {
                         return false;
                     }
@@ -99,7 +99,7 @@ public class TurnoService {
         }
 
         // Restrição 11 — táxi elétrico a carregar no início do turno
-        if (taxi.getMotor() == Motor.ELETRICO && turnoRepository.isTaxiACarregarEm(taxiId, inicio)) {
+        if (taxi.getTipoMotor() == TipoMotor.ELETRICO && turnoRepository.isTaxiACarregarEm(taxiId, inicio)) {
             throw new IllegalStateException("O táxi elétrico está a carregar no início do turno.");
         }
 

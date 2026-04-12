@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
 
 @Repository
-public interface ViagemRepository extends JpaRepository<Viagem, Long> {}
+public interface ViagemRepository extends JpaRepository<Viagem, Long> {
+
+    boolean existsByPedidoId(Long pedidoId);
+}

@@ -2,6 +2,7 @@ package pt.ul.fc.ptir.webtaxi.mapper;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
 public class Mapper {
 
@@ -98,6 +99,10 @@ public class Mapper {
 
 
     // TURNO
+    public static Turno converterParaTurno(TurnoCreateDTO dto, Motorista motorista, Taxi taxi) {
+        return new Turno(new Duracao(dto.inicio(),dto.fim()), motorista, taxi);
+    }
+
     public static TurnoResponseDTO converterParaTurnoResponseDTO(Turno turno) {
         return new TurnoResponseDTO(
             turno.getId(),
@@ -154,21 +159,21 @@ public class Mapper {
             cliente,
             turno,
             pedido,
-            dto.duracao(),
+            new Duracao(dto.dataInicio(),null),
             dto.kilometros(),
             dto.numPassageiro()
         );
     }
 
-    public static ViagemResponseDTO converterParaViagemDTO(Viagem v) {
+    public static ViagemResponseDTO converterParaViagemDTO(Viagem viagem) {
         return new ViagemResponseDTO(
-            v.getId(),
-            converterParaClienteDTO(v.getCliente()),
-            converterParaTurnoDTO(v.getTurno()),
-            converterParaPedidoDTO(v.getPedido()),
-            v.getDuracao(),
-            v.getKilometros(),
-            v.getNumPassageiro()
+            viagem.getId(),
+            converterParaClienteDTO(viagem.getCliente()), 
+            converterParaTurnoResponseDTO(viagem.getTurno()),     
+            converterParaPedidoDTO(viagem.getPedido()),
+            viagem.getDuracao().getInicio(),              
+            viagem.getDuracao().getFim(),                
+            viagem.getKilometros()
         );
     }
 

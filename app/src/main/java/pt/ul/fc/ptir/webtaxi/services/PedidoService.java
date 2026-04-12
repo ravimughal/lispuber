@@ -84,6 +84,16 @@ public class PedidoService {
             throw new IllegalArgumentException("Erro: A rua destino não pode ser null/blank");
         }
 
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof Cliente clienteLogado)) {
+            throw new org.springframework.security.access.AccessDeniedException("Apenas clientes podem criar pedidos.");
+        }
+
+        if (!pedidoDto.clienteId().equals(clienteLogado.getId())) {
+            throw new org.springframework.security.access.AccessDeniedException("Erro: O ID do cliente no pedido não corresponde ao utilizador logado.");
+        }
+
         Pedido newPedido = new Pedido();
 
         Cliente cliente = clienteRepository.findById(pedidoDto.clienteId())

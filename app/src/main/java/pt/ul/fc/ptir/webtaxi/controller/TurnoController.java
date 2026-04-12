@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pt.ul.fc.ptir.webtaxi.dto.TaxiDTO;
+import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoResponseDTO;
 import pt.ul.fc.ptir.webtaxi.services.TurnoService;
@@ -35,7 +35,7 @@ public class TurnoController {
     }
 
     @GetMapping("/{id}/taxis-disponiveis")
-    public ResponseEntity<List<TaxiDTO>> listarTaxisDisponiveis(@PathVariable Long id) {
+    public ResponseEntity<List<TaxiResponseDTO>> listarTaxisDisponiveis(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));
         } catch (RuntimeException e) {

@@ -3,7 +3,10 @@ package pt.ul.fc.ptir.webtaxi.services;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
@@ -11,6 +14,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
@@ -52,64 +56,95 @@ public class ViagemService {
 
     @Transactional
     public ViagemResponseDTO criarViagem(ViagemCreateDTO ViagemDTO) {
+
         validarViagemParaCriacao(ViagemDTO);
+        if (viagemRepository.existsByPedidoId(ViagemDTO.pedidoId())) {
+        throw new IllegalStateException("Erro: Já existe uma viagem iniciada para este pedido.");
+    }
 
         Cliente cliente = clienteRepository.findById(ViagemDTO.clienteId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Cliente não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Cliente não encontrado!"));
         Turno turno = turnoRepository.findById(ViagemDTO.turnoId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Turno não encontrado!"));
         Pedido pedido = pedidoRepository.findById(ViagemDTO.pedidoId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado!"));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Pedido não encontrado!"));
 
         if(pedido.getCliente().getId()!=ViagemDTO.clienteId()){
             throw new IllegalStateException("Erro: O cliente associado à viagem não é o mesmo associado ao pedido.");
         }
+
         if(pedido.getEstadoPedido()!=EstadoPedido.EM_CURSO || pedido.getMotoristaQueAceitou()==null){
             throw new IllegalStateException("Erro: O pedido associado à viagem tem de estar com estado: EM_CURSO");
         }
 
 
-        Viagem viagem = Mapper.converterParaViagem(ViagemDTO, cliente, turno, pedido);
+        Viagem viagem = new Viagem();
+        viagem.setCliente(cliente);
+        viagem.setTurno(turno);
+        viagem.setPedido(pedido);
+        viagem.setDuracao(new Duracao(ViagemDTO.dataInicio(),null));
+        viagem.setKilometros(ViagemDTO.kilometros());
 
         viagem = viagemRepository.save(viagem);
         return Mapper.converterParaViagemDTO(viagem);
     }
 
 
-    // @Transactional
-    // public ViagemDTO finalizarViagem(Long id, ViagemDTO dto) {
+    @Transactional
+    public ViagemResponseDTO finalizarViagem(Long viagemId) { 
+        
+        // Verificar se motorista logged é o motorista da viagem/pedido??
 
-    //     Viagem viagem = viagemRepository.findById(id)
-    //             .orElseThrow(() -> new RuntimeException("Viagem não encontrada"));
+        if(viagemId==null||viagemId<=0){
+            throw new IllegalArgumentException("Erro: O id da viagem tem ser um número inteiro maior do que 0.");
+        }
+        
+        Viagem viagem = viagemRepository.findById(viagemId)
+                .orElseThrow(() -> new RuntimeException("Erro: Viagem não encontrada"));
 
-    //     validarViagemParaFinalizar(viagem, dto);
+        Optional<Pedido> pedidoOpt = pedidoRepository.findById(viagem.getPedido().getId());
 
-    //     Mapper.atualizarComFinalizacao(viagem, dto);
+        if(!pedidoOpt.isPresent()){
+            throw new IllegalStateException("Erro: Pedido não existe");
+        }
+        Pedido pedido=pedidoOpt.get();
 
-    //     viagem = viagemRepository.save(viagem);
+        pedido.setEstadoPedido(EstadoPedido.CONCLUIDO);
 
-    //     return Mapper.converterParaViagemDTO(viagem);
-    // }
+        LocalDateTime data_final=LocalDateTime.now();
+
+        viagem.setDuracao(new Duracao(viagem.getDuracao().getInicio(),data_final));
+
+        pedidoRepository.save(pedido);
+        viagem = viagemRepository.save(viagem);
+
+        return Mapper.converterParaViagemDTO(viagem);
+    }
 
 
     private void validarViagemParaCriacao(ViagemCreateDTO dto) {
         if (dto == null) {
-            throw new IllegalArgumentException("O DTO da viagem não pode ser null.");
+            throw new IllegalArgumentException("Erro: O DTO da viagem não pode ser null.");
+        }
+        if(dto.clienteId()==null||dto.clienteId()<=0){
+            throw new IllegalArgumentException("Erro: O clientId tem de ser um número inteiro maior do que 0.");
         }
 
-        if (dto.numPassageiro() == null || dto.numPassageiro() <= 0) {
-            throw new IllegalArgumentException("O número de passageiros deve ser maior que 0.");
+        if(dto.turnoId()==null||dto.turnoId()<=0){
+            throw new IllegalArgumentException("Erro: O turnoId tem de ser um número inteiro maior do que 0.");
+        }
+
+        if(dto.pedidoId()==null||dto.pedidoId()<=0){
+            throw new IllegalArgumentException("Erro: O pedidoId tem de ser um número inteiro maior do que 0.");
+        }
+
+        if(dto.kilometros()==null||dto.kilometros()<=0){
+            throw new IllegalArgumentException("Erro: O número de kilometros tem de ser maior do que 0.");
+        }
+
+        if (dto.numPassageiro() == null || dto.numPassageiro() <= 0|| dto.numPassageiro()>4) {
+            throw new IllegalArgumentException("Erro: O número de passageiros deve ser entre 1 e 4.");
         }
     }
 
-
-    // private void validarViagemParaFinalizar(Viagem viagem, ViagemDTO dto) {
-    //     if (dto.kilometros() == null || dto.kilometros() <= 0) {
-    //         throw new IllegalArgumentException("Distância inválida.");
-    //     }
-
-    //     // if (dto.preco() == null || dto.preco() < 0) {
-    //     //     throw new IllegalArgumentException("Preço inválido.");
-    //     // }
-    // }
 }

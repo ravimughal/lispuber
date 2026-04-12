@@ -114,7 +114,7 @@ CREATE TABLE viagem (
     pedido_id            BIGINT    NOT NULL,
 
     inicio               TIMESTAMP NOT NULL,
-    fim                  TIMESTAMP NOT NULL,
+    fim                  TIMESTAMP,
 
     km_percorridos       NUMERIC(10,2) NOT NULL CHECK (km_percorridos >= 0),
 

@@ -6,6 +6,7 @@ import pt.ul.fc.ptir.webtaxi.exception.DataInicioDepoisDoFimException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+
 @Embeddable
 public class Duracao {
 
@@ -15,7 +16,7 @@ public class Duracao {
     public Duracao() {}
 
     public Duracao(LocalDateTime inicio, LocalDateTime fim) {
-        if (inicio.isAfter(fim))
+        if (fim!=null && inicio.isAfter(fim))
             throw new DataInicioDepoisDoFimException();
         this.inicio = inicio;
         this.fim = fim;
