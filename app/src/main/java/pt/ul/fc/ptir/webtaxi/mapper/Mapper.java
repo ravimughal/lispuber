@@ -98,16 +98,13 @@ public class Mapper {
 
 
     // TURNO
-    public static Turno converterParaTurno(TurnoCreateDTO dto, Motorista motorista, Taxi taxi) {
-        return new Turno(dto.duracao(), motorista, taxi);
-    }
-
-    public static TurnoResponseDTO converterParaTurnoDTO(Turno t) {
+    public static TurnoResponseDTO converterParaTurnoResponseDTO(Turno turno) {
         return new TurnoResponseDTO(
-            t.getId(),
-            t.getDuracao(),
-            converterParaMotoristaDTO(t.getMotorista()),
-            converterParaTaxiDTO(t.getTaxi())
+            turno.getId(),
+            turno.getMotorista().getId(),
+            turno.getTaxi() != null ? turno.getTaxi().getId() : null,
+            turno.getDuracao().getInicio(),
+            turno.getDuracao().getFim()
         );
     }
 

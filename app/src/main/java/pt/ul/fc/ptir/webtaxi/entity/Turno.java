@@ -17,7 +17,7 @@ public class Turno {
     private Motorista motorista;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true) // Pq é o que está na descrição da api
     private Taxi taxi;
 
     @Embedded
