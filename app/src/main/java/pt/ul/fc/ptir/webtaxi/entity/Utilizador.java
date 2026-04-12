@@ -34,20 +34,16 @@ public abstract class Utilizador {
     @Column(nullable = false, length = 15)
     private Genero genero;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserRole role;
 
     public Utilizador(){}
 
-    public Utilizador(String nif, String email, String senha, String nome, Genero genero, LocalDate dataNascimento, UserRole role){
+    public Utilizador(String nif, String email, String senha, String nome, Genero genero, LocalDate dataNascimento){
         this.nif = nif;
         this.email = email;
         this.senha = senha;
         this.nome = nome;
         this.genero = genero;
         this.dataNascimento = dataNascimento;
-        this.role = role;
     }
 
     public Long getId() {
@@ -110,11 +106,4 @@ public abstract class Utilizador {
         this.nome = nome;
     }
 
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
 }

@@ -85,9 +85,12 @@ CREATE TABLE pedido (
     id                   BIGSERIAL PRIMARY KEY,
     cliente_id           BIGINT        NOT NULL,
     conforto_id          BIGINT        NOT NULL,
+    motorista_id         BIGINT,
 
     num_passageiros      INTEGER       NOT NULL CHECK (num_passageiros > 0),
     preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
+    estado_pedido        VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
+    data_solicitacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     rua_origem           VARCHAR(255),
     latitude_origem      NUMERIC(9,6)  NOT NULL,
@@ -98,7 +101,8 @@ CREATE TABLE pedido (
     longitude_destino    NUMERIC(9,6)  NOT NULL,
 
     FOREIGN KEY (cliente_id)  REFERENCES cliente(id)  ON DELETE CASCADE,
-    FOREIGN KEY (conforto_id) REFERENCES conforto(id)
+    FOREIGN KEY (conforto_id) REFERENCES conforto(id),
+    FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE SET NULL
 );
 
 

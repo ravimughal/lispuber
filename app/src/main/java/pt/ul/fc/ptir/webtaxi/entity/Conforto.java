@@ -19,6 +19,7 @@ public class Conforto {
     @Column(name = "nivel_conforto", nullable = false, unique = true)
     private NivelConforto nivelConforto;
 
+    public Conforto(){}
     public Conforto(Double preco, NivelConforto nivelConforto) {
         this.preco = preco;
         this.nivelConforto = nivelConforto;
