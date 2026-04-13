@@ -1,11 +1,10 @@
 $kind: http-request
-name: Finalizar Viagem
+name: Selecionar Taxi
 method: POST
-url: '{{baseUrl}}/viagens/{{viagemId}}/finalizar'
+url: "{{baseUrl}}/viagens/{{turno}}/selecionar-taxi"
 order: 4000
 headers:
-  - key: Content-Type
-    value: application/json
+  Content-Type: application/json
 body:
   type: json
   content: |-

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Taxis Disponiveis
+method: GET
+url: "{{baseUrl}}/turnos/{{turnoId}}/taxis-disponiveis"
+order: 2000

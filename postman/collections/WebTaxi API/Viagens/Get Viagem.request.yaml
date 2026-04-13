@@ -1,5 +1,0 @@
-$kind: http-request
-name: Get Viagem
-method: GET
-url: '{{baseUrl}}/viagens/{{viagemId}}'
-order: 2000

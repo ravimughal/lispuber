@@ -10,12 +10,9 @@ body:
   content: |-
     {
       "matricula": "AA-10-BB",
-      "marca": "Toyota",
       "modelo": "Corolla",
+      "marca": "Toyota",
+      "tipoMotor": "COMBUSTAO",
       "anoCompra": 2020,
-      "conforto": { 
-        "id": 1,
-        "nivelConforto": "BASICO"
-        },
-      "tipoMotor": "COMBUSTAO"
+      "nivelConforto": "BASICO"
     }
