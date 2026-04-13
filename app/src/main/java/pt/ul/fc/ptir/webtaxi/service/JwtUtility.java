@@ -15,7 +15,7 @@ public class JwtUtility {
     @Value("${com.secapp.jwt.secret}")
     private String SECRET_KEY;
 
-    public final long TOKEN_EXPIRATION_INTERVAL = 24 * 60 * 60 * 1000L;
+    public final long TOKEN_EXPIRATION_INTERVAL = 7 * 24 * 60 * 60 * 1000L;
 
     public String generateToken(Map<String, String> extraClaims, String username, long expireInterval) {
         return Jwts

@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
 import pt.ul.fc.ptir.webtaxi.service.ViagemService;
@@ -33,6 +32,10 @@ public class ViagemController {
         return ResponseEntity.ok(viagemService.obterViagemPorId(id));
     }
 
+    @GetMapping("/byCliente")
+    public ResponseEntity<List<ViagemResponseDTO>> obterViagensByCliente(){
+        return ResponseEntity.ok(viagemService.obterViagensByCliente());
+    }
 
     @PostMapping
     public ResponseEntity<ViagemResponseDTO> criarViagem(@RequestBody ViagemCreateDTO dto) {
@@ -40,7 +43,7 @@ public class ViagemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(viagemDTO);
     }
 
-
+    
     @PatchMapping("/{id}/finalizar") 
     public ResponseEntity<ViagemResponseDTO> finalizarViagem(@PathVariable Long id) {
         ViagemResponseDTO viagemFinalizada = viagemService.finalizarViagem(id);

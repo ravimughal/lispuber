@@ -33,7 +33,7 @@ public class Viagem {
     public Viagem() {}
 
     public Viagem(Cliente cliente, Turno turno, Pedido pedido,
-                  Duracao duracao, Double kilometros, Integer numPassageiro) {
+                  Duracao duracao, Double kilometros) {
 
         this.cliente = cliente;
         this.turno = turno;

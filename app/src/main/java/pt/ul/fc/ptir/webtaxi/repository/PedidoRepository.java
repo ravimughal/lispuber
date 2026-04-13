@@ -12,4 +12,5 @@ import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     List<Pedido> findByEstadoPedido(EstadoPedido estadoPedido);
+    List<Pedido> findByClienteId(Long clienteId);
 }
