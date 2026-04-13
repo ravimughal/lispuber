@@ -83,7 +83,15 @@ public class Mapper {
 
     // TAXI
     public static Taxi converterParaTaxi(TaxiCreateDTO dto, Conforto conforto) {
-        return new Taxi(dto.matricula(), dto.modelo(), dto.marca(), TipoMotor.valueOf(dto.tipoMotor()), dto.anoCompra(), conforto);
+        return new Taxi(
+                dto.matricula(),
+                dto.modelo(),
+                dto.marca(),
+                TipoMotor.valueOf(dto.tipoMotor()),
+                dto.anoCompra(),
+                conforto,
+                dto.kilometros()
+        );
     }
 
     public static TaxiResponseDTO converterParaTaxiDTO(Taxi t) {
@@ -94,7 +102,8 @@ public class Mapper {
             t.getMarca(),
             t.getTipoMotor(),
             t.getAnoCompra(),
-            converterParaConfortoDTO(t.getConforto())
+            converterParaConfortoDTO(t.getConforto()),
+            t.getKilometros()
         );
     }
 
