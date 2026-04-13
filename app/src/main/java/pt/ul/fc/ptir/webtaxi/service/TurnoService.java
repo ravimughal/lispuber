@@ -118,7 +118,7 @@ public class TurnoService {
     @Transactional
     public TurnoResponseDTO atualizarFimTurno(Long turnoId, LocalDateTime novoFim) {
         Turno turno = turnoRepository.findById(turnoId)
-                .orElseThrow(() -> new RuntimeException("Turno não encontrado: " + turnoId));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado: " + turnoId));
 
         if (novoFim.isBefore(turno.getDuracao().getInicio())) {
             throw new IllegalArgumentException("O novo fim não pode ser antes do início do turno.");
