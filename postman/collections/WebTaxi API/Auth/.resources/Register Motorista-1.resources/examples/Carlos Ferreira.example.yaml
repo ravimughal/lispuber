@@ -1,0 +1,38 @@
+$kind: http-example
+request:
+  url: "{{baseUrl}}/auth/register/motorista"
+  method: POST
+  body:
+    type: json
+    content: "{\r
+
+      \  \"nif\": \"987654321\",\r
+
+      \  \"email\": \"carlosferreira@example.com\",\r
+
+      \  \"senha\": \"password123\",\r
+
+      \  \"nome\": \"Carlos Ferreira\",\r
+
+      \  \"genero\": \"MASCULINO\",\r
+
+      \  \"dataNascimento\": \"1985-06-15\",\r
+
+      \  \"rua\": \"Rua das Flores\",\r
+
+      \  \"ruaNumero\": 10,\r
+
+      \  \"codigoPostal\": \"1000-001\",\r
+
+      \  \"numCarta\": \"C123456\",\r
+
+      \  \"validadeCarta\": \"2028-12-31\"\r
+
+      }"
+response:
+  statusCode: 200
+  statusText: OK
+  body:
+    type: json
+    content: ""
+order: 1776101583577
