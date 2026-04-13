@@ -2,6 +2,7 @@ package pt.ul.fc.ptir.webtaxi.services;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -130,6 +131,39 @@ public List<PedidoResponseDTO> getPedidosPendentes(){
 }
 
 
+public PedidoResponseDTO obterPedidoById(Long pedidoId){
+    Optional<Pedido> pedidoOpt=pedidoRepository.findById(pedidoId);
+
+    if(pedidoOpt.isEmpty()){
+        throw new IllegalArgumentException("Erro: Não existe um pedido com o id: "+pedidoId);
+    }
+    return Mapper.converterParaPedidoDTO(pedidoOpt.get());
+
+}
+
+// PEDIDOS/USER
+
+//user
+
+public List<PedidoResponseDTO> obterPedidosByCliente() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!(principal instanceof Cliente clienteLogado)) {
+        throw new org.springframework.security.access.AccessDeniedException("Apenas clientes podem criar pedidos.");
+    }    
+    Long clientId=clienteLogado.getId();
+    List<Pedido> pedidos = pedidoRepository.findByClienteId(clientId);
+    List<PedidoResponseDTO> res = new ArrayList<PedidoResponseDTO>();
+    for (Pedido p:pedidos){
+        res.add(Mapper.converterParaPedidoDTO(p));
+    }
+
+    return res;
+}
+
+
+
+
 @Transactional
 public PedidoResponseDTO aceitarPedido(Long pedidoId) {  //Para motoristas
 
@@ -138,7 +172,7 @@ public PedidoResponseDTO aceitarPedido(Long pedidoId) {  //Para motoristas
     if (!(principal instanceof Motorista motoristaLogado)) {
         throw new org.springframework.security.access.AccessDeniedException("Apenas motoristas podem aceitar pedidos.");
     }
-    System.out.println("O userID do motorista É: "+motoristaLogado.getId()+" ,EMAIL: "+motoristaLogado.getEmail());
+
     Pedido pedido = pedidoRepository.findById(pedidoId)
         .orElseThrow(() -> new RecursoNaoEncontradoException("Pedido não encontrado."));
 

@@ -40,8 +40,15 @@ public class PedidosTaxiController {
         return ResponseEntity.ok(pendentes);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoResponseDTO> obterPedido(@PathVariable Long id){
+        return ResponseEntity.ok(pedidoService.obterPedidoById(id));
+    }
 
-    // TODO: Fazer um método de get pedidos aceites por um dado motorista
+    @GetMapping("/byCliente")
+    public ResponseEntity<List<PedidoResponseDTO>> obterPedido(){
+        return ResponseEntity.ok(pedidoService.obterPedidosByCliente());
+    }
 
 
     // POST /pedidos-taxi/{id}/aceitar - Motorista aceita

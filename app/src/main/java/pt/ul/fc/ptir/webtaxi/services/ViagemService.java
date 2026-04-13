@@ -2,15 +2,19 @@ package pt.ul.fc.ptir.webtaxi.services;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Cliente;
+import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
@@ -78,6 +82,31 @@ public class ViagemService {
         }
 
 
+        LocalDateTime turno_inicio=turno.getDuracao().getInicio();
+        LocalDateTime turno_fim=turno.getDuracao().getFim();
+
+
+        //Restrição 3 do enunciado
+        if(ViagemDTO.dataInicio().isAfter(turno_inicio)&& ViagemDTO.dataInicio().isAfter(turno_fim)){
+            throw new IllegalArgumentException("Erro: A data de inicio da viagem tem de estar dentro do periodo do turno.");
+        }
+
+
+        Motorista motorista = pedido.getMotoristaQueAceitou();
+        long motoristaId= motorista.getId();
+        boolean motoristaOcupado = viagemRepository.isMotoristaOcupado(motoristaId,ViagemDTO.dataInicio());
+        if(motoristaOcupado){
+            throw new IllegalStateException("Erro: O motorista já está numa viagem");
+        }
+
+        long taxiId=turno.getTaxi().getId();
+        boolean taxiOcupado = viagemRepository.isTaxiOcupado(taxiId, turno_inicio);
+
+        if(taxiOcupado){
+            throw new IllegalStateException("Erro: O táxi com id: "+taxiId+" já está a ser usado numa viagem que está a decorrer.");
+        }
+
+
         Viagem viagem = new Viagem();
         viagem.setCliente(cliente);
         viagem.setTurno(turno);
@@ -92,8 +121,6 @@ public class ViagemService {
 
     @Transactional
     public ViagemResponseDTO finalizarViagem(Long viagemId) { 
-        
-        // Verificar se motorista logged é o motorista da viagem/pedido??
 
         if(viagemId==null||viagemId<=0){
             throw new IllegalArgumentException("Erro: O id da viagem tem ser um número inteiro maior do que 0.");
@@ -111,7 +138,18 @@ public class ViagemService {
 
         pedido.setEstadoPedido(EstadoPedido.CONCLUIDO);
 
+        Turno turno = viagem.getTurno();
+
+        LocalDateTime turno_inicio=turno.getDuracao().getInicio();
+        LocalDateTime turno_fim=turno.getDuracao().getFim();
+
         LocalDateTime data_final=LocalDateTime.now();
+
+        //Restrição 3 do enunciado
+        if(data_final.isAfter(turno_inicio) && data_final.isAfter(turno_fim) && data_final.isAfter(viagem.getDuracao().getInicio())){
+            throw new IllegalArgumentException("Erro: A data de fim da viagem tem de estar dentro do periodo do turno e ser antes da"+
+                                                "data de ínicio.");
+        }
 
         viagem.setDuracao(new Duracao(viagem.getDuracao().getInicio(),data_final));
 
@@ -122,6 +160,25 @@ public class ViagemService {
     }
 
 
+
+    public List<ViagemResponseDTO> obterViagensByCliente(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof Cliente clienteLogado)) {
+            throw new org.springframework.security.access.AccessDeniedException("Apenas clientes podem criar pedidos.");
+        }    
+        Long clientId=clienteLogado.getId();
+
+        List<Viagem> viagens= viagemRepository.findByClienteId(clientId);
+        List<ViagemResponseDTO> res = new ArrayList<ViagemResponseDTO>();
+        for(Viagem v:viagens){
+            res.add(Mapper.converterParaViagemDTO(v));
+        }
+        return res;
+    }
+
+
+    
     private void validarViagemParaCriacao(ViagemCreateDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Erro: O DTO da viagem não pode ser null.");
@@ -142,9 +199,6 @@ public class ViagemService {
             throw new IllegalArgumentException("Erro: O número de kilometros tem de ser maior do que 0.");
         }
 
-        if (dto.numPassageiro() == null || dto.numPassageiro() <= 0|| dto.numPassageiro()>4) {
-            throw new IllegalArgumentException("Erro: O número de passageiros deve ser entre 1 e 4.");
-        }
     }
 
 }

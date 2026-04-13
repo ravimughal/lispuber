@@ -160,8 +160,7 @@ public class Mapper {
             turno,
             pedido,
             new Duracao(dto.dataInicio(),null),
-            dto.kilometros(),
-            dto.numPassageiro()
+            dto.kilometros()
         );
     }
 

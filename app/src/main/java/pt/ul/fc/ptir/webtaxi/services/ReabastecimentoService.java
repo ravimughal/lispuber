@@ -3,7 +3,6 @@ package pt.ul.fc.ptir.webtaxi.services;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pt.ul.fc.ptir.webtaxi.controller.ReabastecimentoController;
 import pt.ul.fc.ptir.webtaxi.dto.ReabastecimentoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ReabastecimentoResponseDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Reabastecimento;
