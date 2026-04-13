@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pt.ul.fc.ptir.webtaxi.dto.ReabastecimentoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ReabastecimentoResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.ReabastecimentoService;
+import pt.ul.fc.ptir.webtaxi.service.ReabastecimentoService;
 
 import java.util.List;
 

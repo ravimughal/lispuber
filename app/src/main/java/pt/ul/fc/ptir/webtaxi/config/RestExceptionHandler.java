@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import pt.ul.fc.ptir.webtaxi.exception.*;
+import org.springframework.security.access.AccessDeniedException;
 
 // Trata das exceções no contexto do serviço restful
 
@@ -23,7 +24,7 @@ public class RestExceptionHandler {
     }
 
     @ExceptionHandler(RecursoNaoEncontradoException.class)
-    public ResponseEntity<String> tratarUtilizadorNaoEncontrado(RecursoNaoEncontradoException e) {
+    public ResponseEntity<String> tratarRecursoNaoEncontrado(RecursoNaoEncontradoException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
@@ -32,6 +33,9 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 
-
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> tratarAccessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+    }
 
 }

@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import pt.ul.fc.ptir.webtaxi.services.JwtAuthFilter;
+import pt.ul.fc.ptir.webtaxi.service.JwtAuthFilter;
 
 @Configuration
 @EnableWebSecurity

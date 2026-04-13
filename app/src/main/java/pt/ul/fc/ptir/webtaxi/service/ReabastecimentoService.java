@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.services;
+package pt.ul.fc.ptir.webtaxi.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

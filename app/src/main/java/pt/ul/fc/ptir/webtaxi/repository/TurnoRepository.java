@@ -49,4 +49,12 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
         @Param("taxiId") Long taxiId,
         @Param("inicio") LocalDateTime inicio
     );
+
+    // needed to check no viagem goes beyond the new fim
+    @Query("""
+        SELECT COUNT(v) > 0 FROM Viagem v
+        WHERE v.turno.id = :turnoId
+        AND v.duracao.fim > :novoFim
+    """)
+    boolean existeViagemAlemDeFim(@Param("turnoId") Long turnoId, @Param("novoFim") LocalDateTime novoFim);
 }

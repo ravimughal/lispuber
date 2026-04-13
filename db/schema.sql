@@ -69,7 +69,7 @@ CREATE TABLE taxi (
 CREATE TABLE turno (
     id           BIGSERIAL PRIMARY KEY,
     motorista_id BIGINT    NOT NULL,
-    taxi_id      BIGINT    NOT NULL,
+    taxi_id      BIGINT,
     inicio       TIMESTAMP NOT NULL,
     fim          TIMESTAMP NOT NULL,
 

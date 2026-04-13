@@ -7,10 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.TurnoService;
+import pt.ul.fc.ptir.webtaxi.dto.AtualizarFimTurnoDTO;
+import pt.ul.fc.ptir.webtaxi.dto.SelecionarTaxiDTO;
+import pt.ul.fc.ptir.webtaxi.service.TurnoService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/turnos")
@@ -25,34 +26,30 @@ public class TurnoController {
 
     @PostMapping
     public ResponseEntity<TurnoResponseDTO> criarTurno(@RequestBody TurnoCreateDTO dto) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.criarTurno(dto));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.criarTurno(dto));
     }
 
     @GetMapping("/{id}/taxis-disponiveis")
     public ResponseEntity<List<TaxiResponseDTO>> listarTaxisDisponiveis(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));
     }
 
     @PostMapping("/{id}/selecionar-taxi")
     public ResponseEntity<TurnoResponseDTO> selecionarTaxi(
             @PathVariable Long id,
-            @RequestBody Map<String, Long> body) {
+            @RequestBody SelecionarTaxiDTO dto) {
+        return ResponseEntity.ok(turnoService.selecionarTaxi(id, dto.taxiId()));
+    }
+    @PatchMapping("/{id}/fim")
+    public ResponseEntity<TurnoResponseDTO> atualizarFimTurno(
+            @PathVariable Long id,
+            @RequestBody AtualizarFimTurnoDTO dto) {
         try {
-            Long taxiId = body.get("taxiId");
-            if (taxiId == null) return ResponseEntity.badRequest().build();
-            return ResponseEntity.ok(turnoService.selecionarTaxi(id, taxiId));
+            return ResponseEntity.ok(turnoService.atualizarFimTurno(id, dto.fim()));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
