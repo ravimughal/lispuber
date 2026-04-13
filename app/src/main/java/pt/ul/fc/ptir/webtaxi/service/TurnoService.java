@@ -18,6 +18,7 @@ import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class TurnoService {
@@ -38,6 +39,10 @@ public class TurnoService {
     public TurnoResponseDTO criarTurno(TurnoCreateDTO dto) {
         Motorista motorista = motoristaRepository.findById(dto.motoristaId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado: " + dto.motoristaId()));
+
+        if (dto.inicio().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("O início do turno não pode ser no passado.");
+        }
 
         // Restrição 6 — motorista já tem turno nesse período
         if (!turnoRepository.findTurnosMotoristaNoIntervalo(dto.motoristaId(), dto.inicio(), dto.fim()).isEmpty()) {
@@ -106,6 +111,37 @@ public class TurnoService {
         }
 
         turno.setTaxi(taxi);
+        turnoRepository.save(turno);
+        return Mapper.converterParaTurnoResponseDTO(turno);
+    }
+
+    @Transactional
+    public TurnoResponseDTO atualizarFimTurno(Long turnoId, LocalDateTime novoFim) {
+        Turno turno = turnoRepository.findById(turnoId)
+                .orElseThrow(() -> new RuntimeException("Turno não encontrado: " + turnoId));
+
+        if (novoFim.isBefore(turno.getDuracao().getInicio())) {
+            throw new IllegalArgumentException("O novo fim não pode ser antes do início do turno.");
+        }
+
+        // make sure no existing viagem goes beyond the new end
+        if (turnoRepository.existeViagemAlemDeFim(turnoId, novoFim)) {
+            throw new IllegalStateException("Existem viagens registadas além do novo fim do turno.");
+        }
+
+        // re-check restrição 6 — another taxi/motorista turn might now conflict with extended period
+        var inicio = turno.getDuracao().getInicio();
+        if (!turnoRepository.findTurnosMotoristaNoIntervalo(turno.getMotorista().getId(), inicio, novoFim)
+                .stream().filter(t -> !t.getId().equals(turnoId)).toList().isEmpty()) {
+            throw new IllegalStateException("O motorista já tem outro turno que interseta o novo período.");
+        }
+        if (turno.getTaxi() != null &&
+                !turnoRepository.findTurnosTaxiNoIntervalo(turno.getTaxi().getId(), inicio, novoFim)
+                .stream().filter(t -> !t.getId().equals(turnoId)).toList().isEmpty()) {
+            throw new IllegalStateException("O táxi já está noutro turno que interseta o novo período.");
+        }
+
+        turno.setDuracao(new Duracao(inicio, novoFim));
         turnoRepository.save(turno);
         return Mapper.converterParaTurnoResponseDTO(turno);
     }
