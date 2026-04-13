@@ -53,6 +53,7 @@ public class MotoristaService {
     }
 
 
+    // TODO: depois mudar isso para não precisar dos ifs (alterar lógica de patch)
     @Transactional
     public MotoristaResponseDTO atualizarMotorista(Long id, MotoristaCreateDTO dto) {
         Motorista motorista = motoristaRepository.findById(id)
@@ -96,7 +97,7 @@ public class MotoristaService {
     }
 
     
-    
+    // TODO: rever se o parâmetro existingMotorista é realmente necessário
     // validações partilhadas entre criar e atualizar
     // existingMotorista é null quando estamos a criar
     private void validar(MotoristaCreateDTO dto, Motorista existingMotorista) {

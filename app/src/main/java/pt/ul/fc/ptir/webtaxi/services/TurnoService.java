@@ -60,6 +60,7 @@ public class TurnoService {
         var inicio = turno.getDuracao().getInicio();
         var fim = turno.getDuracao().getFim();
 
+        // TODO: talvez seja melhor fazer a filtragem na bd (repository)?
         return taxiRepository.findAll().stream()
                 .filter(taxi -> {
                     // Restrição 6 — táxi já está noutro turno nesse período

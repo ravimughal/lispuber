@@ -3,6 +3,7 @@ package pt.ul.fc.ptir.webtaxi.mapper;
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
+import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
 public class Mapper {
 
@@ -82,7 +83,7 @@ public class Mapper {
 
     // TAXI
     public static Taxi converterParaTaxi(TaxiCreateDTO dto, Conforto conforto) {
-        return new Taxi(dto.matricula(), dto.modelo(), dto.marca(), dto.tipoMotor(), dto.anoCompra(), conforto);
+        return new Taxi(dto.matricula(), dto.modelo(), dto.marca(), TipoMotor.valueOf(dto.tipoMotor()), dto.anoCompra(), conforto);
     }
 
     public static TaxiResponseDTO converterParaTaxiDTO(Taxi t) {
@@ -116,7 +117,7 @@ public class Mapper {
 
     // PEDIDO
     public static Pedido converterParaPedido(PedidoCreateDTO dto, Cliente cliente, Conforto conforto) {
-        double precoCalculado = conforto.getPreco() * dto.numPassageiros();
+        double precoCalculado = conforto.getPreco() * dto.numPassageiros(); // TODO: talvez seja melhor mover cálculo p fora do mapper
 
         return new Pedido(
             cliente,
