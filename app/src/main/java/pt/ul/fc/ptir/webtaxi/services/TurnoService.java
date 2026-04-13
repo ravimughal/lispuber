@@ -11,6 +11,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Taxi;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.MotoristaRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
@@ -36,11 +37,11 @@ public class TurnoService {
     @Transactional
     public TurnoResponseDTO criarTurno(TurnoCreateDTO dto) {
         Motorista motorista = motoristaRepository.findById(dto.motoristaId())
-                .orElseThrow(() -> new RuntimeException("Motorista não encontrado: " + dto.motoristaId()));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado: " + dto.motoristaId()));
 
         // Restrição 6 — motorista já tem turno nesse período
         if (!turnoRepository.findTurnosMotoristaNoIntervalo(dto.motoristaId(), dto.inicio(), dto.fim()).isEmpty()) {
-            throw new IllegalStateException("O motorista já tem um turno neste período.");
+            throw new IllegalStateException("Erro: O motorista já tem um turno neste período.");
         }
 
         Turno turno = new Turno();
@@ -54,7 +55,7 @@ public class TurnoService {
 
     public List<TaxiResponseDTO> listarTaxisDisponiveis(Long turnoId) {
         Turno turno = turnoRepository.findById(turnoId)
-                .orElseThrow(() -> new RuntimeException("Turno não encontrado: " + turnoId));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado: " + turnoId));
 
         var inicio = turno.getDuracao().getInicio();
         var fim = turno.getDuracao().getFim();
@@ -81,14 +82,14 @@ public class TurnoService {
     @Transactional
     public TurnoResponseDTO selecionarTaxi(Long turnoId, Long taxiId) {
         Turno turno = turnoRepository.findById(turnoId)
-                .orElseThrow(() -> new RuntimeException("Turno não encontrado: " + turnoId));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Turno não encontrado: " + turnoId));
 
         if (turno.getTaxi() != null) {
             throw new IllegalStateException("Este turno já tem um táxi associado.");
         }
 
         Taxi taxi = taxiRepository.findById(taxiId)
-                .orElseThrow(() -> new RuntimeException("Táxi não encontrado: " + taxiId));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Táxi não encontrado: " + taxiId));
 
         var inicio = turno.getDuracao().getInicio();
         var fim = turno.getDuracao().getFim();

@@ -25,36 +25,21 @@ public class TurnoController {
 
     @PostMapping
     public ResponseEntity<TurnoResponseDTO> criarTurno(@RequestBody TurnoCreateDTO dto) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.criarTurno(dto));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.criarTurno(dto));
     }
 
     @GetMapping("/{id}/taxis-disponiveis")
     public ResponseEntity<List<TaxiResponseDTO>> listarTaxisDisponiveis(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));
     }
 
     @PostMapping("/{id}/selecionar-taxi")
     public ResponseEntity<TurnoResponseDTO> selecionarTaxi(
             @PathVariable Long id,
-            @RequestBody Map<String, Long> body) {
-        try {
+            @RequestBody Map<String, Long> body
+    ) {
             Long taxiId = body.get("taxiId");
             if (taxiId == null) return ResponseEntity.badRequest().build();
             return ResponseEntity.ok(turnoService.selecionarTaxi(id, taxiId));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
     }
 }
