@@ -204,24 +204,24 @@ public class Mapper {
 
 
     // REABASTECIMENTO
-    public static Reabastecimento converterParaReabastecimento(ReabastecimentoCreateDTO dto, Turno turno) {
+    public static Reabastecimento converterParaReabastecimento(Turno turno) {
         return new Reabastecimento(
-            dto.quantidade(),
-            dto.kilometros(),
-            dto.eurosPagos(),
-            dto.duracao(),
-            turno
+                0.0,
+                0.0,
+                0.0,
+                new Duracao(java.time.LocalDateTime.now(), null),
+                turno
         );
     }
 
     public static ReabastecimentoResponseDTO converterParaReabastecimentoDTO(Reabastecimento r) {
         return new ReabastecimentoResponseDTO(
-            r.getId(),
-            r.getTurno().getId(),
-            r.getQuantidade(),
-            r.getKilometros(),
-            r.getEurosPagos(),
-            r.getDuracao()
+                r.getId(),
+                r.getTurno().getId(),
+                r.getQuantidade(),
+                r.getKilometros(),
+                r.getEurosPagos(),
+                r.getDuracao()
         );
     }
 
