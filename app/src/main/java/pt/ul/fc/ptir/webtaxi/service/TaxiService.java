@@ -76,6 +76,9 @@ public class TaxiService {
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Nível de conforto não existe: " + taxiCreateDTO.nivelConforto()));
             taxi.setConforto(conforto);
         }
+        if (taxiCreateDTO.kilometros() != null) {
+            taxi.setKilometros(taxiCreateDTO.kilometros());
+        }
         return Mapper.converterParaTaxiDTO(taxi);
     }
 
