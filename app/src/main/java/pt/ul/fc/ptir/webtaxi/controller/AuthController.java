@@ -7,15 +7,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Map;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
-import pt.ul.fc.ptir.webtaxi.services.AuthService;
-
-
+import pt.ul.fc.ptir.webtaxi.service.AuthService;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,52 +21,31 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    
     @PostMapping("/register/client") 
     public ResponseEntity<String> registerNewClient(@RequestBody ClienteCreateDTO clienteCreateDTO) {
-        try{
-            String token=authService.registerNewClient(clienteCreateDTO);
-            return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        String token = authService.registerNewClient(clienteCreateDTO);
+        return new ResponseEntity<>(token,HttpStatus.CREATED);
     }
 
     
     @PostMapping("/register/gestor") 
     public ResponseEntity<String> registerNewGestor(@RequestBody GestorCreateDTO gestorCreateDTO) {
-        try{
-            String token=authService.registerNewGestor(gestorCreateDTO);
-            return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+        String token = authService.registerNewGestor(gestorCreateDTO);
+        return new ResponseEntity<>(token,HttpStatus.CREATED);
     }
 
 
     @PostMapping("/register/motorista")
     public ResponseEntity<String> registerNewMotorista(@RequestBody MotoristaCreateDTO motoristaCreateDTO){
-        try{
-        String token= authService.registerNewMotorista(motoristaCreateDTO);
+        String token = authService.registerNewMotorista(motoristaCreateDTO);
         return new ResponseEntity<>(token,HttpStatus.CREATED);
-        }catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            // return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
-        @RequestParam String email, 
-        @RequestParam String password
-    ) {
-        try {
-            String token = authService.login(email, password);
-            return new ResponseEntity<>(token, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
+    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        String token = authService.login(loginRequestDTO);
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
     @GetMapping("/debug")

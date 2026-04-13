@@ -1,0 +1,25 @@
+$kind: http-request
+name: Register Client
+method: POST
+url: "{{baseUrl}}/auth/register/client"
+settings:
+  disabledSystemHeaders:
+    - host
+    - user-agent
+    - accept-encoding
+    - connection
+    - content-length
+order: 1000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nif": "223456789",
+      "email": "joaosilva@example.com",
+      "senha": "password123",
+      "nome": "João Silva",
+      "genero": "MASCULINO",
+      "dataNascimento": "1999-03-29"
+    }

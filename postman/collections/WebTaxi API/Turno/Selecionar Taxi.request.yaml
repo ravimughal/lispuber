@@ -1,0 +1,18 @@
+$kind: http-request
+name: Selecionar Taxi
+method: POST
+url: "{{baseUrl}}/viagens/{{turno}}/selecionar-taxi"
+order: 4000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "duracao": {
+        "inicio": "2024-01-15T10:00:00",
+        "fim": "2024-01-15T10:30:00"
+      },
+      "kmPercorridos": 12.5,
+      "preco": 18.75
+    }

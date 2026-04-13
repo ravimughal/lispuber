@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
-
-
 @Entity
 @Table(name = "taxi")
 public class Taxi {
@@ -34,17 +32,20 @@ public class Taxi {
     @JoinColumn(name = "conforto_id")
     private Conforto conforto;
 
+    @Column(nullable = false)
+    private Double kilometros;
 
 
     public Taxi() {}
 
-    public Taxi(String matricula, String modelo, String marca, TipoMotor tipoMotor, Integer anoCompra, Conforto conforto) {
+    public Taxi(String matricula, String modelo, String marca, TipoMotor tipoMotor, Integer anoCompra, Conforto conforto, Double kilometros) {
         this.matricula = matricula;
         this.modelo = modelo;
         this.marca = marca;
         this.tipoMotor = tipoMotor;
         this.anoCompra = anoCompra;
         this.conforto = conforto;
+        this.kilometros = kilometros;
     }
 
 
@@ -109,5 +110,13 @@ public class Taxi {
 
     public void setConforto(Conforto conforto) {
         this.conforto = conforto;
+    }
+
+    public Double getKilometros() {
+        return kilometros;
+    }
+
+    public void setKilometros(Double kilometros) {
+        this.kilometros = kilometros;
     }
 }

@@ -1,0 +1,8 @@
+$kind: http-request
+name: Login
+method: POST
+url: "{{baseUrl}}/auth/login?email=joaosilva@example.com&password=password123"
+order: 5000
+queryParams:
+  email: joaosilva@example.com
+  password: password123

@@ -1,0 +1,18 @@
+$kind: http-request
+name: Create Taxi
+method: POST
+url: "{{baseUrl}}/taxis"
+order: 2000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "matricula": "AA-10-BB",
+      "modelo": "Corolla",
+      "marca": "Toyota",
+      "tipoMotor": "COMBUSTAO",
+      "anoCompra": 2020,
+      "nivelConforto": "BASICO"
+    }

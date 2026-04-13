@@ -2,8 +2,8 @@ package pt.ul.fc.ptir.webtaxi.mapper;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
-
-
+import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
+import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
 public class Mapper {
 
@@ -77,13 +77,21 @@ public class Mapper {
 
     // CONFORTO
     public static ConfortoDTO converterParaConfortoDTO(Conforto c) {
-        return new ConfortoDTO(c.getPreco(), c.getNivel());
+        return new ConfortoDTO(c.getPreco(), c.getNivelConforto());
     }
 
 
     // TAXI
     public static Taxi converterParaTaxi(TaxiCreateDTO dto, Conforto conforto) {
-        return new Taxi(dto.matricula(), dto.modelo(), dto.marca(), dto.tipoMotor(), dto.anoCompra(), conforto);
+        return new Taxi(
+                dto.matricula(),
+                dto.modelo(),
+                dto.marca(),
+                TipoMotor.valueOf(dto.tipoMotor()),
+                dto.anoCompra(),
+                conforto,
+                dto.kilometros()
+        );
     }
 
     public static TaxiResponseDTO converterParaTaxiDTO(Taxi t) {
@@ -94,29 +102,31 @@ public class Mapper {
             t.getMarca(),
             t.getTipoMotor(),
             t.getAnoCompra(),
-            converterParaConfortoDTO(t.getConforto())
+            converterParaConfortoDTO(t.getConforto()),
+            t.getKilometros()
         );
     }
 
 
     // TURNO
     public static Turno converterParaTurno(TurnoCreateDTO dto, Motorista motorista, Taxi taxi) {
-        return new Turno(dto.duracao(), motorista, taxi);
+        return new Turno(new Duracao(dto.inicio(),dto.fim()), motorista, taxi);
     }
 
-    public static TurnoResponseDTO converterParaTurnoDTO(Turno t) {
+    public static TurnoResponseDTO converterParaTurnoResponseDTO(Turno turno) {
         return new TurnoResponseDTO(
-            t.getId(),
-            t.getDuracao(),
-            converterParaMotoristaDTO(t.getMotorista()),
-            converterParaTaxiDTO(t.getTaxi())
+            turno.getId(),
+            turno.getMotorista().getId(),
+            turno.getTaxi() != null ? turno.getTaxi().getId() : null,
+            turno.getDuracao().getInicio(),
+            turno.getDuracao().getFim()
         );
     }
 
 
     // PEDIDO
     public static Pedido converterParaPedido(PedidoCreateDTO dto, Cliente cliente, Conforto conforto) {
-        double precoCalculado = conforto.getPreco() * dto.numPassageiros();
+        double precoCalculado = conforto.getPreco() * dto.numPassageiros(); // TODO: talvez seja melhor mover cálculo p fora do mapper
 
         return new Pedido(
             cliente,
@@ -144,8 +154,12 @@ public class Mapper {
             p.getLongitudeOrigem(),
             p.getRuaDestino(),
             p.getLatitudeDestino(),
-            p.getLongitudeDestino()
+            p.getLongitudeDestino(),
+            p.getEstadoPedido(),
+            (p.getMotoristaQueAceitou() != null ? p.getMotoristaQueAceitou().getId() : null),
+            p.getDataSolicitacao()
         );
+
     }
 
 
@@ -155,21 +169,20 @@ public class Mapper {
             cliente,
             turno,
             pedido,
-            dto.duracao(),
-            dto.kilometros(),
-            dto.numPassageiro()
+            new Duracao(dto.dataInicio(),null),
+            dto.kilometros()
         );
     }
 
-    public static ViagemResponseDTO converterParaViagemDTO(Viagem v) {
+    public static ViagemResponseDTO converterParaViagemDTO(Viagem viagem) {
         return new ViagemResponseDTO(
-            v.getId(),
-            converterParaClienteDTO(v.getCliente()),
-            converterParaTurnoDTO(v.getTurno()),
-            converterParaPedidoDTO(v.getPedido()),
-            v.getDuracao(),
-            v.getKilometros(),
-            v.getNumPassageiro()
+            viagem.getId(),
+            converterParaClienteDTO(viagem.getCliente()), 
+            converterParaTurnoResponseDTO(viagem.getTurno()),     
+            converterParaPedidoDTO(viagem.getPedido()),
+            viagem.getDuracao().getInicio(),              
+            viagem.getDuracao().getFim(),                
+            viagem.getKilometros()
         );
     }
 
@@ -208,6 +221,40 @@ public class Mapper {
             r.getKilometros(),
             r.getEurosPagos(),
             r.getDuracao()
+        );
+    }
+
+    // UTILIZADOR
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(MotoristaCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
+        );
+    }
+
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(ClienteCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
+        );
+    }
+
+    public static UtilizadorCreateDTO converterParaUtilizadorResponseDTO(GestorCreateDTO dto) {
+        return new UtilizadorCreateDTO(
+            dto.nif(),
+            dto.email(),
+            dto.senha(),
+            dto.nome(),
+            dto.genero(),
+            dto.dataNascimento()
         );
     }
 }

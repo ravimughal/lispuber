@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 
-
-
 @Entity
 @Table(name = "utilizador")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -32,23 +30,20 @@ public abstract class Utilizador {
     private LocalDate dataNascimento;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length = 15)
+    @Column(nullable = false, length = 15)
     private Genero genero;
-
 
 
     public Utilizador(){}
 
     public Utilizador(String nif, String email, String senha, String nome, Genero genero, LocalDate dataNascimento){
-        this.nif=nif;
-        this.email=email;
-        this.senha=senha;
-        this.nome=nome;
-        this.genero=genero;
-        this.dataNascimento=dataNascimento;
+        this.nif = nif;
+        this.email = email;
+        this.senha = senha;
+        this.nome = nome;
+        this.genero = genero;
+        this.dataNascimento = dataNascimento;
     }
-
-
 
     public Long getId() {
         return this.id;
@@ -58,7 +53,6 @@ public abstract class Utilizador {
         this.id=id;
     }
 
-
     public String getNif() {
         return this.nif;
     }
@@ -66,7 +60,6 @@ public abstract class Utilizador {
     public void setNif(String newNif) {
         this.nif = newNif;
     }
-
 
     public String getEmail(){
         return this.email;
@@ -76,7 +69,6 @@ public abstract class Utilizador {
         this.email = newEmail;
     }   
 
-
     public String getSenha(){
         return this.senha;
     }
@@ -84,7 +76,6 @@ public abstract class Utilizador {
     public void setSenha(String newSenha) {
         this.senha = newSenha;
     }
-
 
     public String getNome(){
         return this.nome;
@@ -94,7 +85,6 @@ public abstract class Utilizador {
         this.nome = newNome;
     }
     
-
     public Genero getGenero(){
         return this.genero;
     }
@@ -103,7 +93,6 @@ public abstract class Utilizador {
         this.genero=newGenero;
     }
 
-
     public LocalDate getDataNascimento() {
         return this.dataNascimento;
     }
@@ -111,4 +100,9 @@ public abstract class Utilizador {
     public void setDataNascimento(LocalDate newDataNascimento) {
         this.dataNascimento = newDataNascimento;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
 }

@@ -1,0 +1,5 @@
+$kind: http-request
+name: Get Session
+method: GET
+url: '{{baseUrl}}/session/get'
+order: 2000

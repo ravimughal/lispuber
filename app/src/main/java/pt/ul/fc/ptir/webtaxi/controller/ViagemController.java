@@ -5,12 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.ViagemService;
-
-
+import pt.ul.fc.ptir.webtaxi.service.ViagemService;
 
 @RestController
 @RequestMapping("/viagens")
@@ -32,13 +29,13 @@ public class ViagemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ViagemResponseDTO> obterViagem(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(viagemService.obterViagemPorId(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(viagemService.obterViagemPorId(id));
     }
 
+    @GetMapping("/byCliente")
+    public ResponseEntity<List<ViagemResponseDTO>> obterViagensByCliente(){
+        return ResponseEntity.ok(viagemService.obterViagensByCliente());
+    }
 
     @PostMapping
     public ResponseEntity<ViagemResponseDTO> criarViagem(@RequestBody ViagemCreateDTO dto) {
@@ -46,9 +43,10 @@ public class ViagemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(viagemDTO);
     }
 
-
-    // @PostMapping("/{id}/finalizar")
-    // public ResponseEntity<ViagemDTO> finalizarViagem(@PathVariable Long id, @RequestBody ViagemDTO dto) {
-    //     return ResponseEntity.ok(viagemService.finalizarViagem(id, dto));
-    // }
+    
+    @PatchMapping("/{id}/finalizar") 
+    public ResponseEntity<ViagemResponseDTO> finalizarViagem(@PathVariable Long id) {
+        ViagemResponseDTO viagemFinalizada = viagemService.finalizarViagem(id);
+        return ResponseEntity.ok(viagemFinalizada);
+    }
 }

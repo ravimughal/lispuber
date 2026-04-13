@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 
-
-
 @Repository
 public interface MotoristaRepository extends JpaRepository<Motorista,Long> {
     

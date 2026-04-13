@@ -1,0 +1,5 @@
+$kind: http-request
+name: List Taxis
+method: GET
+url: '{{baseUrl}}/taxis'
+order: 1000

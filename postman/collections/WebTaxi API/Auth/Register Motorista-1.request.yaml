@@ -1,0 +1,24 @@
+$kind: http-request
+name: Register Motorista
+url: "{{baseUrl}}/auth/register/motorista"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nif": "987654321",
+      "email": "carlosferreira@example.com",
+      "senha": "password123",
+      "nome": "Carlos Ferreira",
+      "genero": "MASCULINO",
+      "dataNascimento": "1985-06-15",
+      "rua": "Rua das Flores",
+      "ruaNumero": 10,
+      "codigoPostal": "1000-001",
+      "numCarta": "C123456",
+      "validadeCarta": "2028-12-31"
+    }
+examples: .resources/Register Motorista-1.resources/examples
+order: 3793

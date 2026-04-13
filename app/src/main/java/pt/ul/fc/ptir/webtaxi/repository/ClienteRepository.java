@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 
-
-
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente,Long> {
     Optional<Cliente> findByEmail(String email);

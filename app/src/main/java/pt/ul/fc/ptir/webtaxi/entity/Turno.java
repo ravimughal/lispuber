@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
-
-
 @Entity
 @Table(name = "turno")
 public class Turno {
@@ -19,7 +17,7 @@ public class Turno {
     private Motorista motorista;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true) // Pq é o que está na descrição da api
     private Taxi taxi;
 
     @Embedded

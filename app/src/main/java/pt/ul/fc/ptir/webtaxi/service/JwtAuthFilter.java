@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.services;
+package pt.ul.fc.ptir.webtaxi.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,8 +14,6 @@ import java.util.List;
 
 import pt.ul.fc.ptir.webtaxi.entity.Utilizador;
 import pt.ul.fc.ptir.webtaxi.repository.UtilizadorRepository;
-
-
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -59,7 +57,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 new UsernamePasswordAuthenticationToken(user, null, authorities);
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
         filterChain.doFilter(request, response);
     }
 }

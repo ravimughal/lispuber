@@ -3,8 +3,6 @@ package pt.ul.fc.ptir.webtaxi.entity;
 import jakarta.persistence.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 
-
-
 @Entity
 @Table(name = "viagem")
 public class Viagem {
@@ -27,10 +25,7 @@ public class Viagem {
 
     private Duracao duracao;
 
-    @Column(name = "num_passageiro", nullable = false)
-    private Integer numPassageiro;
-
-    @Column(nullable = false)
+    @Column(name = "km_percorridos", nullable = false)
     private Double kilometros;
 
 
@@ -38,14 +33,13 @@ public class Viagem {
     public Viagem() {}
 
     public Viagem(Cliente cliente, Turno turno, Pedido pedido,
-                  Duracao duracao, Double kilometros, Integer numPassageiro) {
+                  Duracao duracao, Double kilometros) {
 
         this.cliente = cliente;
         this.turno = turno;
         this.pedido = pedido;
         this.duracao = duracao;
         this.kilometros = kilometros;
-        this.numPassageiro = numPassageiro;
     }
 
 
@@ -63,15 +57,6 @@ public class Viagem {
 
     public void setKilometros(Double kilometros) {
         this.kilometros = kilometros;
-    }
-
-
-    public Integer getNumPassageiro() {
-        return numPassageiro;
-    }
-
-    public void setNumPassageiro(Integer numPassageiro) {
-        this.numPassageiro = numPassageiro;
     }
 
 

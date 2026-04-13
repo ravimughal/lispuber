@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import pt.ul.fc.ptir.webtaxi.entity.*;
 
-
-
 @Repository
 public interface UtilizadorRepository extends JpaRepository<Utilizador,Long>{
 

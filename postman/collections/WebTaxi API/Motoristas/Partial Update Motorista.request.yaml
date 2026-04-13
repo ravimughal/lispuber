@@ -1,0 +1,13 @@
+$kind: http-request
+name: Partial Update Motorista
+method: PATCH
+url: "{{baseUrl}}/motoristas/{{motoristaId}}"
+order: 5000
+headers:
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "validadeCarta": "2029-12-30"
+    }

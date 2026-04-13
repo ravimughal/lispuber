@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.NivelConforto;
 
-
-
 @Entity
 @Table(name = "conforto")
 public class Conforto {
@@ -21,14 +19,11 @@ public class Conforto {
     @Column(name = "nivel_conforto", nullable = false, unique = true)
     private NivelConforto nivelConforto;
 
-
-
+    public Conforto(){}
     public Conforto(Double preco, NivelConforto nivelConforto) {
         this.preco = preco;
         this.nivelConforto = nivelConforto;
     }
-
-
 
     public Long getId() {
         return id;
@@ -38,7 +33,6 @@ public class Conforto {
         this.id = id;
     }
 
-
     public Double getPreco() {
         return preco;
     }
@@ -47,12 +41,11 @@ public class Conforto {
         this.preco = preco;
     }
     
-
-    public NivelConforto getNivel() {
+    public NivelConforto getNivelConforto() {
         return nivelConforto;
     }
 
-    public void setNivel(NivelConforto nivelConforto) {
+    public void setNivelConforto(NivelConforto nivelConforto) {
         this.nivelConforto = nivelConforto;
     }
 }
