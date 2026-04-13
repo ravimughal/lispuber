@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.services;
+package pt.ul.fc.ptir.webtaxi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

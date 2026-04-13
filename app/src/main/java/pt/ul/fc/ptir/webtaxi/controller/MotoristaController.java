@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaCreateDTO;
-import pt.ul.fc.ptir.webtaxi.services.MotoristaService;
+import pt.ul.fc.ptir.webtaxi.service.MotoristaService;
 
 @RestController
 @RequestMapping("/motoristas")

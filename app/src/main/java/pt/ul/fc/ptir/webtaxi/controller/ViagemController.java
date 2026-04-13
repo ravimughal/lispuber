@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.ViagemService;
+import pt.ul.fc.ptir.webtaxi.service.ViagemService;
 
 @RestController
 @RequestMapping("/viagens")

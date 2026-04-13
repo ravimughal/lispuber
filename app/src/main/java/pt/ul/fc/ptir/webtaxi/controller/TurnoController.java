@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TurnoResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.TurnoService;
+import pt.ul.fc.ptir.webtaxi.service.TurnoService;
 
 import java.util.List;
 import java.util.Map;

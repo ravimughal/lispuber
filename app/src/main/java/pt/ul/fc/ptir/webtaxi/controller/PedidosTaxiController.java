@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pt.ul.fc.ptir.webtaxi.dto.PedidoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.PedidoResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.PedidoService;
+import pt.ul.fc.ptir.webtaxi.service.PedidoService;
 
 @RestController
 @RequestMapping("/pedidos-taxi")

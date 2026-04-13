@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Map;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
-import pt.ul.fc.ptir.webtaxi.services.AuthService;
+import pt.ul.fc.ptir.webtaxi.service.AuthService;
 
 @RestController
 @RequestMapping("/auth")

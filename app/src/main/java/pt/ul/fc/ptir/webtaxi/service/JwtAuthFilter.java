@@ -1,4 +1,4 @@
-package pt.ul.fc.ptir.webtaxi.services;
+package pt.ul.fc.ptir.webtaxi.service;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

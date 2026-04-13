@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 import pt.ul.fc.ptir.webtaxi.dto.TaxiCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
-import pt.ul.fc.ptir.webtaxi.services.TaxiService;
+import pt.ul.fc.ptir.webtaxi.service.TaxiService;
 
 @RestController
 @RequestMapping("/taxis")
