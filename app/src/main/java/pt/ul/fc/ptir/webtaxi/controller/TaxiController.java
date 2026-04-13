@@ -1,6 +1,8 @@
 package pt.ul.fc.ptir.webtaxi.controller;
 
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +29,7 @@ public class TaxiController {
     
     @PostMapping
     public ResponseEntity<TaxiResponseDTO> criarTaxi(@RequestBody TaxiCreateDTO TaxiCreateDTO) {
-        return ResponseEntity.ok(taxiService.criarTaxi(TaxiCreateDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(taxiService.criarTaxi(TaxiCreateDTO));
     }
 
     @GetMapping("/{id}")

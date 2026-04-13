@@ -38,17 +38,8 @@ public class TurnoController {
     public ResponseEntity<TurnoResponseDTO> selecionarTaxi(
             @PathVariable Long id,
             @RequestBody SelecionarTaxiDTO dto) {
-        try {
-            return ResponseEntity.ok(turnoService.selecionarTaxi(id, dto.taxiId()));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(turnoService.selecionarTaxi(id, dto.taxiId()));
     }
-
     @PatchMapping("/{id}/fim")
     public ResponseEntity<TurnoResponseDTO> atualizarFimTurno(
             @PathVariable Long id,
