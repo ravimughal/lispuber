@@ -1,0 +1,9 @@
+ªcaso venha a ser preciso
+
+
+# fazer copia do repositorio
+git clone https://andre-alexandre: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@github.com/ravimughal/projeto-ptir.git
+
+
+# partilhar uma pasta
+scp -r projeto_ptir/db apa@10.204.0.7:/home/apa/
