@@ -21,31 +21,31 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/register/client") 
-    public ResponseEntity<String> registerNewClient(@RequestBody ClienteCreateDTO clienteCreateDTO) {
-        String token = authService.registerNewClient(clienteCreateDTO);
-        return new ResponseEntity<>(token,HttpStatus.CREATED);
+    @PostMapping("/register/client")
+    public ResponseEntity<Map<String, Object>> registerNewClient(@RequestBody ClienteCreateDTO clienteCreateDTO) {
+        Map<String, Object> response = authService.registerNewClient(clienteCreateDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     
     @PostMapping("/register/gestor") 
-    public ResponseEntity<String> registerNewGestor(@RequestBody GestorCreateDTO gestorCreateDTO) {
-        String token = authService.registerNewGestor(gestorCreateDTO);
-        return new ResponseEntity<>(token,HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> registerNewGestor(@RequestBody GestorCreateDTO gestorCreateDTO) {
+        Map<String, Object> response = authService.registerNewGestor(gestorCreateDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
     @PostMapping("/register/motorista")
-    public ResponseEntity<String> registerNewMotorista(@RequestBody MotoristaCreateDTO motoristaCreateDTO){
-        String token = authService.registerNewMotorista(motoristaCreateDTO);
-        return new ResponseEntity<>(token,HttpStatus.CREATED);
+    public ResponseEntity<Map<String, Object>> registerNewMotorista(@RequestBody MotoristaCreateDTO motoristaCreateDTO){
+        Map<String, Object> response = authService.registerNewMotorista(motoristaCreateDTO);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDTO) {
-        String token = authService.login(loginRequestDTO);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        Map<String, Object> response = authService.login(loginRequestDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/debug")

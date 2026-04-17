@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 import pt.ul.fc.ptir.webtaxi.entity.Conforto;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
+import pt.ul.fc.ptir.webtaxi.entity.Utilizador;
 import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
@@ -45,11 +47,15 @@ public class PedidoService {
 
     @Transactional
     public PedidoResponseDTO criarPedido(PedidoCreateDTO pedidoDto){
-        if(pedidoDto.clienteId()==null||pedidoDto.clienteId()<=0){
-            throw new IllegalArgumentException("Erro: O atributo clientId tem de ser um número inteiro maior do que 0.");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Utilizador utilizador = (Utilizador) authentication.getPrincipal();
+
+        if (!(utilizador instanceof Cliente cliente)) {
+            throw new IllegalArgumentException("Apenas clientes podem criar pedidos.");
         }
+    
         if(pedidoDto.confortoId()==null||pedidoDto.confortoId()<=0){
-        throw new IllegalArgumentException("Erro: O atributo confortoId tem de ser um número inteiro maior do que 0.");
+            throw new IllegalArgumentException("Erro: O atributo confortoId tem de ser um número inteiro maior do que 0.");
         }
 
 
@@ -91,14 +97,7 @@ public class PedidoService {
             throw new org.springframework.security.access.AccessDeniedException("Apenas clientes podem criar pedidos.");
         }
 
-        if (!pedidoDto.clienteId().equals(clienteLogado.getId())) {
-            throw new org.springframework.security.access.AccessDeniedException("Erro: O ID do cliente no pedido não corresponde ao utilizador logado.");
-        }
-
         Pedido newPedido = new Pedido();
-
-        Cliente cliente = clienteRepository.findById(pedidoDto.clienteId())
-        .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Cliente não encontrado!"));
 
         Conforto conforto = confortoRepository.findById(pedidoDto.confortoId())
         .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Conforto não encontrado!"));

@@ -41,7 +41,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String registerNewClient(ClienteCreateDTO clienteCreateDTO) {
+    public Map<String, Object> registerNewClient(ClienteCreateDTO clienteCreateDTO) {
 
         validarDadosUtilizador(Mapper.converterParaUtilizadorResponseDTO(clienteCreateDTO));
 
@@ -64,11 +64,27 @@ public class AuthService {
         long validade = jwtUtility.TOKEN_EXPIRATION_INTERVAL;
         Map<String, String> claims = new HashMap<>();
         claims.put("role", UserRole.CLIENTE.name());
-        return jwtUtility.generateToken(claims, cliente.getEmail(), validade);
+
+        String token = jwtUtility.generateToken(claims, cliente.getEmail(), validade);
+
+        ClienteResponseDTO clienteDTO = new ClienteResponseDTO(
+            null,
+            cliente.getNif(),
+            cliente.getEmail(),
+            cliente.getNome(),
+            cliente.getGenero(),
+            cliente.getDataNascimento()
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("cliente", clienteDTO);
+        response.put("role", UserRole.CLIENTE.name());
+        return response;
     }
 
     @Transactional
-    public String registerNewGestor(GestorCreateDTO gestorCreateDTO) {
+    public Map<String, Object> registerNewGestor(GestorCreateDTO gestorCreateDTO) {
 
         validarDadosUtilizador(Mapper.converterParaUtilizadorResponseDTO(gestorCreateDTO));
 
@@ -91,11 +107,27 @@ public class AuthService {
         long validade = jwtUtility.TOKEN_EXPIRATION_INTERVAL;
         Map<String, String> claims = new HashMap<>();
         claims.put("role", UserRole.GESTOR.name());
-        return jwtUtility.generateToken(claims, gestor.getEmail(), validade);
+
+        String token = jwtUtility.generateToken(claims, gestor.getEmail(), validade);
+
+        GestorResponseDTO gestorDTO = new GestorResponseDTO(
+            null,
+            gestor.getNif(),
+            gestor.getEmail(),
+            gestor.getNome(),
+            gestor.getGenero(),
+            gestor.getDataNascimento()
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("gestor", gestorDTO);
+        response.put("role", UserRole.GESTOR.name());
+        return response;
     }
 
     @Transactional
-    public String registerNewMotorista(MotoristaCreateDTO motoristaCreateDTO) {
+    public Map<String, Object> registerNewMotorista(MotoristaCreateDTO motoristaCreateDTO) {
 
         validarDadosUtilizador(Mapper.converterParaUtilizadorResponseDTO(motoristaCreateDTO));
 
@@ -138,11 +170,33 @@ public class AuthService {
         long validade = jwtUtility.TOKEN_EXPIRATION_INTERVAL;
         Map<String, String> claims = new HashMap<>();
         claims.put("role", UserRole.MOTORISTA.name());
-        return jwtUtility.generateToken(claims, motorista.getEmail(), validade);
+        
+        String token = jwtUtility.generateToken(claims, motorista.getEmail(), validade);
+
+        MotoristaResponseDTO motoristaDTO = new MotoristaResponseDTO(
+            null,
+            motorista.getNif(),
+            motorista.getEmail(),
+            motorista.getNome(),
+            motorista.getGenero(),
+            motorista.getDataNascimento(),
+            motorista.getRua(),
+            motorista.getRuaNumero(),
+            motorista.getCodigoPostal(),
+            motorista.getNumCartaConducao(),
+            motorista.getValidadeCartaConducao()
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("motorista", motoristaDTO);
+        response.put("role", UserRole.MOTORISTA.name());
+        return response;
     }
 
     @Transactional
-    public String login(LoginRequestDTO loginRequestDTO) {
+    public Map<String, Object> login(LoginRequestDTO loginRequestDTO) {
+
         String email = loginRequestDTO.email();
         String password = loginRequestDTO.password();
 
@@ -150,34 +204,73 @@ public class AuthService {
             throw new IllegalArgumentException("Erro: O email não pode ser vazio.");
         }
 
-        Optional<Utilizador> utilizadorOpt = utilizadorRepository.findByEmail(email);
+        Utilizador utilizador = utilizadorRepository.findByEmail(email)
+            .orElseThrow(() -> new RecursoNaoEncontradoException("Email ou senha inválidos"));
 
-        // não existe este email na db
-        if (utilizadorOpt.isEmpty()) {
-            throw new RecursoNaoEncontradoException("Email ou senha inválidos");
-        }
-
-        Utilizador utilizador = utilizadorOpt.get();
-
-        // não existe esta senha na db
-        if (!passwordEncoder.matches(password,utilizador.getSenha())) {
+        if (!passwordEncoder.matches(password, utilizador.getSenha())) {
             throw new RecursoNaoEncontradoException("Email ou senha inválidos");
         }
 
         long validade = jwtUtility.TOKEN_EXPIRATION_INTERVAL;
         Map<String, String> claims = new HashMap<>();
 
-        if (utilizador instanceof Cliente) {
+        Map<String, Object> response = new HashMap<>();
+        String role = null;
+        Object userDTO = null;
+
+        if (utilizador instanceof Cliente cliente) {
             claims.put("role", UserRole.CLIENTE.name());
-        } else if (utilizador instanceof Motorista) {
+            role = UserRole.CLIENTE.name();
+
+            userDTO = new ClienteResponseDTO(
+                null,
+                cliente.getNif(),
+                cliente.getEmail(),
+                cliente.getNome(),
+                cliente.getGenero(),
+                cliente.getDataNascimento()
+            );
+
+        } else if (utilizador instanceof Motorista motorista) {
             claims.put("role", UserRole.MOTORISTA.name());
-        } else if (utilizador instanceof Gestor) {
+            role = UserRole.MOTORISTA.name();
+
+            userDTO = new MotoristaResponseDTO(
+                null,
+                motorista.getNif(),
+                motorista.getEmail(),
+                motorista.getNome(),
+                motorista.getGenero(),
+                motorista.getDataNascimento(),
+                motorista.getRua(),
+                motorista.getRuaNumero(),
+                motorista.getCodigoPostal(),
+                motorista.getNumCartaConducao(),
+                motorista.getValidadeCartaConducao()
+            );
+
+        } else if (utilizador instanceof Gestor gestor) {
             claims.put("role", UserRole.GESTOR.name());
+            role = UserRole.GESTOR.name();
+
+            userDTO = new GestorResponseDTO(
+                null,
+                gestor.getNif(),
+                gestor.getEmail(),
+                gestor.getNome(),
+                gestor.getGenero(),
+                gestor.getDataNascimento()
+            );
+
         } else {
             throw new TipoDeUtilizadorInvalidoException();
         }
 
-        return jwtUtility.generateToken(claims, utilizador.getEmail(), validade);
+        String token = jwtUtility.generateToken(claims, utilizador.getEmail(), validade);
+        response.put("token", token);
+        response.put("user", userDTO);
+        response.put("role", role);
+        return response;
     }
     
     private boolean isNIFValid(String nif) {

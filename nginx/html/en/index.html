@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lisp</title>
+  <title>LispUber</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
   
-  <script src="js/ui.js"></script>
+  <script src="/js/main.js"></script>
 
   <script>
     tailwind.config = {
@@ -67,9 +67,37 @@
         <a href="pricing" class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800">Pricing</a>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
-        <a href="signin" class="hidden sm:block text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">Sign in</a>      
-        <a href="app" class="text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">Open app</a>
+        <button onclick="Theme.toggle()" data-theme-icon
+          class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+          🌙
+        </button>
+
+        <a href="signin" id="signinBtn"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">
+          Sign in
+        </a>
+        <a href="" class="appBtn text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">
+          Open app
+        </a>
+
+        <div class="relative">
+          <button id="langToggle"
+            class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+            EN ▾
+          </button>
+
+          <div id="langMenu"
+            class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+            <button data-lang="en"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              English
+            </button>
+            <button data-lang="pt"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              Português
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -91,7 +119,7 @@
       </p>
 
       <div class="flex flex-wrap gap-3 animate-[fadeUp_.5s_.24s_ease_both]">
-        <a href="app" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm shadow-lg shadow-sky-500/25 transition-all hover:-translate-y-0.5">
+        <a href="" class="appBtn inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm shadow-lg shadow-sky-500/25 transition-all hover:-translate-y-0.5">
           Book a ride
         </a>
         <a href="about" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-sky-400 dark:hover:border-sky-500 text-slate-600 dark:text-slate-300 font-medium text-sm transition-all hover:-translate-y-0.5">
@@ -171,7 +199,7 @@
     <div class="max-w-5xl mx-auto px-5 py-16 text-center">
       <h2 class="font-heading text-3xl font-bold text-white mb-3">Ready to ride?</h2>
       <p class="text-sky-100 mb-7 text-sm">Join over 2 million riders who trust Lisp every day.</p>
-      <a href="app" class="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-sky-600 font-semibold text-sm hover:bg-sky-50 transition-all shadow-lg">
+      <a href="" class="appBtn inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-white text-sky-600 font-semibold text-sm hover:bg-sky-50 transition-all shadow-lg">
         Open the app →
       </a>
     </div>

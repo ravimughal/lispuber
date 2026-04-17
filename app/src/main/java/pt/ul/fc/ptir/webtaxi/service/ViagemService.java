@@ -2,6 +2,7 @@ package pt.ul.fc.ptir.webtaxi.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Cliente;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
+import pt.ul.fc.ptir.webtaxi.entity.Utilizador;
 import pt.ul.fc.ptir.webtaxi.entity.Viagem;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
@@ -66,18 +68,21 @@ public class ViagemService {
         throw new IllegalStateException("Erro: Já existe uma viagem iniciada para este pedido.");
     }
 
-        Cliente cliente = clienteRepository.findById(ViagemDTO.clienteId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Cliente não encontrado!"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Utilizador utilizador = (Utilizador) authentication.getPrincipal();
+
+        if (!(utilizador instanceof Cliente cliente)) {
+            throw new IllegalArgumentException("Apenas clientes podem criar pedidos.");
+        }
+
         Turno turno = turnoRepository.findById(ViagemDTO.turnoId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Turno não encontrado!"));
         Pedido pedido = pedidoRepository.findById(ViagemDTO.pedidoId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Pedido não encontrado!"));
 
-        if(pedido.getCliente().getId()!=ViagemDTO.clienteId()){
-            throw new IllegalStateException("Erro: O cliente associado à viagem não é o mesmo associado ao pedido.");
-        }
-
         if(pedido.getEstadoPedido()!=EstadoPedido.EM_CURSO || pedido.getMotoristaQueAceitou()==null){
+            System.out.println("Estado do pedido: "+pedido.getEstadoPedido());
+            System.out.println("Motorista que aceitou: "+pedido.getMotoristaQueAceitou());
             throw new IllegalStateException("Erro: O pedido associado à viagem tem de estar com estado: EM_CURSO");
         }
 
@@ -182,9 +187,6 @@ public class ViagemService {
     private void validarViagemParaCriacao(ViagemCreateDTO dto) {
         if (dto == null) {
             throw new IllegalArgumentException("Erro: O DTO da viagem não pode ser null.");
-        }
-        if(dto.clienteId()==null||dto.clienteId()<=0){
-            throw new IllegalArgumentException("Erro: O clientId tem de ser um número inteiro maior do que 0.");
         }
 
         if(dto.turnoId()==null||dto.turnoId()<=0){

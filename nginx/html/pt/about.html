@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre - Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+  
+  <script src="/js/main.js"></script>
+
+  <script>
+    tailwind.config = { darkMode:'class', theme:{ extend:{
+      fontFamily:{ sans:['DM Sans','sans-serif'], heading:['Sora','sans-serif'] },
+      animation:{ 'fade-up':'fadeUp .5s ease both', 'fade-up-1':'fadeUp .5s .1s ease both', 'fade-up-2':'fadeUp .5s .2s ease both' },
+      keyframes:{ fadeUp:{ from:{ opacity:'0', transform:'translateY(18px)' }, to:{ opacity:'1', transform:'translateY(0)' } } },
+    }}};
+  </script>
+
+  <style>
+    body{font-family:'DM Sans',sans-serif;} .font-heading,h1,h2,h3{font-family:'Sora',sans-serif;}
+    *,*::before,*::after{transition:background-color .2s,border-color .2s,color .15s;}
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:#0f172a;color:#f1f5f9;padding:.5rem 1.25rem;border-radius:999px;font-size:.82rem;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1) !important;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+    .dark #toast{background:#f1f5f9;color:#0f172a;} #toast.show{transform:translateX(-50%) translateY(0);}
+  </style>
+</head>
+
+<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+  <div id="toast"></div>
+
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+      </a>
+      <div class="hidden md:flex items-center gap-1 text-sm">
+        <a href="index"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Início</a>
+        <a href="about"   class="px-3 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-medium">Sobre</a>
+        <a href="how"     class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Como funciona</a>
+        <a href="pricing" class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Preço</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="Theme.toggle()" data-theme-icon
+          class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+          🌙
+        </button>
+
+        <a href="signin" id="signinBtn"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">
+          Entrar
+        </a>
+        <a href="" class="appBtn text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">
+          Abrir Aplicação
+        </a>
+
+        <div class="relative">
+          <button id="langToggle"
+            class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+            EN ▾
+          </button>
+
+          <div id="langMenu"
+            class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+            <button data-lang="en"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              English
+            </button>
+            <button data-lang="pt"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              Português
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="max-w-5xl mx-auto px-5 pt-16 pb-10 border-b border-slate-100 dark:border-slate-800">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-3 animate-[fadeUp_.5s_ease_both]">A nossa história</p>
+    <h1 class="font-heading text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight mb-4 animate-[fadeUp_.5s_.1s_ease_both]">
+      Reimaginámos<br/><span class="text-sky-500">o transporte urbano.</span>
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-lg max-w-xl leading-relaxed animate-[fadeUp_.5s_.2s_ease_both]">
+      Fundada em 2019 com uma crença: deslocar-se na cidade deve ser simples, seguro e acessível para todos.    </p>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-5 py-14 grid md:grid-cols-[1fr_320px] gap-10 items-start">
+    <div>
+      <h2 class="font-heading text-2xl font-bold text-slate-900 dark:text-white mb-5">Construída de forma diferente.</h2>
+      <p class="text-slate-500 dark:text-slate-400 text-[15px] leading-relaxed mb-4">A maioria das plataformas de transporte otimiza o crescimento em detrimento da experiência. Nós escolhemos o oposto — investir na qualidade dos motoristas, preços transparentes e segurança real antes de escalar.</p>
+      <p class="text-slate-500 dark:text-slate-400 text-[15px] leading-relaxed mb-4">Isso significou um crescimento inicial mais lento. Também significou que quando os utilizadores descobrem a Lisp, ficam. Ganhamos confiança viagem após viagem.</p>
+      <p class="text-slate-500 dark:text-slate-400 text-[15px] leading-relaxed">Hoje a LispUber opera em mais de 40 cidades pela Europa, com 85.000 motoristas ativos e mais de 12 milhões de viagens concluídas, sem um único caso de alteração de tarifa após a viagem.</p>
+    </div>
+
+    <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5">
+      <h3 class="font-heading font-semibold text-slate-900 dark:text-white text-sm mb-4 pb-3 border-b border-slate-200 dark:border-slate-700">Os nossos princípios</h3>
+      <ul class="space-y-2.5">
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Tarifas definidas antes da confirmação</li>
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Verificação de motoristas em 3 etapas</li>
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Monitorização de segurança 24/7 na app</li>
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Dados dos utilizadores nunca são vendidos</li>
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Ganhos dos motoristas revistos trimestralmente</li>
+        <li class="flex items-start gap-2.5 text-sm text-slate-500 dark:text-slate-400"><span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1.5 flex-shrink-0"></span>Tolerância zero à manipulação de preços</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="max-w-5xl mx-auto px-5 pb-14">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center">
+        <div class="font-heading text-3xl font-bold text-sky-500 mb-1">40+</div>
+        <div class="text-xs text-slate-400">Cidades</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center">
+        <div class="font-heading text-3xl font-bold text-sky-500 mb-1">12M</div>
+        <div class="text-xs text-slate-400">Viagens concluídas</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center">
+        <div class="font-heading text-3xl font-bold text-sky-500 mb-1">85K</div>
+        <div class="text-xs text-slate-400">Motoristas ativos</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center">
+        <div class="font-heading text-3xl font-bold text-sky-500 mb-1">4.7★</div>
+        <div class="text-xs text-slate-400">Avaliação média dos motoristas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM -->
+  <div class="max-w-5xl mx-auto px-5 pb-20">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-4">A equipa</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center hover:border-sky-300 dark:hover:border-sky-700 transition-all">
+        <div class="mb-3 flex justify-center">
+          <img src="../../images/norm.png" alt="Norm" class="w-12 h-12 object-cover rounded-full">
+        </div>
+        <div class="font-heading font-semibold text-slate-900 dark:text-white text-sm">Manuel João</div>
+        <div class="text-xs text-slate-400 mt-1">Co-fundador & Diretor Executivo</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center hover:border-sky-300 dark:hover:border-sky-700 transition-all">
+        <div class="mb-3 flex justify-center">
+          <img src="../../images/norm.png" alt="Norm" class="w-12 h-12 object-cover rounded-full">
+        </div>
+        <div class="font-heading font-semibold text-slate-900 dark:text-white text-sm">Zé Cabra</div>
+        <div class="text-xs text-slate-400 mt-1">Co-fundador & Diretor de Tecnologia</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center hover:border-sky-300 dark:hover:border-sky-700 transition-all">
+        <div class="mb-3 flex justify-center">
+          <img src="../../images/norm.png" alt="Norm" class="w-12 h-12 object-cover rounded-full">
+        </div>
+        <div class="font-heading font-semibold text-slate-900 dark:text-white text-sm">Norm Macdonald</div>
+        <div class="text-xs text-slate-400 mt-1">Responsável pela Segurança</div>
+      </div>
+      <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-5 text-center hover:border-sky-300 dark:hover:border-sky-700 transition-all">
+        <div class="mb-3 flex justify-center">
+          <img src="../../images/norm.png" alt="Norm" class="w-12 h-12 object-cover rounded-full">
+        </div>
+        <div class="font-heading font-semibold text-slate-900 dark:text-white text-sm">Companhia</div>
+        <div class="text-xs text-slate-400 mt-1">Responsável pelas Operações</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-sm text-slate-700 dark:text-slate-300">
+        <div class="w-5 h-5 rounded bg-sky-500 flex items-center justify-center text-white text-[10px] font-bold">L</div>Lisp
+      </a>
+      <div class="flex gap-5 text-xs text-slate-400">
+        <a href="about" class="hover:text-sky-500">Sobre</a>
+        <a href="how" class="hover:text-sky-500">Como funciona</a>
+        <a href="pricing" class="hover:text-sky-500">Preços</a>
+      </div>
+      <div class="text-xs text-slate-400">© 2026 Lisp</div>
+    </div>
+  </footer>
+</body>
+</html>

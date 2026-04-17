@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pricing - Lisp</title>
+  <title>Pricing - LispUber</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
   
-  <script src="js/ui.js"></script>
+  <script src="/js/main.js"></script>
 
   <script>
     tailwind.config={darkMode:'class',theme:{extend:{
@@ -57,9 +57,37 @@
         <a href="pricing" class="px-3 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-medium">Pricing</a>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="Theme.toggle()" data-theme-icon class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">🌙</button>
-        <a href="signin" class="hidden sm:block text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">Sign in</a>
-        <a href="app" class="text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">Open app</a>
+        <button onclick="Theme.toggle()" data-theme-icon
+          class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+          🌙
+        </button>
+
+        <a href="signin" id="signinBtn"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">
+          Sign in
+        </a>
+        <a href="" class="appBtn text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">
+          Open app
+        </a>
+
+        <div class="relative">
+          <button id="langToggle"
+            class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+            EN ▾
+          </button>
+
+          <div id="langMenu"
+            class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+            <button data-lang="en"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              English
+            </button>
+            <button data-lang="pt"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              Português
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
