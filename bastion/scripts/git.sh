@@ -33,7 +33,7 @@ get_internal_ip() {
 
 pull_git() {
   cd "$PROJECT_DIR" || exit 1
-  git pull
+  git pull https://andre-alexandre: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@github.com/ravimughal/projeto-ptir.git
   echo "Git pulled"
 }
 
