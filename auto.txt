@@ -1,4 +1,8 @@
 NGINX:
+    gcloud compute machine-images create nginx-image --source-instance=nginx1-vm --zone=europe-southwest1-c
+
+    gcloud compute instances delete nginx1-vm --zone=europe-southwest1-c --quiet
+
     gcloud compute instances create nginx1-vm --source-machine-image=nginx-image --private-network-ip=10.204.0.11   -
     -no-address --zone=europe-southwest1-c
 
@@ -105,6 +109,8 @@ NGINX:
 APP:
     gcloud compute machine-images create app-image --source-instance=app1-vm --zone=europe-southwest1-c
 
+    gcloud compute instances delete app1-vm --zone=europe-southwest1-c --quiet
+
     gcloud compute instances create app1-vm --source-machine-image=app-image --private-network-ip=10.204.0.21   -
     -no-address --zone=europe-southwest1-c
 
@@ -113,5 +119,9 @@ APP:
 
 
 DB:
+    gcloud compute machine-images create db-image --source-instance=db1-vm --zone=europe-southwest1-c
+
+    gcloud compute instances delete db1-vm --zone=europe-southwest1-c --quiet
+
     gcloud compute instances create db1-vm --source-machine-image=db-image --private-network-ip=10.204.0.31   -
     -no-address --zone=europe-southwest1-c
