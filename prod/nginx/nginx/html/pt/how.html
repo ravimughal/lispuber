@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Como Funciona - Lisp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap">
+
+  <script src="/js/main.js"></script>
+
+  <script>
+    tailwind.config={darkMode:'class',theme:{extend:{
+      fontFamily:{sans:['DM Sans','sans-serif'],
+      heading:['Sora','sans-serif']}
+    }}};
+
+    function toggleFaq(btn) { btn.closest('.faq-item').classList.toggle('open'); }
+  </script>
+
+  <style>
+    body{font-family:'DM Sans',sans-serif;} .font-heading,h1,h2,h3{font-family:'Sora',sans-serif;}
+    *,*::before,*::after{transition:background-color .2s,border-color .2s,color .15s;}
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(60px);background:#0f172a;color:#f1f5f9;padding:.5rem 1.25rem;border-radius:999px;font-size:.82rem;z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1) !important;pointer-events:none;white-space:nowrap;}
+    .dark #toast{background:#f1f5f9;color:#0f172a;} #toast.show{transform:translateX(-50%) translateY(0);}
+    .faq-answer{max-height:0;overflow:hidden;transition:max-height .35s ease,margin .3s ease;}
+    .faq-item.open .faq-answer{max-height:200px;margin-top:.75rem;}
+    .faq-item.open .chevron{transform:rotate(180deg);}
+    .chevron{transition:transform .2s;}
+  </style>
+</head>
+
+<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+  <div id="toast"></div>
+
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
+      </a>
+      <div class="hidden md:flex items-center gap-1 text-sm">
+        <a href="index"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Início</a>
+        <a href="about"   class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Sobre</a>
+        <a href="how"     class="px-3 py-1.5 rounded-lg text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/60 font-medium">Como funciona</a>
+        <a href="pricing" class="px-3 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">Preços</a>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="Theme.toggle()" data-theme-icon
+          class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+          🌙
+        </button>
+
+        <a href="signin" id="signinBtn"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-sky-400 text-slate-600 dark:text-slate-300">
+          Entrar
+        </a>
+        <a href="" class="appBtn text-sm px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium">
+          Abrir Aplicação
+        </a>
+
+        <div class="relative">
+          <button id="langToggle"
+            class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+            EN ▾
+          </button>
+
+          <div id="langMenu"
+            class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+            <button data-lang="en"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              English
+            </button>
+            <button data-lang="pt"
+              class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+              Português
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="max-w-5xl mx-auto px-5 pt-16 pb-10 border-b border-slate-100 dark:border-slate-800">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-3">Processo simples</p>
+    <h1 class="font-heading text-4xl md:text-5xl font-bold text-slate-900 dark:text-white leading-tight mb-4">
+      Viaja em <span class="text-sky-500">4 passos.</span>
+    </h1>
+    <p class="text-slate-500 dark:text-slate-400 text-lg max-w-md">Sem curva de aprendizagem. Abre e aplicação e diz para onde queres ir.</p>
+  </div>
+
+
+  <div class="max-w-2xl mx-auto px-5 py-14 space-y-4">
+    
+    <div class="relative flex gap-5">
+      <div class="flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full border-2 border-sky-500 bg-sky-50 dark:bg-sky-950/50 flex items-center justify-center font-heading font-bold text-sky-600 dark:text-sky-400 text-sm flex-shrink-0">1</div>
+        <div class="w-px flex-1 bg-sky-100 dark:bg-sky-900 mt-2"></div>
+      </div>
+      <div class="pb-8 flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-heading font-semibold text-slate-900 dark:text-white">Define o teu destino</h3>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Escreve onde queres ir ou toca no mapa em tempo real. A pesquisa inteligente sugere lugares instantaneamente. O GPS detecta automaticamente a tua localização.</p>
+      </div>
+    </div>
+
+    <div class="relative flex gap-5">
+      <div class="flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full border-2 border-sky-500 bg-sky-50 dark:bg-sky-950/50 flex items-center justify-center font-heading font-bold text-sky-600 dark:text-sky-400 text-sm flex-shrink-0">2</div>
+        <div class="w-px flex-1 bg-sky-100 dark:bg-sky-900 mt-2"></div>
+      </div>
+      <div class="pb-8 flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-heading font-semibold text-slate-900 dark:text-white">Escolhe a tua viagem & vê o preço</h3>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Escolhe Economia, Conforto ou Premium. O preço é bloqueado antes de confirmar — calculado pela distância real da rota, sem surpresas.</p>
+      </div>
+    </div>
+
+    <div class="relative flex gap-5">
+      <div class="flex flex-col items-center">
+        <div class="w-9 h-9 rounded-full border-2 border-sky-500 bg-sky-50 dark:bg-sky-950/50 flex items-center justify-center font-heading font-bold text-sky-600 dark:text-sky-400 text-sm flex-shrink-0">3</div>
+        <div class="w-px flex-1 bg-sky-100 dark:bg-sky-900 mt-2"></div>
+      </div>
+      <div class="pb-8 flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-heading font-semibold text-slate-900 dark:text-white">Encontra um motorista</h3>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Ligado instantaneamente ao motorista verificado mais próximo. Observa-o aproximar-se em tempo real — nome, veículo, matrícula e classificação visíveis desde o início.</p>
+      </div>
+    </div>
+
+    <div class="flex gap-5">
+      <div class="w-9 h-9 rounded-full border-2 border-sky-500 bg-sky-50 dark:bg-sky-950/50 flex items-center justify-center font-heading font-bold text-sky-600 dark:text-sky-400 text-sm flex-shrink-0">4</div>
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-heading font-semibold text-slate-900 dark:text-white">Viaja, paga, avalia — pronto</h3>
+        </div>
+        <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">O pagamento é automático. Deixa uma avaliação rápida e já estás feito. Uma fatura chega ao teu correio imediatamente com uma análise completa.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="max-w-2xl mx-auto px-5 pb-20">
+    <p class="text-xs font-semibold tracking-widest uppercase text-sky-500 mb-5">Perguntas Frequentes</p>
+
+    <div class="space-y-px">
+      <div class="faq-item border-b border-slate-100 dark:border-slate-800 py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          Posso agendar uma viagem para mais tarde?
+          <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Carregue na opção "Agendar" no ecrã de reserva para definir um horário de recolha no futuro. Confirmamos um motorista 30 minutos antes da partida.</div>
+      </div>
+      <div class="faq-item border-b border-slate-100 dark:border-slate-800 py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          E se o meu motorista não aparecer?
+          <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Carregue na opção "Contactar motorista" primeiro. Se o motorista cancelar ou não chegar, és automaticamente remapeado sem custo adicional.</div>
+      </div>
+      <div class="faq-item border-b border-slate-100 dark:border-slate-800 py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          Há uma taxa de cancelamento?
+          <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Não há taxa se cancelares dentro de 2 minutos após a reserva. Após esse tempo, pode ser aplicada uma pequena taxa de €1 se o motorista já estiver a caminho.</div>
+      </div>
+      <div class="faq-item py-4">
+        <button class="w-full flex justify-between items-center text-left gap-4 font-heading font-medium text-slate-900 dark:text-white text-sm" onclick="toggleFaq(this)">
+          Posso adicionar múltiplos pontos de paragem?
+          <span class="chevron text-sky-500 text-xs">▾</span>
+        </button>
+        <div class="faq-answer text-sm text-slate-500 dark:text-slate-400 leading-relaxed">Sim! Carrega em "+ Add stop" para adicionar até 2 pontos de paragem intermédios. Cada segmento é incluído na tarifa inicial.</div>
+      </div>
+    </div>
+
+    <div class="mt-10 text-center">
+      <a href="" class="appBtn inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm shadow-lg shadow-sky-500/25 transition-all">
+        Marca a tua primeira viagem →
+      </a>
+    </div>
+  </div>
+
+  <footer class="border-t border-slate-100 dark:border-slate-800">
+    <div class="max-w-5xl mx-auto px-5 py-6 flex flex-wrap items-center justify-between gap-4">
+      <a href="index" class="flex items-center gap-2 font-heading font-semibold text-sm text-slate-700 dark:text-slate-300">
+        <div class="w-5 h-5 rounded bg-sky-500 flex items-center justify-center text-white text-[10px] font-bold">L</div>Lisp
+      </a>
+      <div class="flex gap-5 text-xs text-slate-400">
+        <a href="about" class="hover:text-sky-500">Sobre</a>
+        <a href="how" class="hover:text-sky-500">Como funciona</a>
+        <a href="pricing" class="hover:text-sky-500">Preços</a>
+      </div>
+      <div class="text-xs text-slate-400">© 2026 Lisp</div>
+    </div>
+  </footer>
+</body>
+</html>
