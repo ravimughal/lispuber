@@ -165,3 +165,20 @@ CREATE TABLE reabastecimento (
 
     FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
+
+
+
+CREATE TABLE pagamento (
+    id                  BIGSERIAL     PRIMARY KEY,
+    viagem_id           BIGINT        NOT NULL UNIQUE,
+    stripe_payment_id   VARCHAR(255)  NOT NULL UNIQUE,
+    
+    estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
+    valor               NUMERIC(10,2) NOT NULL,
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
+
+    CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO', 'FALHOU')),
+    
+    FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
+);
