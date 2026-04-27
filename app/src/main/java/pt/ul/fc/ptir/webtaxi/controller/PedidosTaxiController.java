@@ -28,7 +28,7 @@ public class PedidosTaxiController {
 
     // POST /pedidos-taxi - Criar pedido
     @PostMapping
-    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoCreateDTO pedidoDto) {
+    public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoCreateDTO pedidoDto) throws Exception{
         PedidoResponseDTO novoPedido = pedidoService.criarPedido(pedidoDto);
         return new ResponseEntity<>(novoPedido, HttpStatus.CREATED);
     }

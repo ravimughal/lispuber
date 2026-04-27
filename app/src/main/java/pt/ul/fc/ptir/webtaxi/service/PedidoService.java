@@ -46,7 +46,7 @@ public class PedidoService {
 
 
     @Transactional
-    public PedidoResponseDTO criarPedido(PedidoCreateDTO pedidoDto){
+    public PedidoResponseDTO criarPedido(PedidoCreateDTO pedidoDto) throws Exception{
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Utilizador utilizador = (Utilizador) authentication.getPrincipal();
 
@@ -101,7 +101,9 @@ public class PedidoService {
 
         Conforto conforto = confortoRepository.findById(pedidoDto.confortoId())
         .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Conforto não encontrado!"));
+        LocalDateTime dataAtual =LocalDateTime.now();
 
+    
         newPedido.setCliente(cliente);
         newPedido.setConforto(conforto);
         newPedido.setLatitudeDestino(pedidoDto.latitudeDestino());
@@ -111,9 +113,21 @@ public class PedidoService {
         newPedido.setNumPassageiros(pedidoDto.numPassageiros());
         newPedido.setRuaDestino(pedidoDto.ruaDestino());
         newPedido.setRuaOrigem(pedidoDto.ruaOrigem());
-        newPedido.setPreco(90.0);  //MUDAR POSTERIORMENTE
+        newPedido.setDataSolicitacao(dataAtual);
+
+        PrecosService precoService = new PrecosService();
+        Double preco;
+
+        try{//calcular o preço tendo em conta a distancia, hora do dia e nivel de conforto
+            preco=precoService.getPrecoPedido(pedidoDto.latitudeOrigem(),pedidoDto.longitudeOrigem(),
+                                    pedidoDto.latitudeDestino(),pedidoDto.longitudeDestino(), dataAtual, conforto.getNivelConforto());
+        }catch(Exception e){
+            throw new Exception("Erro: Falha no calculo do preço da viagem.");
+        }
+
+        newPedido.setPreco(preco);
+
         newPedido.setEstadoPedido(EstadoPedido.PENDENTE);
-        newPedido.setDataSolicitacao(LocalDateTime.now());
         pedidoRepository.save(newPedido);
 
     return Mapper.converterParaPedidoDTO(newPedido);
