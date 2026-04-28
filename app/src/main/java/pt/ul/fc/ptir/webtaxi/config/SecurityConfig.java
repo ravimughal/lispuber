@@ -34,7 +34,9 @@ public class SecurityConfig {
                     "/auth/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/pagamentos/webhook", // para usar webhook sem token
+                    "/stripe-test.html"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
