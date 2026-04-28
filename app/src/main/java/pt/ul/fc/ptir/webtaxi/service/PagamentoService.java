@@ -128,7 +128,7 @@ public class PagamentoService {
             throw new RuntimeException("Webhook signature inválida.");
         }
         System.out.println("Evento: " + event.getType());
-        // We care about these two event types
+        // We care only about this event
         switch (event.getType()) {
             case "payment_intent.succeeded" -> {
                 String json = event.getDataObjectDeserializer().getRawJson();
@@ -145,13 +145,14 @@ public class PagamentoService {
                 System.out.println("PaymentIntent ID: " + paymentIntentId);
                 marcarPago(paymentIntentId);
             }
-            case "payment_intent.payment_failed" -> {
-                var optional = event.getDataObjectDeserializer().getObject();
-                if (optional.isEmpty()) return; // ignore event safely
+            // REMOVED ESTADO 'FALHOU' from pagamentos (se for para por a funcionar outravez ser'a preciso atualizar o c'odigo para ser parecido ao de cima)
+            // case "payment_intent.payment_failed" -> {
+            //     var optional = event.getDataObjectDeserializer().getObject();
+            //     if (optional.isEmpty()) return; // ignore event safely
 
-                PaymentIntent intent = (PaymentIntent) optional.get();
-                marcarFalhou(intent.getId());
-            }
+            //     PaymentIntent intent = (PaymentIntent) optional.get();
+            //     marcarFalhou(intent.getId());
+            // }
             default -> { /* ignore other events */ }
         }
     }
@@ -164,13 +165,13 @@ public class PagamentoService {
         });
     }
 
-    private void marcarFalhou(String stripePaymentId) {
-        pagamentoRepository.findByStripePaymentId(stripePaymentId).ifPresent(p -> {
-            p.setEstado(EstadoPagamento.FALHOU);
-            p.setAtualizadoEm(LocalDateTime.now());
-            pagamentoRepository.save(p);
-        });
-    }
+    // private void marcarFalhou(String stripePaymentId) {
+    //     pagamentoRepository.findByStripePaymentId(stripePaymentId).ifPresent(p -> {
+    //         p.setEstado(EstadoPagamento.FALHOU);
+    //         p.setAtualizadoEm(LocalDateTime.now());
+    //         pagamentoRepository.save(p);
+    //     });
+    // }
 
     /**
      * Called by the driver's frontend to poll for payment status.

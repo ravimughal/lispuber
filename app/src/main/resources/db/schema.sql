@@ -178,7 +178,7 @@ CREATE TABLE pagamento (
     criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em       TIMESTAMP,
 
-    CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO', 'FALHOU')),
+    CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO')),
     
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
