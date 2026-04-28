@@ -257,4 +257,25 @@ public class Mapper {
             dto.dataNascimento()
         );
     }
+
+    // PAGAMENTO ----------------------
+    public static PagamentoEstadoDTO converterParaPagamentoEstadoDTO(Pagamento pagamento) {
+        return new PagamentoEstadoDTO(
+            pagamento.getId(),
+            pagamento.getViagem().getId(),
+            pagamento.getEstado().name()
+        );
+    }
+
+    public static PagamentoIniciarResponseDTO converterParaPagamentoIniciarResponseDTO(
+            Pagamento pagamento,
+            String clientSecret,
+            String publishableKey) {
+        return new PagamentoIniciarResponseDTO(
+            pagamento.getId(),
+            pagamento.getEstado().name(),
+            clientSecret,
+            publishableKey
+        );
+    }
 }
