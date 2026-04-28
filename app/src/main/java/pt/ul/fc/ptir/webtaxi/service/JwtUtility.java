@@ -59,6 +59,10 @@ public class JwtUtility {
     }
 
     public boolean isTokenValid(String token) {
-        return !isTokenExpired(token);
+        try {
+            return !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;  // malformed, wrong signature, etc.
+        }
     }
 }
