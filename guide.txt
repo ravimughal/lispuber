@@ -1,0 +1,144 @@
+Scripts para ter no PC de cada um:
+	./tunnel.sh
+	./bastion.sh
+
+
+
+
+
+Como usar ./tunnel.sh:
+
+	./tunnel.sh start
+		É suposto deixar a correr e não fechar quando queremos ter um túnel para utilizar *forward ou *mount.
+		Se não formos usar esses comandos não é necessário usar.
+
+  	./tunnel.sh forward <vm> <local_port> <remote_port>
+		Serve para ligar uma porta de um servidor a uma porta nossa, de modo a usar o servidor como se estivesse a rodar no nosso localhost.
+		Costuma apenas ser usado para: ./tunnel.sh forward app<num>-vm 8080 8080
+
+  	./tunnel.sh mount <vm>
+		Serve para fazer mount do filesystem da VM no nosso filesystem em /home/<user>/mnt/<vm>
+		Assim podemos editar os ficheiros da VM como se estivesse no nosso PC.
+
+  	./tunnel.sh umount <vm>
+		Simplesmente para fazer umount.
+
+
+
+
+
+Como usar ./bastion.sh:
+
+	./bastion.sh start
+		Ligar 
+
+	./bastion.sh stop
+		Desligar
+		
+	./bastion.sh ssh
+		Fazer SSH
+
+
+
+
+
+
+
+
+
+
+Scripts para ter no Bastion:
+	./manage.sh
+	./deploy.sh
+	./git.sh
+	./nginx-failover.sh
+	./app-failover.sh 
+
+
+
+
+
+Como usar ./manage.sh:
+
+  	./manage.sh start-all
+		Ligar todas as máquinas, menos o bastion
+
+  	./manage.sh stop-all
+		Desligar todas as máquinas, menos o bastion
+
+  	./manage.sh start <vm>
+		Ligar VM em específico
+		./manage.sh start app1-vm
+
+  	./manage.sh stop <vm>
+		Desligar VM em específico
+		./manage.sh stop app1-vm
+
+  	./manage.sh ssh <vm>
+		Fazer SSH numa VM
+		./manage.sh ssh app1-vm
+
+  	./manage.sh list
+		Ter uma lista de todas as VMs e os seus estados e IPs internos e externos
+
+
+
+
+
+Como usar ./deploy.sh:
+	
+	./deploy.sh
+		Envia os ficheiros de prod das pasta projeto-ptir para todas as apps e nginxs.
+		Além disso também faz restart aos seus system para começarem a usar os novos ficheiros atualizados.
+		Ou seja, faz um deploy completo.
+		Não se faz isto às dbs, pois nelas só se pode mudar o schema e isso já não deve de sofrer grandes modificações. São modificações mais minuciosas.
+
+
+
+
+
+Como usar ./git.sh:
+
+  	./git.sh pull
+		Fazer pull do GitHub para a pasta projeto-ptir
+
+  	./git.sh send <vm> (já não existe necessidade de usar porque agora temos o deploy)
+		Enviar a pastas de desenvolvimento (não prod) do respetivo tipo de server para o server em questão.
+		./git.sh send app1-vm  -  envia a pasta app para o server app1-vm
+
+  	./git.sh list
+		Lista todas as VMs e o seu tipo	
+
+
+
+
+
+Como usar ./nginx-failover.sh:
+
+	./nginx-failover.sh (roda no crontab de 5 em 5 minutos, mas pode-se simplesmente executar)
+		Caso o nginx1 falhe, muda o IP para o nginx2 e liga o nginx2
+		Caso o nginx1 volte a funcionar, muda o IP para o nginx1 e desliga o nginx2
+
+
+
+
+
+Como usar ./app-failover.sh:
+
+	./app-failover.sh (roda no crontab de 10 em 10 minutos)
+		Vou remodelar, já completo
+		
+
+
+
+
+Como usar ./db-failover.sh:
+
+	./db-failover.sh (roda no crontab de 10 em 10 minutos, mas pode-se simplesmente executar)
+		Para mudar a db principal.
+		Vou fazer, já completo
+
+
+
+
+
