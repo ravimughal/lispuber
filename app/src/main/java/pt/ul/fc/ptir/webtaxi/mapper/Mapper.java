@@ -203,24 +203,24 @@ public class Mapper {
 
 
     // REABASTECIMENTO
-    public static Reabastecimento converterParaReabastecimento(ReabastecimentoCreateDTO dto, Turno turno) {
+    public static Reabastecimento converterParaReabastecimento(Turno turno) {
         return new Reabastecimento(
-            dto.quantidade(),
-            dto.kilometros(),
-            dto.eurosPagos(),
-            dto.duracao(),
-            turno
+                0.0,
+                0.0,
+                0.0,
+                new Duracao(java.time.LocalDateTime.now(), null),
+                turno
         );
     }
 
     public static ReabastecimentoResponseDTO converterParaReabastecimentoDTO(Reabastecimento r) {
         return new ReabastecimentoResponseDTO(
-            r.getId(),
-            r.getTurno().getId(),
-            r.getQuantidade(),
-            r.getKilometros(),
-            r.getEurosPagos(),
-            r.getDuracao()
+                r.getId(),
+                r.getTurno().getId(),
+                r.getQuantidade(),
+                r.getKilometros(),
+                r.getEurosPagos(),
+                r.getDuracao()
         );
     }
 
@@ -255,6 +255,27 @@ public class Mapper {
             dto.nome(),
             dto.genero(),
             dto.dataNascimento()
+        );
+    }
+
+    // PAGAMENTO ----------------------
+    public static PagamentoEstadoDTO converterParaPagamentoEstadoDTO(Pagamento pagamento) {
+        return new PagamentoEstadoDTO(
+            pagamento.getId(),
+            pagamento.getViagem().getId(),
+            pagamento.getEstado().name()
+        );
+    }
+
+    public static PagamentoIniciarResponseDTO converterParaPagamentoIniciarResponseDTO(
+            Pagamento pagamento,
+            String clientSecret,
+            String publishableKey) {
+        return new PagamentoIniciarResponseDTO(
+            pagamento.getId(),
+            pagamento.getEstado().name(),
+            clientSecret,
+            publishableKey
         );
     }
 }

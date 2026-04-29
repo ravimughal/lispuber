@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Taxi — Teste de Pagamento</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #141416;
+      --surface2: #1c1c1f;
+      --border: #2a2a2e;
+      --accent: #e8ff47;
+      --accent2: #47c8ff;
+      --danger: #ff4747;
+      --success: #47ff8c;
+      --text: #f0f0f0;
+      --muted: #6b6b72;
+      --font-display: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-mono);
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      grid-column: 1 / -1;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--surface);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+      color: var(--accent);
+    }
+
+    .logo span { color: var(--text); }
+
+    .badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 99px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ── Panels ── */
+    .panel {
+      padding: 32px;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .panel:last-child { border-right: none; }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      padding: 10px 14px;
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: var(--accent); }
+    input::placeholder { color: var(--muted); }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 8px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0d0d0f;
+    }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    .btn-danger:hover:not(:disabled) { background: var(--danger); color: #fff; }
+
+    /* ── Status chip ── */
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-weight: 500;
+    }
+
+    .chip-pendente { background: rgba(255,200,47,0.12); color: #ffc82f; border: 1px solid rgba(255,200,47,0.3); }
+    .chip-pago     { background: rgba(71,255,140,0.12); color: var(--success); border: 1px solid rgba(71,255,140,0.3); }
+    .chip-falhou   { background: rgba(255,71,71,0.12);  color: var(--danger);  border: 1px solid rgba(255,71,71,0.3); }
+    .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .chip-dot.pulse { animation: pulse 1.4s infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── Log ── */
+    .log {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 0.75rem;
+      line-height: 1.7;
+      min-height: 80px;
+      max-height: 220px;
+      overflow-y: auto;
+      color: var(--muted);
+      margin-top: 16px;
+    }
+
+    .log-entry { display: flex; gap: 8px; }
+    .log-time  { color: var(--border); flex-shrink: 0; }
+    .log-ok    { color: var(--success); }
+    .log-err   { color: var(--danger); }
+    .log-info  { color: var(--accent2); }
+
+    /* ── Info box ── */
+    .info-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 0.8rem;
+    }
+
+    .info-row + .info-row { border-top: 1px solid var(--border); }
+    .info-label { color: var(--muted); }
+    .info-value { color: var(--text); font-weight: 500; }
+    .info-value.accent { color: var(--accent); font-size: 1rem; }
+
+    /* ── Stripe element container ── */
+    #payment-element {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 14px;
+      margin: 16px 0;
+      min-height: 56px;
+      transition: border-color 0.15s;
+    }
+
+    #payment-element:focus-within { border-color: var(--accent); }
+
+    /* ── Driver polling panel ── */
+    .big-status {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .big-status-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      display: block;
+      animation: none;
+    }
+
+    .big-status-icon.spin { animation: spin 1.5s linear infinite; }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .big-status-label {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.4rem;
+      letter-spacing: -0.02em;
+    }
+
+    .big-status-sub {
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 6px;
+    }
+
+    /* ── Test card hint ── */
+    .card-hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(71,200,255,0.06);
+      border: 1px solid rgba(71,200,255,0.15);
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+
+    .card-hint strong { color: var(--accent2); }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── Loading spinner inline ── */
+    .spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">TAXI<span>PAY</span></div>
+  <div class="badge">Stripe Test Mode</div>
+</header>
+
+<!-- ───── LEFT PANEL: Config + Client Flow ───── -->
+<div class="panel" id="left-panel">
+
+  <!-- Step 1: Auth -->
+  <div class="panel-title">① Autenticação (JWT)</div>
+
+  <div class="field">
+    <label>Backend URL</label>
+    <input id="base-url" value="http://localhost:8080" />
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input id="email" placeholder="cliente@email.com" type="email" />
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input id="password" type="password" placeholder="••••••••" />
+  </div>
+  <button class="btn btn-secondary" onclick="doLogin()">Login &amp; obter JWT</button>
+
+  <div class="log" id="auth-log"><span class="log-entry"><span class="log-info">—</span>&nbsp;Aguardando login...</span></div>
+
+  <div class="divider"></div>
+
+  <!-- Step 2: Iniciar Pagamento (client) -->
+  <div class="panel-title">② Cliente — Iniciar pagamento</div>
+
+  <div class="field">
+    <label>Viagem ID</label>
+    <input id="viagem-id" placeholder="ex: 42" type="number" />
+  </div>
+
+  <button class="btn btn-secondary" id="btn-iniciar" onclick="iniciarPagamento()" disabled>
+    Iniciar pagamento
+  </button>
+
+  <!-- Payment info -->
+  <div id="payment-info" class="hidden" style="margin-top:20px;">
+    <div class="info-box">
+      <div class="info-row">
+        <span class="info-label">Viagem</span>
+        <span class="info-value" id="info-viagem">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Valor</span>
+        <span class="info-value accent" id="info-valor">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Estado</span>
+        <span id="info-estado">—</span>
+      </div>
+    </div>
+
+    <div class="section-title">Cartão de pagamento (Stripe)</div>
+    <div id="payment-element"></div>
+
+    <div class="card-hint">
+      <strong>Cartão de teste:</strong> 4242 4242 4242 4242 &nbsp;·&nbsp;
+      Validade: qualquer data futura &nbsp;·&nbsp; CVC: qualquer 3 dígitos<br>
+      <strong>Cartão que falha:</strong> 4000 0000 0000 9995
+    </div>
+
+    <button class="btn btn-primary" id="btn-pagar" onclick="confirmarPagamento()">
+      Pagar agora
+    </button>
+  </div>
+
+  <div class="log" id="payment-log" style="margin-top:16px;"></div>
+
+</div>
+
+<!-- ───── RIGHT PANEL: Driver polling ───── -->
+<div class="panel" id="right-panel">
+  <div class="panel-title">③ Motorista — Aguardar pagamento</div>
+
+  <div class="field">
+    <label>Viagem ID (mesma do lado esquerdo)</label>
+    <input id="driver-viagem-id" placeholder="ex: 42" type="number" />
+  </div>
+
+  <button class="btn btn-secondary" id="btn-poll" onclick="startPolling()" disabled>
+    Começar a aguardar pagamento
+  </button>
+  <button class="btn btn-danger hidden" id="btn-stop" onclick="stopPolling()" style="margin-top:8px;">
+    Parar polling
+  </button>
+
+  <!-- Big status display -->
+  <div class="big-status" id="driver-status-display">
+    <span class="big-status-icon">💤</span>
+    <div class="big-status-label" style="color: var(--muted)">Inativo</div>
+    <div class="big-status-sub">Inicia o polling para ver o estado</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Poll log -->
+  <div class="section-title">Log de polling</div>
+  <div class="log" id="driver-log"></div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────
+  let jwt = null;
+  let stripe = null;
+  let elements = null;
+  let pollInterval = null;
+  let currentViagemId = null;
+
+  // ── Helpers ────────────────────────────────────────────
+  function ts() {
+    return new Date().toLocaleTimeString('pt-PT', { hour12: false });
+  }
+
+  function addLog(logId, msg, type = 'info') {
+    const log = document.getElementById(logId);
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `<span class="log-time">${ts()}</span><span class="log-${type}">${msg}</span>`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function baseUrl() {
+    return document.getElementById('base-url').value.replace(/\/$/, '');
+  }
+
+  function authHeaders() {
+    return {
+      'Content-Type': 'application/json',
+      ...(jwt ? { 'Authorization': `Bearer ${jwt}` } : {})
+    };
+  }
+
+  function setDriverStatus(icon, label, sub, iconClass = '', labelColor = '') {
+    document.getElementById('driver-status-display').innerHTML = `
+      <span class="big-status-icon ${iconClass}">${icon}</span>
+      <div class="big-status-label" style="color:${labelColor || 'var(--text)'}">${label}</div>
+      <div class="big-status-sub">${sub}</div>
+    `;
+  }
+
+  // ── Auth ───────────────────────────────────────────────
+  async function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    if (!email || !password) { addLog('auth-log', 'Preenche email e password.', 'err'); return; }
+
+    addLog('auth-log', `POST /auth/login com ${email}...`, 'info');
+
+    try {
+      const res = await fetch(`${baseUrl()}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      jwt = text;
+
+      // adapt to whatever field your backend returns the token as
+      if (!jwt) throw new Error('Token não encontrado na resposta: ' + JSON.stringify(data));
+
+      addLog('auth-log', `✓ JWT obtido (${jwt.substring(0, 20)}...)`, 'ok');
+      document.getElementById('btn-iniciar').disabled = false;
+      document.getElementById('btn-poll').disabled = false;
+
+    } catch (e) {
+      addLog('auth-log', `✗ ${e.message}`, 'err');
+    }
+  }
+
+  // ── Client: Iniciar pagamento ───────────────────────────
+  async function iniciarPagamento() {
+    const vid = document.getElementById('viagem-id').value.trim();
+    if (!vid) { addLog('payment-log', 'Insere um Viagem ID.', 'err'); return; }
+
+    currentViagemId = vid;
+    addLog('payment-log', `POST /pagamentos/viagem/${vid}/iniciar...`, 'info');
+
+    try {
+      const res = await fetch(`${baseUrl()}/pagamentos/viagem/${vid}/iniciar`, {
+        method: 'POST',
+        headers: authHeaders()
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`HTTP ${res.status} — ${err}`);
+      }
+
+      const data = await res.json();
+      addLog('payment-log', `✓ PaymentIntent criado`, 'ok');
+      addLog('payment-log', `  clientSecret: ${data.clientSecret.substring(0, 30)}...`, 'info');
+      addLog('payment-log', `  publishableKey: ${data.publishableKey.substring(0, 20)}...`, 'info');
+      addLog('payment-log', `  estado: ${data.estado}`, 'info');
+
+      // Show info box
+      document.getElementById('info-viagem').textContent = `#${vid}`;
+      document.getElementById('info-valor').textContent = '(ver abaixo)'; // price comes from pedido server-side
+      document.getElementById('info-estado').innerHTML = chipHtml(data.estado);
+      document.getElementById('payment-info').classList.remove('hidden');
+
+      // Also sync driver panel viagem id
+      document.getElementById('driver-viagem-id').value = vid;
+
+      // Init Stripe.js
+      stripe = Stripe(data.publishableKey);
+      elements = stripe.elements({ clientSecret: data.clientSecret });
+      const paymentEl = elements.create('payment', {
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorPrimary: '#e8ff47',
+            colorBackground: '#1c1c1f',
+            colorText: '#f0f0f0',
+            colorDanger: '#ff4747',
+            fontFamily: 'DM Mono, monospace',
+            borderRadius: '6px',
+          }
+        }
+      });
+      paymentEl.mount('#payment-element');
+      addLog('payment-log', '✓ Stripe.js montado — podes inserir o cartão', 'ok');
+
+    } catch (e) {
+      addLog('payment-log', `✗ ${e.message}`, 'err');
+    }
+  }
+
+  // ── Client: Confirmar pagamento ─────────────────────────
+  async function confirmarPagamento() {
+    if (!stripe || !elements) { addLog('payment-log', 'Inicia o pagamento primeiro.', 'err'); return; }
+
+    const btn = document.getElementById('btn-pagar');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>A processar...';
+    addLog('payment-log', 'A confirmar pagamento no Stripe...', 'info');
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        // After 3D Secure redirects (if any), Stripe sends back here
+        return_url: window.location.href,
+      },
+      redirect: 'if_required'   // avoid redirect for simple card payments
+    });
+
+    if (error) {
+      addLog('payment-log', `✗ Stripe: ${error.message}`, 'err');
+      document.getElementById('info-estado').innerHTML = chipHtml('FALHOU');
+      btn.disabled = false;
+      btn.textContent = 'Tentar novamente';
+    } else {
+      addLog('payment-log', '✓ Pagamento confirmado pelo Stripe!', 'ok');
+      addLog('payment-log', '  Webhook a ser enviado ao backend...', 'info');
+      document.getElementById('info-estado').innerHTML = chipHtml('PAGO');
+      btn.textContent = '✓ Pago';
+    }
+  }
+
+  // ── Driver: Polling ─────────────────────────────────────
+  function startPolling() {
+    const vid = document.getElementById('driver-viagem-id').value.trim();
+    if (!vid) { addLog('driver-log', 'Insere um Viagem ID.', 'err'); return; }
+    if (!jwt) { addLog('driver-log', 'Faz login primeiro.', 'err'); return; }
+
+    currentViagemId = vid;
+    setDriverStatus('⏳', 'A aguardar pagamento...', `Viagem #${vid} — polling a cada 3s`, 'spin', 'var(--accent2)');
+    addLog('driver-log', `Polling iniciado para viagem #${vid}`, 'info');
+
+    document.getElementById('btn-poll').classList.add('hidden');
+    document.getElementById('btn-stop').classList.remove('hidden');
+
+    pollInterval = setInterval(() => pollEstado(vid), 3000);
+    pollEstado(vid); // immediate first call
+  }
+
+  function stopPolling() {
+    clearInterval(pollInterval);
+    pollInterval = null;
+    setDriverStatus('💤', 'Polling parado', 'Clica para recomeçar');
+    addLog('driver-log', 'Polling parado manualmente.', 'info');
+    document.getElementById('btn-poll').classList.remove('hidden');
+    document.getElementById('btn-stop').classList.add('hidden');
+  }
+
+  async function pollEstado(vid) {
+    try {
+      const res = await fetch(`${baseUrl()}/pagamentos/viagem/${vid}/estado`, {
+        headers: authHeaders()
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      addLog('driver-log', `GET /estado → ${data.estado}`, data.estado === 'PAGO' ? 'ok' : data.estado === 'FALHOU' ? 'err' : 'info');
+
+      if (data.estado === 'PAGO') {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        setDriverStatus('✅', 'Pagamento recebido!', `Viagem #${vid} — paga com sucesso`, '', 'var(--success)');
+        document.getElementById('btn-poll').classList.remove('hidden');
+        document.getElementById('btn-stop').classList.add('hidden');
+
+      } else if (data.estado === 'FALHOU') {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        setDriverStatus('❌', 'Pagamento falhou', 'O cliente deverá tentar novamente', '', 'var(--danger)');
+        document.getElementById('btn-poll').classList.remove('hidden');
+        document.getElementById('btn-stop').classList.add('hidden');
+      }
+
+    } catch (e) {
+      addLog('driver-log', `✗ ${e.message}`, 'err');
+    }
+  }
+
+  // ── UI helpers ──────────────────────────────────────────
+  function chipHtml(estado) {
+    const map = {
+      'PENDENTE': ['chip-pendente', '●', true],
+      'PAGO':     ['chip-pago',     '●', false],
+      'FALHOU':   ['chip-falhou',   '●', false],
+    };
+    const [cls, dot, pulse] = map[estado] || ['chip-pendente', '●', false];
+    return `<span class="status-chip ${cls}"><span class="chip-dot ${pulse ? 'pulse' : ''}"></span>${estado}</span>`;
+  }
+</script>
+</body>
+</html>

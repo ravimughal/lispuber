@@ -19,7 +19,7 @@ public class Reabastecimento {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "inicio", column = @Column(name = "data_inicio", nullable = false)),
-        @AttributeOverride(name = "fim", column = @Column(name = "data_fim", nullable = false))
+        @AttributeOverride(name = "fim", column = @Column(name = "data_fim", nullable = true))
     })
     private Duracao duracao;
 
