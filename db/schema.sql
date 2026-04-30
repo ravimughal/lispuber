@@ -1,11 +1,22 @@
+DROP TABLE IF EXISTS reabastecimento CASCADE;
+DROP TABLE IF EXISTS fatura CASCADE;
+DROP TABLE IF EXISTS viagem CASCADE;
+DROP TABLE IF EXISTS pedido CASCADE;
+DROP TABLE IF EXISTS turno CASCADE;
+DROP TABLE IF EXISTS taxi CASCADE;
+DROP TABLE IF EXISTS motorista CASCADE;
+DROP TABLE IF EXISTS gestor CASCADE;
+DROP TABLE IF EXISTS cliente CASCADE;
+DROP TABLE IF EXISTS utilizador CASCADE;
+DROP TABLE IF EXISTS conforto CASCADE;
+
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
     nivel_conforto VARCHAR(10)   NOT NULL UNIQUE,
     preco          NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
 
-    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'LUXUOSO'))
+    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'CONFORTO', 'LUXUOSO'))
 );
-
 
 
 CREATE TABLE utilizador (
@@ -69,7 +80,7 @@ CREATE TABLE taxi (
 CREATE TABLE turno (
     id           BIGSERIAL PRIMARY KEY,
     motorista_id BIGINT    NOT NULL,
-    taxi_id      BIGINT,
+    taxi_id      BIGINT    NOT NULL,
     inicio       TIMESTAMP NOT NULL,
     fim          TIMESTAMP NOT NULL,
 
@@ -105,7 +116,10 @@ CREATE TABLE pedido (
     FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE SET NULL
 );
 
-
+CREATE TABLE configuracao_taxas (
+    chave VARCHAR(50) PRIMARY KEY,
+    valor DECIMAL(10, 2) NOT NULL
+);
 
 CREATE TABLE viagem (
     id                   BIGSERIAL PRIMARY KEY,
@@ -153,6 +167,8 @@ CREATE TABLE reabastecimento (
 
     FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
+
+
 
 CREATE TABLE pagamento (
     id                  BIGSERIAL     PRIMARY KEY,

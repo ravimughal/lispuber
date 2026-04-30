@@ -9,6 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.stripe.model.TaxRate;
+
 import jakarta.transaction.Transactional;
 import pt.ul.fc.ptir.webtaxi.dto.PedidoCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.PedidoResponseDTO;
@@ -21,6 +23,7 @@ import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.ClienteRepository;
+import pt.ul.fc.ptir.webtaxi.repository.ConfiguracaoTaxaRepository;
 import pt.ul.fc.ptir.webtaxi.repository.ConfortoRepository;
 import pt.ul.fc.ptir.webtaxi.repository.MotoristaRepository;
 import pt.ul.fc.ptir.webtaxi.repository.PedidoRepository;
@@ -33,15 +36,17 @@ public class PedidoService {
     private final ClienteRepository clienteRepository;
     private final ConfortoRepository confortoRepository;
     private final PedidoRepository pedidoRepository;
+    private final ConfiguracaoTaxaRepository taxaRepository;
     private final MotoristaRepository motoristaRepository;
 
     @Autowired
     public PedidoService(ClienteRepository clienteRepository, ConfortoRepository confortoRepository, PedidoRepository pedidoRepository,
-         MotoristaRepository motoristaRepository) {
+         MotoristaRepository motoristaRepository,ConfiguracaoTaxaRepository taxaRepository) {
         this.clienteRepository=clienteRepository;
         this.confortoRepository=confortoRepository;
         this.pedidoRepository=pedidoRepository;
         this.motoristaRepository=motoristaRepository;
+        this.taxaRepository=taxaRepository;
     }
 
 
@@ -115,12 +120,12 @@ public class PedidoService {
         newPedido.setRuaOrigem(pedidoDto.ruaOrigem());
         newPedido.setDataSolicitacao(dataAtual);
 
-        PrecoService precoService = new PrecoService();
+        PrecoService precoService = new PrecoService(confortoRepository,taxaRepository);
         Double preco;
 
         try{//calcular o preço tendo em conta a distancia, hora do dia e nivel de conforto
-            preco=precoService.getPrecoPedido(pedidoDto.latitudeOrigem(),pedidoDto.longitudeOrigem(),
-                                    pedidoDto.latitudeDestino(),pedidoDto.longitudeDestino(), dataAtual, conforto.getNivelConforto());
+            preco=Double.valueOf(precoService.getPrecoPedido(pedidoDto.latitudeOrigem(),pedidoDto.longitudeOrigem(),
+                                    pedidoDto.latitudeDestino(),pedidoDto.longitudeDestino(), dataAtual, conforto.getNivelConforto()));
         }catch(Exception e){
             throw new Exception("Erro: Falha no calculo do preço da viagem.");
         }

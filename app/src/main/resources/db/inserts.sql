@@ -1,6 +1,7 @@
 INSERT INTO conforto (nivel_conforto, preco) VALUES
- ('BASICO', 5.50),
- ('LUXUOSO', 15.00);
+ ('BASICO', 0.50),
+ ('CONFORTO', 0.75),
+ ('LUXUOSO', 1.0);
 
 
 INSERT INTO utilizador (id, nome, email, nif, genero, senha, data_nascimento) VALUES
@@ -26,3 +27,6 @@ INSERT INTO turno (motorista_id, taxi_id, inicio, fim) VALUES
    (2, 1, '2026-04-11 08:00:00', '2026-04-11 16:00:00'),
    (2, 2, '2026-04-12 08:00:00', '2026-04-12 16:00:00'),
    (2, 3, '2026-04-13 22:00:00', '2026-04-14 06:00:00');
+
+INSERT INTO configuracao_taxas (chave, valor) 
+VALUES ('TAXA_NOTURNA', 1.30);

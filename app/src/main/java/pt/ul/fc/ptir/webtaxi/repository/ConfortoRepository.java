@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import pt.ul.fc.ptir.webtaxi.entity.Conforto;
 import pt.ul.fc.ptir.webtaxi.entity.enums.NivelConforto;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository

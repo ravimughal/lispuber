@@ -15,9 +15,8 @@ CREATE TABLE conforto (
     nivel_conforto VARCHAR(10)   NOT NULL UNIQUE,
     preco          NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
 
-    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'LUXUOSO'))
+    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'CONFORTO', 'LUXUOSO'))
 );
-
 
 
 CREATE TABLE utilizador (
@@ -117,7 +116,10 @@ CREATE TABLE pedido (
     FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE SET NULL
 );
 
-
+CREATE TABLE configuracao_taxas (
+    chave VARCHAR(50) PRIMARY KEY,
+    valor DECIMAL(10, 2) NOT NULL
+);
 
 CREATE TABLE viagem (
     id                   BIGSERIAL PRIMARY KEY,
