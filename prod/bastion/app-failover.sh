@@ -56,7 +56,7 @@ else
   echo "app1 UP → remove app3 if exists"
 
   if vm_exists $APP3_NAME; then
-    echo "🗑 Deleting app3..."
+    echo "Deleting app3..."
     gcloud compute instances delete $APP3_NAME \
       --zone=$ZONE \
       --quiet
