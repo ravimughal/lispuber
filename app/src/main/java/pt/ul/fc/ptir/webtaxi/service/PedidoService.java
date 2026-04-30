@@ -63,21 +63,21 @@ public class PedidoService {
             throw new IllegalArgumentException("Erro: Os atributos latitude Origem/Destino e longitude Origem/Destino não podem ser null");
         }
         if(pedidoDto.latitudeOrigem()>90||pedidoDto.latitudeOrigem()<-90){
-            throw new IllegalArgumentException("Erro: Latitude origem fora do range válido.");
+            throw new IllegalArgumentException("Erro: Latitude origem fora do range válido [-90,90].");
 
         }
 
         if(pedidoDto.latitudeDestino()>90||pedidoDto.latitudeDestino()<-90){
-            throw new IllegalArgumentException("Erro: Latitude destino fora do range válido.");
+            throw new IllegalArgumentException("Erro: Latitude destino fora do range válido [-90,90].");
 
         }
         if(pedidoDto.longitudeOrigem()>180||pedidoDto.longitudeOrigem()<-180){
-            throw new IllegalArgumentException("Erro: Longitude origem fora do range válido.");
+            throw new IllegalArgumentException("Erro: Longitude origem fora do range válido [-180,180].");
 
         }
 
         if(pedidoDto.longitudeDestino()>180||pedidoDto.longitudeDestino()<-180){
-            throw new IllegalArgumentException("Erro: Longitude origem fora do range válido.");
+            throw new IllegalArgumentException("Erro: Longitude origem fora do range válido [-180,180].");
 
         }
 
@@ -115,7 +115,7 @@ public class PedidoService {
         newPedido.setRuaOrigem(pedidoDto.ruaOrigem());
         newPedido.setDataSolicitacao(dataAtual);
 
-        PrecosService precoService = new PrecosService();
+        PrecoService precoService = new PrecoService();
         Double preco;
 
         try{//calcular o preço tendo em conta a distancia, hora do dia e nivel de conforto
