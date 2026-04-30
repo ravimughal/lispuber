@@ -43,6 +43,7 @@ server {
         proxy_read_timeout 3s;
 
         add_header X-Backend-Name $backend_name always;
+        add_header X-Nginx-Name $nginx_name always;
     }
 
     # Languages

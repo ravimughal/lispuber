@@ -66,6 +66,7 @@ while read -r NAME IP; do
   scp -o StrictHostKeyChecking=no \
     $NGINX_PATH/backend.conf \
     $NGINX_PATH/backend-map.conf \
+    $NGINX_PATH/nginx-map.conf \
     $NGINX_PATH/default \
     $USER@$IP:/tmp/
 
@@ -81,6 +82,7 @@ while read -r NAME IP; do
 
     sudo mv /tmp/backend.conf /etc/nginx/conf.d/backend.conf
     sudo mv /tmp/backend-map.conf /etc/nginx/conf.d/backend-map.conf
+    sudo mv /tmp/nginx-map.conf /etc/nginx/conf.d/nginx-map.conf
 
     # default should go to sites-available normally
     sudo mv /tmp/default /etc/nginx/sites-available/default

@@ -62,7 +62,7 @@ fi
 echo "nginx1 DOWN"
 
 if [[ "$CURRENT_OWNER" == "$BACKUP" ]]; then
-  echo "✔ IP already on nginx2"
+  echo "IP already on nginx2"
   exit 0
 fi
 
