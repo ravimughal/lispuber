@@ -13,7 +13,7 @@ public interface FaturaRepository extends JpaRepository<Fatura, Long> {
 
     boolean existsByViagemId(Long viagemId);
 
-    @Query("SELECT MAX(f.numSequencial() FROM Fatura f")
+    @Query("SELECT MAX(f.numSequencial) FROM Fatura f")
     Long findMaxNumSequencial();
 
     List<Fatura> findByViagemTurnoMotoristaIdOrderByDataDesc(Long motoristaId);

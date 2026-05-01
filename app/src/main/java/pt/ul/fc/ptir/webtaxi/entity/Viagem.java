@@ -28,6 +28,9 @@ public class Viagem {
     @Column(name = "km_percorridos", nullable = false)
     private Double kilometros;
 
+    @Column(nullable = false)
+    private Double preco;
+
 
 
     public Viagem() {}
@@ -93,5 +96,13 @@ public class Viagem {
 
     public void setTurno(Turno turno) {
         this.turno = turno;
+    }
+
+    public Double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(Double preco) {
+        this.preco = preco;
     }
 }
