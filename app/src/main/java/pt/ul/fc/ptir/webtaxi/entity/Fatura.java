@@ -21,6 +21,9 @@ public class Fatura {
     @JoinColumn(name = "viagem_id", nullable = false, unique = true)
     private Viagem viagem;
 
+    @Column(name = "valor_em_euros", nullable = false)
+    private Double valorEmEuros;
+
 
 
     public Fatura(){}
@@ -66,5 +69,13 @@ public class Fatura {
 
     public void setViagem(Viagem viagem) {
         this.viagem = viagem;
+    }
+
+    public Double getValorEmEuros() {
+        return valorEmEuros;
+    }
+
+    public void setValorEmEuros(Double valorEmEuros) {
+        this.valorEmEuros = valorEmEuros;
     }
 }
