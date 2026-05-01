@@ -144,6 +144,7 @@ CREATE TABLE fatura (
     viagem_id      BIGINT    NOT NULL UNIQUE,
     num_sequencial BIGINT    NOT NULL UNIQUE,
     data           TIMESTAMP NOT NULL,
+    valor_em_euros NUMERIC(10,2) NOT NULL CHECK (valor_em_euros > 0),
 
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
