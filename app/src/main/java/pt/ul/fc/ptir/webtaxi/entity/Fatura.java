@@ -18,7 +18,7 @@ public class Fatura {
     private LocalDateTime data;
 
     @OneToOne
-    @JoinColumn(name = "viagem_id", nullable = false)
+    @JoinColumn(name = "viagem_id", nullable = false, unique = true)
     private Viagem viagem;
 
 
