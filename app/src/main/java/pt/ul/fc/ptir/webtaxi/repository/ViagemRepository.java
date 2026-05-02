@@ -31,4 +31,11 @@ public interface ViagemRepository extends JpaRepository<Viagem, Long> {
            "AND (v.duracao.fim IS NULL OR v.duracao.fim > :inicioNova)")
     boolean isTaxiOcupado(@Param("taxiId") Long taxiId, 
                           @Param("inicioNova") LocalDateTime inicioNova);
+
+    @Query("""
+        SELECT COUNT(t) > 0 from Viagem v
+        WHERE t.taxi.id = :taxiId
+    """)
+    boolean existeTaxiEmViagens(@Param("taxiId") Long taxiId);
+
 }

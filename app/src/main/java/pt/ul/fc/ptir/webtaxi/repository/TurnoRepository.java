@@ -64,5 +64,4 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     """)
     boolean existeTaxiEmTurnos(@Param("taxiId") Long taxiId);
 
-    List<Turno> findByTaxi_Id(Long taxiId);
 }

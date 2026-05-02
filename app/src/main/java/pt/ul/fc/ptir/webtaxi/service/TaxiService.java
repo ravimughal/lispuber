@@ -18,6 +18,7 @@ import pt.ul.fc.ptir.webtaxi.entity.Taxi;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
+import pt.ul.fc.ptir.webtaxi.repository.ViagemRepository;
 
 @Service
 public class TaxiService {
@@ -25,12 +26,14 @@ public class TaxiService {
     private final TaxiRepository taxiRepository;
     private final ConfortoRepository confortoRepository;
     private final TurnoRepository turnoRepository;
+    private final ViagemRepository viagemRepository;
 
     @Autowired
-    public TaxiService(TaxiRepository taxiRepository, ConfortoRepository confortoRepository, TurnoRepository turnoRepository) {
+    public TaxiService(TaxiRepository taxiRepository, ConfortoRepository confortoRepository, TurnoRepository turnoRepository, ViagemRepository viagemRepository) {
         this.taxiRepository = taxiRepository;
         this.confortoRepository = confortoRepository;
         this.turnoRepository = turnoRepository;
+        this.viagemRepository = viagemRepository;
     }
 
     public List<TaxiResponseDTO> listarTaxis() {
@@ -77,8 +80,8 @@ public class TaxiService {
         if (taxiCreateDTO.anoCompra() != null)
             taxi.setAnoCompra(taxiCreateDTO.anoCompra());
 
-        if (taxiCreateDTO.nivelConforto() != null && !taxiCreateDTO.nivelConforto().isBlank()) {
-            // verificar se o táxi nunca fez viagem e não permitir a edição caso já tenha feito
+        // só permite editar o conforto caso este táxi nunca tenha feito uma viagem
+        if (taxiCreateDTO.nivelConforto() != null && !taxiCreateDTO.nivelConforto().isBlank() && !viagemRepository.existeTaxiEmViagens(id)) {
             Conforto conforto = confortoRepository.findByNivelConforto(NivelConforto.valueOf(taxiCreateDTO.nivelConforto()))
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Nível de conforto não existe: " + taxiCreateDTO.nivelConforto()));
             taxi.setConforto(conforto);
