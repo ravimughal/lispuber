@@ -43,6 +43,8 @@ CREATE TABLE motorista (
     rua                     VARCHAR(255) NOT NULL,
     rua_numero              INTEGER      NOT NULL,
     codigo_postal           VARCHAR(15)  NOT NULL,
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
 
     FOREIGN KEY (id) REFERENCES utilizador(id) ON DELETE CASCADE
 );

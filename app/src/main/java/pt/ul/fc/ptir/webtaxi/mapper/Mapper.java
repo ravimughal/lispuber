@@ -72,7 +72,9 @@ public class Mapper {
             m.getRuaNumero(),
             m.getCodigoPostal(),
             m.getNumCartaConducao(),
-            m.getValidadeCartaConducao()
+            m.getValidadeCartaConducao(),
+            m.getCriadoEm(),
+            m.getAtualizadoEm()
         );
     }
 

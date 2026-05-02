@@ -5,25 +5,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaResponseDTO;
 import pt.ul.fc.ptir.webtaxi.dto.MotoristaCreateDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoRemovivelException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.MotoristaRepository;
+import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
 
 @Service
 public class MotoristaService {
 
     private final MotoristaRepository motoristaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TurnoRepository turnoRepository;
 
     @Autowired
-    public MotoristaService(MotoristaRepository motoristaRepository, PasswordEncoder passwordEncoder) {
+    public MotoristaService(MotoristaRepository motoristaRepository, PasswordEncoder passwordEncoder, TurnoRepository turnoRepository) {
         this.motoristaRepository = motoristaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.turnoRepository = turnoRepository;
     }
 
 
@@ -78,7 +83,8 @@ public class MotoristaService {
         if (dto.codigoPostal() != null)
             motorista.setCodigoPostal(dto.codigoPostal());
 
-        motoristaRepository.save(motorista);
+        motorista.setAtualizadoEm(LocalDateTime.now());
+        motorista = motoristaRepository.save(motorista);
         return Mapper.converterParaMotoristaDTO(motorista);
     }
 
