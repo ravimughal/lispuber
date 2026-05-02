@@ -33,8 +33,8 @@ public interface ViagemRepository extends JpaRepository<Viagem, Long> {
                           @Param("inicioNova") LocalDateTime inicioNova);
 
     @Query("""
-        SELECT COUNT(t) > 0 from Viagem v
-        WHERE t.taxi.id = :taxiId
+        SELECT COUNT(v) > 0 from Viagem v
+        WHERE v.turno.taxi.id = :taxiId
     """)
     boolean existeTaxiEmViagens(@Param("taxiId") Long taxiId);
 

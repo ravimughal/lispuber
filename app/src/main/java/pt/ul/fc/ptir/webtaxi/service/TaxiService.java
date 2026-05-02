@@ -2,6 +2,8 @@ package pt.ul.fc.ptir.webtaxi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,7 @@ public class TaxiService {
             .orElseThrow(() -> new RecursoNaoEncontradoException("Conforto não encontrado."));
 
         Taxi taxi = Mapper.converterParaTaxi(taxiCreateDTO, conforto);
+        taxi.setCriadoEm(LocalDateTime.now());
 
         if (taxiRepository.existsByMatricula(taxi.getMatricula()))
             throw new IllegalStateException("Já existe um táxi com esta matrícula. (matrícula " + taxi.getMatricula() + ")");
@@ -89,6 +92,9 @@ public class TaxiService {
         if (taxiCreateDTO.kilometros() != null) {
             taxi.setKilometros(taxiCreateDTO.kilometros());
         }
+
+        taxi.setAtualizadoEm(LocalDateTime.now());
+        taxi = taxiRepository.save(taxi);
         return Mapper.converterParaTaxiDTO(taxi);
     }
 

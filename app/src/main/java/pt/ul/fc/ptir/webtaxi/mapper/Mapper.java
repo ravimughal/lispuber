@@ -105,7 +105,9 @@ public class Mapper {
             t.getTipoMotor(),
             t.getAnoCompra(),
             converterParaConfortoDTO(t.getConforto()),
-            t.getKilometros()
+            t.getKilometros(),
+            t.getCriadoEm(),
+            t.getAtualizadoEm()
         );
     }
 
