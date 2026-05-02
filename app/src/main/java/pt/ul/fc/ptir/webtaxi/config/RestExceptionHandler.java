@@ -38,4 +38,8 @@ public class RestExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
 
+    @ExceptionHandler(RecursoNaoEditavelException.class)
+    public ResponseEntity<String> tratarRecursoNaoEditavel(RecursoNaoEditavelException e) {
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(e.getMessage());
+    }
 }

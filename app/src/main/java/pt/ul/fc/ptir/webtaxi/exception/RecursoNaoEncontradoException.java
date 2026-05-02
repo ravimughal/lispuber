@@ -6,7 +6,7 @@ public class RecursoNaoEncontradoException extends RuntimeException {
         super("Recurso não encontrado");
     }
 
-    public RecursoNaoEncontradoException(String message) {
-        super(message);
+    public RecursoNaoEncontradoException(String mensagem) {
+        super("Recurso não encontrado: " + mensagem);
     }
 }
