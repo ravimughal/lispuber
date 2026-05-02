@@ -1,10 +1,12 @@
 package pt.ul.fc.ptir.webtaxi.mapper;
 
+import org.springframework.stereotype.Component;
 import pt.ul.fc.ptir.webtaxi.dto.*;
 import pt.ul.fc.ptir.webtaxi.entity.*;
 import pt.ul.fc.ptir.webtaxi.entity.embeddable.Duracao;
 import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
+@Component
 public class Mapper {
 
     // CLIENTE
@@ -192,12 +194,14 @@ public class Mapper {
         return new Fatura(numSequencial, java.time.LocalDateTime.now(), viagem);
     }
 
-    public static FaturaResponseDTO converterParaFaturaDTO(Fatura f) {
+
+    public FaturaResponseDTO converterParaFaturaDTO(Fatura fatura) {
         return new FaturaResponseDTO(
-            f.getId(),
-            f.getNumSequencial(),
-            f.getData(),
-            f.getViagem().getId()
+                fatura.getId(),
+                fatura.getNumSequencial(),
+                fatura.getData(),
+                fatura.getViagem().getId(),
+                fatura.getViagem().getPreco()
         );
     }
 

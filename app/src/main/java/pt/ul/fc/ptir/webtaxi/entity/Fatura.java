@@ -18,8 +18,11 @@ public class Fatura {
     private LocalDateTime data;
 
     @OneToOne
-    @JoinColumn(name = "viagem_id", nullable = false)
+    @JoinColumn(name = "viagem_id", nullable = false, unique = true)
     private Viagem viagem;
+
+    @Column(name = "valor_em_euros", nullable = false)
+    private Double valorEmEuros;
 
 
 
@@ -66,5 +69,13 @@ public class Fatura {
 
     public void setViagem(Viagem viagem) {
         this.viagem = viagem;
+    }
+
+    public Double getValorEmEuros() {
+        return valorEmEuros;
+    }
+
+    public void setValorEmEuros(Double valorEmEuros) {
+        this.valorEmEuros = valorEmEuros;
     }
 }
