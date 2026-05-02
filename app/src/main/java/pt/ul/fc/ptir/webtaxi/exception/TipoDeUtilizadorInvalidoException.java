@@ -6,7 +6,7 @@ public class TipoDeUtilizadorInvalidoException extends RuntimeException {
         super("Tipo de utilizador desconhecido.");
     }
 
-    public TipoDeUtilizadorInvalidoException(String mensagem) {
-        super("Tipo de utilizador desconhecido: " + mensagem);
+    public TipoDeUtilizadorInvalidoException(String message) {
+        super("Tipo de utilizador desconhecido: " + message);
     }
 }

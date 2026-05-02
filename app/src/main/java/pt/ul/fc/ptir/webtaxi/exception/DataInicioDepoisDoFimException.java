@@ -5,7 +5,7 @@ public class DataInicioDepoisDoFimException extends RuntimeException {
         super("Data de início não pode ser depois da data de fim.");
     }
 
-    public DataInicioDepoisDoFimException(String mensagem) {
-        super("Data de início não pode ser depois da data de fim: " + mensagem);
+    public DataInicioDepoisDoFimException(String message) {
+        super("Data de início não pode ser depois da data de fim: " + message);
     }
 }

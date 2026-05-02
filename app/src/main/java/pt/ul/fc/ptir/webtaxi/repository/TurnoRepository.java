@@ -64,4 +64,10 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     """)
     boolean existeTaxiEmTurnos(@Param("taxiId") Long taxiId);
 
+    @Query("""
+        SELECT COUNT(t) > 0 from Turno t
+        WHERE t.motorista.id = :motoristaId
+    """)
+    boolean existeMotoristaEmTurnos(@Param("motoristaId") Long motoristaId);
+
 }

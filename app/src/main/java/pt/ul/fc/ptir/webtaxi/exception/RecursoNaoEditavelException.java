@@ -6,7 +6,7 @@ public class RecursoNaoEditavelException extends RuntimeException {
         super("Recurso não editável.");
     }
 
-    public RecursoNaoEditavelException(String mensagem) {
-        super("Recurso não editável: " + mensagem);
+    public RecursoNaoEditavelException(String message) {
+        super("Recurso não editável: " + message);
     }
 }

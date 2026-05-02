@@ -51,7 +51,6 @@ public class TaxiService {
             .orElseThrow(() -> new RecursoNaoEncontradoException("Conforto não encontrado."));
 
         Taxi taxi = Mapper.converterParaTaxi(taxiCreateDTO, conforto);
-        taxi.setCriadoEm(LocalDateTime.now());
 
         if (taxiRepository.existsByMatricula(taxi.getMatricula()))
             throw new IllegalStateException("Já existe um táxi com esta matrícula. (matrícula " + taxi.getMatricula() + ")");
