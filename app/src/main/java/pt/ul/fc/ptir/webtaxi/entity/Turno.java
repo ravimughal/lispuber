@@ -17,7 +17,7 @@ public class Turno {
     private Motorista motorista;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn
     private Taxi taxi;
 
     @Embedded

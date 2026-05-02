@@ -1,16 +1,3 @@
-DROP TABLE IF EXISTS pagamento CASCADE;
-DROP TABLE IF EXISTS reabastecimento CASCADE;
-DROP TABLE IF EXISTS fatura CASCADE;
-DROP TABLE IF EXISTS viagem CASCADE;
-DROP TABLE IF EXISTS pedido CASCADE;
-DROP TABLE IF EXISTS turno CASCADE;
-DROP TABLE IF EXISTS taxi CASCADE;
-DROP TABLE IF EXISTS motorista CASCADE;
-DROP TABLE IF EXISTS gestor CASCADE;
-DROP TABLE IF EXISTS cliente CASCADE;
-DROP TABLE IF EXISTS utilizador CASCADE;
-DROP TABLE IF EXISTS conforto CASCADE;
-
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
     nivel_conforto VARCHAR(10)   NOT NULL UNIQUE,
@@ -82,7 +69,7 @@ CREATE TABLE taxi (
 CREATE TABLE turno (
     id           BIGSERIAL PRIMARY KEY,
     motorista_id BIGINT    NOT NULL,
-    taxi_id      BIGINT    NOT NULL,
+    taxi_id      BIGINT,
     inicio       TIMESTAMP NOT NULL,
     fim          TIMESTAMP NOT NULL,
 
@@ -145,7 +132,6 @@ CREATE TABLE fatura (
     viagem_id      BIGINT    NOT NULL UNIQUE,
     num_sequencial BIGINT    NOT NULL UNIQUE,
     data           TIMESTAMP NOT NULL,
-    valor_em_euros NUMERIC(10,2) NOT NULL CHECK (valor_em_euros > 0),
 
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
@@ -165,22 +151,20 @@ CREATE TABLE reabastecimento (
 
     CHECK (data_fim > data_inicio),
 
-    FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
+FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
-
-
 
 CREATE TABLE pagamento (
     id                  BIGSERIAL     PRIMARY KEY,
     viagem_id           BIGINT        NOT NULL UNIQUE,
     stripe_payment_id   VARCHAR(255)  NOT NULL UNIQUE,
-    
+
     estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     valor               NUMERIC(10,2) NOT NULL,
     criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em       TIMESTAMP,
 
     CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO')),
-    
+
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );

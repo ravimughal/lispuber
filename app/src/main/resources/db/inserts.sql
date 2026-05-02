@@ -4,9 +4,9 @@ INSERT INTO conforto (nivel_conforto, preco) VALUES
 
 
 INSERT INTO utilizador (id, nome, email, nif, genero, senha, data_nascimento) VALUES
-  (1, 'Gestor Master', 'gestor@teste.com', '123456789', 'MASCULINO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1990-01-01'),
-  (2, 'Motorista Alpha', 'motorista@teste.com', '987654321', 'MASCULINO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1992-05-10'),
-  (3, 'Cliente Beta', 'cliente@teste.com', '111222333', 'FEMININO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1995-09-20');
+  (1, 'Gestor Master', 'gestor@teste.com', '123456789', 'MASCULINO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1990-01-01'), -- senha: abc123
+  (2, 'Motorista Alpha', 'motorista@teste.com', '987654321', 'MASCULINO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1992-05-10'), -- senha: abc123
+  (3, 'Cliente Beta', 'cliente@teste.com', '111222333', 'FEMININO', '$2a$12$wTEFcWtwil5moDXMRYhGpOsGuy3Bux2Md.KUidagdISF5BvoZ.lLu', '1995-09-20'); -- senha: abc123
 
 
 INSERT INTO gestor (id) VALUES (1);
