@@ -2,12 +2,16 @@ package pt.ul.fc.ptir.webtaxi.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 import pt.ul.fc.ptir.webtaxi.entity.Conforto;
+import pt.ul.fc.ptir.webtaxi.entity.Turno;
 import pt.ul.fc.ptir.webtaxi.entity.enums.NivelConforto;
 import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
+import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEditavelException;
 import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.repository.ConfortoRepository;
 import pt.ul.fc.ptir.webtaxi.dto.TaxiCreateDTO;
@@ -15,17 +19,23 @@ import pt.ul.fc.ptir.webtaxi.dto.TaxiResponseDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Taxi;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.TaxiRepository;
+import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
+import pt.ul.fc.ptir.webtaxi.repository.ViagemRepository;
 
 @Service
 public class TaxiService {
 
     private final TaxiRepository taxiRepository;
     private final ConfortoRepository confortoRepository;
+    private final TurnoRepository turnoRepository;
+    private final ViagemRepository viagemRepository;
 
     @Autowired
-    public TaxiService(TaxiRepository taxiRepository, ConfortoRepository confortoRepository) {
+    public TaxiService(TaxiRepository taxiRepository, ConfortoRepository confortoRepository, TurnoRepository turnoRepository, ViagemRepository viagemRepository) {
         this.taxiRepository = taxiRepository;
         this.confortoRepository = confortoRepository;
+        this.turnoRepository = turnoRepository;
+        this.viagemRepository = viagemRepository;
     }
 
     public List<TaxiResponseDTO> listarTaxis() {
@@ -71,7 +81,9 @@ public class TaxiService {
             taxi.setTipoMotor(TipoMotor.valueOf(taxiCreateDTO.tipoMotor()));
         if (taxiCreateDTO.anoCompra() != null)
             taxi.setAnoCompra(taxiCreateDTO.anoCompra());
-        if (taxiCreateDTO.nivelConforto() != null && !taxiCreateDTO.nivelConforto().isBlank()) {
+
+        // só permite editar o conforto caso este táxi nunca tenha feito uma viagem
+        if (taxiCreateDTO.nivelConforto() != null && !taxiCreateDTO.nivelConforto().isBlank() && !viagemRepository.existeTaxiEmViagens(id)) {
             Conforto conforto = confortoRepository.findByNivelConforto(NivelConforto.valueOf(taxiCreateDTO.nivelConforto()))
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Nível de conforto não existe: " + taxiCreateDTO.nivelConforto()));
             taxi.setConforto(conforto);
@@ -79,11 +91,17 @@ public class TaxiService {
         if (taxiCreateDTO.kilometros() != null) {
             taxi.setKilometros(taxiCreateDTO.kilometros());
         }
+
+        taxi.setAtualizadoEm(LocalDateTime.now());
+        taxi = taxiRepository.save(taxi);
         return Mapper.converterParaTaxiDTO(taxi);
     }
 
     @Transactional
     public void removerTaxi(Long id) {
+        // verificar se o taxi já foi requisitado para algum turno
+        if (turnoRepository.existeTaxiEmTurnos(id))
+            throw new RecursoNaoEditavelException("Táxi já foi requisitado em algum turno.");
         Taxi taxi = taxiRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Táxi não encontrado com id: " + id));
         taxiRepository.delete(taxi);
     }

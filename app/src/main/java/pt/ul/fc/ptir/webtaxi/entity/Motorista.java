@@ -1,6 +1,8 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -26,7 +28,11 @@ public class Motorista extends Utilizador {
     @Column(name = "validade_carta_conducao", nullable = false)
     private LocalDate validadeCartaConducao;
 
+    @Column(name = "criado_em")
+    private LocalDateTime criadoEm;
 
+    @Column(name = "atualizado_em")
+    private LocalDateTime atualizadoEm;
 
     public Motorista(){}
 
@@ -42,8 +48,6 @@ public class Motorista extends Utilizador {
         this.validadeCartaConducao = validadeCarta;
     }
 
-
-
     public String getRua() {
         return rua;
     }
@@ -51,7 +55,6 @@ public class Motorista extends Utilizador {
     public void setRua(String rua) {
         this.rua = rua;
     }
-
 
     public Integer getRuaNumero() {
         return ruaNumero;
@@ -61,7 +64,6 @@ public class Motorista extends Utilizador {
         this.ruaNumero = ruaNumero;
     }
 
-
     public String getCodigoPostal() {
         return codigoPostal;
     }
@@ -69,7 +71,6 @@ public class Motorista extends Utilizador {
     public void setCodigoPostal(String codigoPostal) {
         this.codigoPostal = codigoPostal;
     }
-
 
     public String getNumCartaConducao() {
         return numCartaConducao;
@@ -79,12 +80,27 @@ public class Motorista extends Utilizador {
         this.numCartaConducao = numCartaConducao;
     }
 
-
     public LocalDate getValidadeCartaConducao() {
         return validadeCartaConducao;
     }
 
     public void setValidadeCartaConducao(LocalDate validadeCartaConducao) {
         this.validadeCartaConducao = validadeCartaConducao;
+    }
+
+    public LocalDateTime getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
+    }
+
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
     }
 }

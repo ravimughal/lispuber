@@ -72,7 +72,9 @@ public class Mapper {
             m.getRuaNumero(),
             m.getCodigoPostal(),
             m.getNumCartaConducao(),
-            m.getValidadeCartaConducao()
+            m.getValidadeCartaConducao(),
+            m.getCriadoEm(),
+            m.getAtualizadoEm()
         );
     }
 
@@ -105,7 +107,9 @@ public class Mapper {
             t.getTipoMotor(),
             t.getAnoCompra(),
             converterParaConfortoDTO(t.getConforto()),
-            t.getKilometros()
+            t.getKilometros(),
+            t.getCriadoEm(),
+            t.getAtualizadoEm()
         );
     }
 

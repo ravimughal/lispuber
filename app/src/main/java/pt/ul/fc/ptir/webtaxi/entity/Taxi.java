@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 
 import pt.ul.fc.ptir.webtaxi.entity.enums.TipoMotor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "taxi")
 public class Taxi {
@@ -35,6 +37,11 @@ public class Taxi {
     @Column(nullable = false)
     private Double kilometros;
 
+    @Column(name = "criado_em", nullable = false)
+    private LocalDateTime criadoEm;
+
+    @Column(name = "atualizado_em")
+    private LocalDateTime atualizadoEm;
 
     public Taxi() {}
 
@@ -118,5 +125,21 @@ public class Taxi {
 
     public void setKilometros(Double kilometros) {
         this.kilometros = kilometros;
+    }
+
+    public LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
+    public LocalDateTime getAtualizadoEm() {
+        return atualizadoEm;
+    }
+
+    public void setAtualizadoEm(LocalDateTime atualizadoEm) {
+        this.atualizadoEm = atualizadoEm;
     }
 }

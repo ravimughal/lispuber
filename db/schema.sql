@@ -54,6 +54,8 @@ CREATE TABLE motorista (
     rua                     VARCHAR(255) NOT NULL,
     rua_numero              INTEGER      NOT NULL,
     codigo_postal           VARCHAR(15)  NOT NULL,
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
 
     FOREIGN KEY (id) REFERENCES utilizador(id) ON DELETE CASCADE
 );
@@ -61,19 +63,22 @@ CREATE TABLE motorista (
 
 
 CREATE TABLE taxi (
-    id          BIGSERIAL     PRIMARY KEY,
-    matricula   VARCHAR(31)   NOT NULL UNIQUE,
-    marca       VARCHAR(63)   NOT NULL,
-    modelo      VARCHAR(63)   NOT NULL,
-    tipo_motor  VARCHAR(10)   NOT NULL,
-    ano_compra  INTEGER       NOT NULL CHECK (ano_compra > 1900),
-    conforto_id BIGINT        NOT NULL,
-    kilometros  NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
+    id                  BIGSERIAL     PRIMARY KEY,
+    matricula           VARCHAR(31)   NOT NULL UNIQUE,
+    marca               VARCHAR(63)   NOT NULL,
+    modelo              VARCHAR(63)   NOT NULL,
+    tipo_motor          VARCHAR(10)   NOT NULL,
+    ano_compra          INTEGER       NOT NULL CHECK (ano_compra > 1900),
+    conforto_id         BIGINT        NOT NULL,
+    kilometros          NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
 
     CONSTRAINT taxi_tipo_motor_check CHECK (tipo_motor IN ('COMBUSTAO', 'ELETRICO')),
 
     FOREIGN KEY (conforto_id) REFERENCES conforto(id)
 );
+
 
 
 
