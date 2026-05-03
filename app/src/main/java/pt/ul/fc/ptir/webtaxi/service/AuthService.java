@@ -184,7 +184,9 @@ public class AuthService {
             motorista.getRuaNumero(),
             motorista.getCodigoPostal(),
             motorista.getNumCartaConducao(),
-            motorista.getValidadeCartaConducao()
+            motorista.getValidadeCartaConducao(),
+            null,
+            null
         );
 
         Map<String, Object> response = new HashMap<>();
@@ -246,7 +248,9 @@ public class AuthService {
                 motorista.getRuaNumero(),
                 motorista.getCodigoPostal(),
                 motorista.getNumCartaConducao(),
-                motorista.getValidadeCartaConducao()
+                motorista.getValidadeCartaConducao(),
+                null,
+                null
             );
 
         } else if (utilizador instanceof Gestor gestor) {
