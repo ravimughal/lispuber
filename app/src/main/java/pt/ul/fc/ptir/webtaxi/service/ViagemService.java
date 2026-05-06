@@ -15,6 +15,7 @@ import java.util.Optional;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemCreateDTO;
 import pt.ul.fc.ptir.webtaxi.dto.ViagemResponseDTO;
 import pt.ul.fc.ptir.webtaxi.entity.Cliente;
+import pt.ul.fc.ptir.webtaxi.entity.Conforto;
 import pt.ul.fc.ptir.webtaxi.entity.Motorista;
 import pt.ul.fc.ptir.webtaxi.entity.Pedido;
 import pt.ul.fc.ptir.webtaxi.entity.Turno;
@@ -26,6 +27,8 @@ import pt.ul.fc.ptir.webtaxi.exception.RecursoNaoEncontradoException;
 import pt.ul.fc.ptir.webtaxi.mapper.Mapper;
 import pt.ul.fc.ptir.webtaxi.repository.ViagemRepository;
 import pt.ul.fc.ptir.webtaxi.repository.ClienteRepository;
+import pt.ul.fc.ptir.webtaxi.repository.ConfortoRepository;
+import pt.ul.fc.ptir.webtaxi.repository.ConfiguracaoTaxaRepository;
 import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
 import pt.ul.fc.ptir.webtaxi.repository.PedidoRepository;
 
@@ -35,15 +38,19 @@ public class ViagemService {
 
     private final ViagemRepository viagemRepository;
     private final ClienteRepository clienteRepository;
+    private final ConfortoRepository confortoRepository;
     private final TurnoRepository turnoRepository;
     private final PedidoRepository pedidoRepository;
+    private final ConfiguracaoTaxaRepository taxaRepository;
 
     @Autowired
-    public ViagemService(ViagemRepository viagemRepository, ClienteRepository clienteRepository, TurnoRepository turnoRepository, PedidoRepository pedidoRepository) {
+    public ViagemService(ViagemRepository viagemRepository, ClienteRepository clienteRepository, TurnoRepository turnoRepository, PedidoRepository pedidoRepository, ConfortoRepository confortoRepository, ConfiguracaoTaxaRepository taxaRepository) {
         this.viagemRepository = viagemRepository;
         this.clienteRepository = clienteRepository;
         this.turnoRepository = turnoRepository;
         this.pedidoRepository = pedidoRepository;
+        this.confortoRepository = confortoRepository;
+        this.taxaRepository = taxaRepository;
     }
 
 
@@ -61,7 +68,7 @@ public class ViagemService {
 
 
     @Transactional
-    public ViagemResponseDTO criarViagem(ViagemCreateDTO ViagemDTO) {
+    public ViagemResponseDTO criarViagem(ViagemCreateDTO ViagemDTO) throws Exception {
 
         validarViagemParaCriacao(ViagemDTO);
         if (viagemRepository.existsByPedidoId(ViagemDTO.pedidoId())) {
@@ -71,8 +78,8 @@ public class ViagemService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Utilizador utilizador = (Utilizador) authentication.getPrincipal();
 
-        if (!(utilizador instanceof Cliente cliente)) {
-            throw new IllegalArgumentException("Apenas clientes podem criar pedidos.");
+        if (!(utilizador instanceof Motorista cliente)) {
+             throw new IllegalArgumentException("Apenas motoristas podem criar viagens.");
         }
 
         Turno turno = turnoRepository.findById(ViagemDTO.turnoId())
@@ -110,14 +117,31 @@ public class ViagemService {
         if(taxiOcupado){
             throw new IllegalStateException("Erro: O táxi com id: "+taxiId+" já está a ser usado numa viagem que está a decorrer.");
         }
+        
+        LocalDateTime dataAtual=LocalDateTime.now();
 
+        Conforto conforto = confortoRepository.findById(pedido.getConforto().getId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Erro: Nível de conforto não encontrado!"));
 
         Viagem viagem = new Viagem();
-        viagem.setCliente(cliente);
+        viagem.setCliente(pedido.getCliente());
         viagem.setTurno(turno);
         viagem.setPedido(pedido);
         viagem.setDuracao(new Duracao(ViagemDTO.dataInicio(),null));
         viagem.setKilometros(ViagemDTO.kilometros());
+        
+        
+        PrecoService precoService = new PrecoService(confortoRepository,taxaRepository);
+        Double preco;
+
+        try{//calcular o preço tendo em conta a distancia, hora do dia e nivel de conforto
+            preco=Double.valueOf(precoService.getPrecoPedido(pedido.getLatitudeOrigem(),pedido.getLongitudeOrigem(),
+                                    pedido.getLatitudeDestino(),pedido.getLongitudeDestino(), dataAtual, conforto.getNivelConforto()));
+        }catch(Exception e){
+            throw new Exception("Erro: Falha no calculo do preço da viagem.");
+        }
+
+        viagem.setPreco(preco);
 
         viagem = viagemRepository.save(viagem);
         return Mapper.converterParaViagemDTO(viagem);
@@ -175,6 +199,24 @@ public class ViagemService {
         Long clientId=clienteLogado.getId();
 
         List<Viagem> viagens= viagemRepository.findByClienteId(clientId);
+        List<ViagemResponseDTO> res = new ArrayList<ViagemResponseDTO>();
+        for(Viagem v:viagens){
+            res.add(Mapper.converterParaViagemDTO(v));
+        }
+        return res;
+    }
+
+
+    
+    public List<ViagemResponseDTO> obterViagensByMotorista(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof Motorista motoristaLogado)) {
+            throw new org.springframework.security.access.AccessDeniedException("Apenas motoristas podem criar viagens.");
+        }    
+        Long motoristaId=motoristaLogado.getId();
+
+        List<Viagem> viagens= viagemRepository.findByTurno_Motorista_Id(motoristaId);
         List<ViagemResponseDTO> res = new ArrayList<ViagemResponseDTO>();
         for(Viagem v:viagens){
             res.add(Mapper.converterParaViagemDTO(v));

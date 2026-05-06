@@ -36,13 +36,14 @@ public class Viagem {
     public Viagem() {}
 
     public Viagem(Cliente cliente, Turno turno, Pedido pedido,
-                  Duracao duracao, Double kilometros) {
+                  Duracao duracao, Double kilometros, Double preco) {
 
         this.cliente = cliente;
         this.turno = turno;
         this.pedido = pedido;
         this.duracao = duracao;
         this.kilometros = kilometros;
+        this.preco = preco;
     }
 
 

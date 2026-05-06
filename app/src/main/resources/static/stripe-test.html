@@ -489,8 +489,8 @@
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const text = await res.text();
-      jwt = text;
+      const data = await res.json();
+      jwt = data.token; 
 
       // adapt to whatever field your backend returns the token as
       if (!jwt) throw new Error('Token não encontrado na resposta: ' + JSON.stringify(data));

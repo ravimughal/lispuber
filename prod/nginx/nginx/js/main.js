@@ -150,19 +150,20 @@ async function login() {
   const password = document.getElementById("login-pass").value;
 
   try {
-    const response = await fetch("https://lispuber.xyz/api/auth/login", {
+    const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "accept": "*/*"
       },
       body: JSON.stringify({
-        email: email,
-        password: password
+        "email": email,
+        "password": password
       })
     });
 
     if (!response.ok) {
+      console.error("Login failed:", response);
       throw new Error("Login failed");
     }
 
@@ -193,7 +194,7 @@ async function create() {
   const dateBirth = document.getElementById("create-dateBirth").value;
 
   try {
-    const response = await fetch("https://lispuber.xyz/api/auth/register/client", {
+    const response = await fetch("/api/auth/register/client", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

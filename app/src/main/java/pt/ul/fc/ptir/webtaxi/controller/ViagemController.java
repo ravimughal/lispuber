@@ -22,6 +22,7 @@ public class ViagemController {
 
 
     @GetMapping
+    
     public ResponseEntity<List<ViagemResponseDTO>> listarViagens() {
         return ResponseEntity.ok(viagemService.listarViagens());
     }
@@ -37,8 +38,13 @@ public class ViagemController {
         return ResponseEntity.ok(viagemService.obterViagensByCliente());
     }
 
+    @GetMapping("/byMotorista")
+    public ResponseEntity<List<ViagemResponseDTO>> obterViagensByMotorista(){
+        return ResponseEntity.ok(viagemService.obterViagensByMotorista());
+    }
+
     @PostMapping
-    public ResponseEntity<ViagemResponseDTO> criarViagem(@RequestBody ViagemCreateDTO dto) {
+    public ResponseEntity<ViagemResponseDTO> criarViagem(@RequestBody ViagemCreateDTO dto) throws Exception {
         ViagemResponseDTO viagemDTO = viagemService.criarViagem(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(viagemDTO);
     }

@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import pt.ul.fc.ptir.webtaxi.entity.enums.Genero;
 import pt.ul.fc.ptir.webtaxi.entity.enums.UserRole;
@@ -28,7 +30,7 @@ public class Motorista extends Utilizador {
     @Column(name = "validade_carta_conducao", nullable = false)
     private LocalDate validadeCartaConducao;
 
-    @Column(name = "criado_em")
+    @Column(name = "criado_em", nullable = false)
     private LocalDateTime criadoEm;
 
     @Column(name = "atualizado_em")
@@ -46,6 +48,17 @@ public class Motorista extends Utilizador {
         this.codigoPostal = codigoPostal;
         this.numCartaConducao = numCarta;
         this.validadeCartaConducao = validadeCarta;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.criadoEm = LocalDateTime.now();
+        this.atualizadoEm = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.atualizadoEm = LocalDateTime.now();
     }
 
     public String getRua() {

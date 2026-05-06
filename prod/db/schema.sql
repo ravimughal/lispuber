@@ -1,11 +1,22 @@
+DROP TABLE IF EXISTS reabastecimento CASCADE;
+DROP TABLE IF EXISTS fatura CASCADE;
+DROP TABLE IF EXISTS viagem CASCADE;
+DROP TABLE IF EXISTS pedido CASCADE;
+DROP TABLE IF EXISTS turno CASCADE;
+DROP TABLE IF EXISTS taxi CASCADE;
+DROP TABLE IF EXISTS motorista CASCADE;
+DROP TABLE IF EXISTS gestor CASCADE;
+DROP TABLE IF EXISTS cliente CASCADE;
+DROP TABLE IF EXISTS utilizador CASCADE;
+DROP TABLE IF EXISTS conforto CASCADE;
+
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
     nivel_conforto VARCHAR(10)   NOT NULL UNIQUE,
     preco          NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
 
-    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'LUXUOSO'))
+    CONSTRAINT conforto_nivel_check CHECK (nivel_conforto IN ('BASICO', 'CONFORTO', 'LUXUOSO'))
 );
-
 
 
 CREATE TABLE utilizador (
@@ -43,6 +54,8 @@ CREATE TABLE motorista (
     rua                     VARCHAR(255) NOT NULL,
     rua_numero              INTEGER      NOT NULL,
     codigo_postal           VARCHAR(15)  NOT NULL,
+    criado_em               TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em           TIMESTAMP,
 
     FOREIGN KEY (id) REFERENCES utilizador(id) ON DELETE CASCADE
 );
@@ -50,19 +63,22 @@ CREATE TABLE motorista (
 
 
 CREATE TABLE taxi (
-    id          BIGSERIAL     PRIMARY KEY,
-    matricula   VARCHAR(31)   NOT NULL UNIQUE,
-    marca       VARCHAR(63)   NOT NULL,
-    modelo      VARCHAR(63)   NOT NULL,
-    tipo_motor  VARCHAR(10)   NOT NULL,
-    ano_compra  INTEGER       NOT NULL CHECK (ano_compra > 1900),
-    conforto_id BIGINT        NOT NULL,
-    kilometros  NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
+    id                  BIGSERIAL     PRIMARY KEY,
+    matricula           VARCHAR(31)   NOT NULL UNIQUE,
+    marca               VARCHAR(63)   NOT NULL,
+    modelo              VARCHAR(63)   NOT NULL,
+    tipo_motor          VARCHAR(10)   NOT NULL,
+    ano_compra          INTEGER       NOT NULL CHECK (ano_compra > 1900),
+    conforto_id         BIGINT        NOT NULL,
+    kilometros          NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
 
     CONSTRAINT taxi_tipo_motor_check CHECK (tipo_motor IN ('COMBUSTAO', 'ELETRICO')),
 
     FOREIGN KEY (conforto_id) REFERENCES conforto(id)
 );
+
 
 
 
@@ -88,7 +104,6 @@ CREATE TABLE pedido (
     motorista_id         BIGINT,
 
     num_passageiros      INTEGER       NOT NULL CHECK (num_passageiros > 0),
-    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
     estado_pedido        VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     data_solicitacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -105,7 +120,10 @@ CREATE TABLE pedido (
     FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE SET NULL
 );
 
-
+CREATE TABLE configuracao_taxas (
+    chave VARCHAR(50) PRIMARY KEY,
+    valor DECIMAL(10, 2) NOT NULL
+);
 
 CREATE TABLE viagem (
     id                   BIGSERIAL PRIMARY KEY,
@@ -118,10 +136,13 @@ CREATE TABLE viagem (
 
     km_percorridos       NUMERIC(10,2) NOT NULL CHECK (km_percorridos >= 0),
 
+    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
+
+
     CHECK (fim > inicio),
 
     FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
-    FOREIGN KEY (turno_id)   REFERENCES turno(id),
+    FOREIGN KEY (turno_id)   REFERENCES turno(id) ON DELETE CASCADE,
     FOREIGN KEY (pedido_id)  REFERENCES pedido(id)
 );
 
@@ -143,7 +164,7 @@ CREATE TABLE reabastecimento (
     turno_id        BIGINT    NOT NULL,
 
     data_inicio     TIMESTAMP NOT NULL,
-    data_fim        TIMESTAMP NOT NULL,
+    data_fim        TIMESTAMP,
 
     quantidade      NUMERIC(10,2) NOT NULL CHECK (quantidade >= 0),
     euros_pagos     NUMERIC(10,2) NOT NULL CHECK (euros_pagos >= 0),
@@ -152,4 +173,21 @@ CREATE TABLE reabastecimento (
     CHECK (data_fim > data_inicio),
 
     FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE pagamento (
+    id                  BIGSERIAL     PRIMARY KEY,
+    viagem_id           BIGINT        NOT NULL UNIQUE,
+    stripe_payment_id   VARCHAR(255)  NOT NULL UNIQUE,
+    
+    estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
+    valor               NUMERIC(10,2) NOT NULL,
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
+
+    CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO')),
+    
+    FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );

@@ -30,8 +30,6 @@ public class Pedido {
     @Column(name = "num_passageiros", nullable = false)
     private Integer numPassageiros;
 
-    @Column(nullable = false)
-    private Double preco;
 
     @Column(name = "rua_origem", nullable = false, length = 255)
     private String ruaOrigem;
@@ -61,12 +59,11 @@ public class Pedido {
 
     public Pedido() {}
 
-    public Pedido(Cliente cliente, Conforto conforto, Integer numPassageiros, Double preco, String ruaOrigem, 
+    public Pedido(Cliente cliente, Conforto conforto, Integer numPassageiros, String ruaOrigem, 
                   Double latitudeOrigem, Double longitudeOrigem, String ruaDestino, Double latitudeDestino, 
                   Double longitudeDestino) {
         this.conforto = conforto;
         this.cliente = cliente;
-        this.preco = preco;
         this.numPassageiros = numPassageiros;
         this.ruaOrigem = ruaOrigem;
         this.latitudeOrigem = latitudeOrigem;
@@ -117,15 +114,6 @@ public class Pedido {
     }
 
     
-    public Double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
-    }
-
-    
     public EstadoPedido getEstadoPedido(){
         return estadoPedido;
     }
@@ -133,6 +121,7 @@ public class Pedido {
     public void setEstadoPedido(EstadoPedido newEstado){
         this.estadoPedido=newEstado;
     }
+    
 
     public String getRuaOrigem() {
         return ruaOrigem;

@@ -40,6 +40,14 @@ public class PedidosTaxiController {
         return ResponseEntity.ok(pendentes);
     }
 
+    // GET /pedidos-taxi - Listar todos os pedidos
+    @GetMapping("/")
+    public ResponseEntity<List<PedidoResponseDTO>> getPedidos() {
+        List<PedidoResponseDTO> pedidos = pedidoService.getPedidos();
+        return ResponseEntity.ok(pedidos);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<PedidoResponseDTO> obterPedido(@PathVariable Long id){
         return ResponseEntity.ok(pedidoService.obterPedidoById(id));
@@ -48,6 +56,11 @@ public class PedidosTaxiController {
     @GetMapping("/byCliente")
     public ResponseEntity<List<PedidoResponseDTO>> obterPedido(){
         return ResponseEntity.ok(pedidoService.obterPedidosByCliente());
+    }
+
+    @GetMapping("/byMotorista")
+    public ResponseEntity<List<PedidoResponseDTO>> obterPedidosByMotorista(){
+        return ResponseEntity.ok(pedidoService.obterPedidosByMotorista());
     }
 
 

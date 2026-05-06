@@ -95,7 +95,7 @@ public class MotoristaService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Motorista não encontrado com id: " + id));
 
         // Restrição da API: só pode remover se nunca tiver tido um turno
-        if (turnoRepository.existeMotoristaEmTurnos(id))
+        if (turnoRepository.existeMotoristaEmTurnos(id, LocalDateTime.now()))
             throw new RecursoNaoRemovivelException("O motorista já requisitou algum turno.");
 
         motoristaRepository.delete(motorista);

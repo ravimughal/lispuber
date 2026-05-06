@@ -2,8 +2,10 @@ package pt.ul.fc.ptir.webtaxi.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import pt.ul.fc.ptir.webtaxi.dto.TaxiCreateDTO;
@@ -16,12 +18,14 @@ public class TaxiController {
 
     private final TaxiService taxiService;
 
+    @Autowired
     public TaxiController(TaxiService taxiService) {
         this.taxiService = taxiService;
     }
 
 
     @GetMapping
+    @PreAuthorize("hasRole('GESTOR')")
     public ResponseEntity<List<TaxiResponseDTO>> listarTaxis() {
         return ResponseEntity.ok(taxiService.listarTaxis());
     }

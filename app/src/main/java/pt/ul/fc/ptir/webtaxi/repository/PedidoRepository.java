@@ -13,4 +13,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     List<Pedido> findByEstadoPedido(EstadoPedido estadoPedido);
     List<Pedido> findByClienteId(Long clienteId);
+    List<Pedido> findByMotoristaQueAceitou_Id(Long motoristaId);
 }

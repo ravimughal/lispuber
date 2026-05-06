@@ -132,13 +132,10 @@ public class Mapper {
 
     // PEDIDO
     public static Pedido converterParaPedido(PedidoCreateDTO dto, Cliente cliente, Conforto conforto) {
-        double precoCalculado = conforto.getPreco() * dto.numPassageiros(); // TODO: talvez seja melhor mover cálculo p fora do mapper
-
         return new Pedido(
             cliente,
             conforto,
             dto.numPassageiros(),
-            precoCalculado,
             dto.ruaOrigem(),
             dto.latitudeOrigem(),
             dto.longitudeOrigem(),
@@ -154,7 +151,6 @@ public class Mapper {
             converterParaClienteDTO(p.getCliente()),
             converterParaConfortoDTO(p.getConforto()),
             p.getNumPassageiros(),
-            p.getPreco(),
             p.getRuaOrigem(),
             p.getLatitudeOrigem(),
             p.getLongitudeOrigem(),
@@ -171,24 +167,29 @@ public class Mapper {
 
     // VIAGEM
     public static Viagem converterParaViagem(ViagemCreateDTO dto, Cliente cliente, Turno turno, Pedido pedido) {
+        Conforto conforto = pedido.getConforto();
+        double precoCalculado = conforto.getPreco() * pedido.getNumPassageiros();
+
         return new Viagem(
             cliente,
             turno,
             pedido,
             new Duracao(dto.dataInicio(),null),
-            dto.kilometros()
+            dto.kilometros(),
+            precoCalculado
         );
     }
 
     public static ViagemResponseDTO converterParaViagemDTO(Viagem viagem) {
         return new ViagemResponseDTO(
             viagem.getId(),
-            converterParaClienteDTO(viagem.getCliente()), 
+            converterParaClienteDTO(viagem.getPedido().getCliente()), 
             converterParaTurnoResponseDTO(viagem.getTurno()),     
             converterParaPedidoDTO(viagem.getPedido()),
             viagem.getDuracao().getInicio(),              
             viagem.getDuracao().getFim(),                
-            viagem.getKilometros()
+            viagem.getKilometros(),
+            viagem.getPreco()
         );
     }
 

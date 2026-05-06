@@ -67,7 +67,10 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
     @Query("""
         SELECT COUNT(t) > 0 from Turno t
         WHERE t.motorista.id = :motoristaId
+              AND t.duracao.fim >= :agora
     """)
-    boolean existeMotoristaEmTurnos(@Param("motoristaId") Long motoristaId);
+    boolean existeMotoristaEmTurnos(@Param("motoristaId") Long motoristaId, @Param("agora") LocalDateTime agora);
+
+    List<Turno> findByMotoristaId(Long motoristaId);
 
 }

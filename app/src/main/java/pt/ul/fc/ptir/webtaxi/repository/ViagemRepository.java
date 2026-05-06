@@ -15,6 +15,7 @@ public interface ViagemRepository extends JpaRepository<Viagem, Long> {
 
     boolean existsByPedidoId(Long pedidoId);
     List<Viagem> findByClienteId(Long clienteId);
+    List<Viagem> findByTurno_Motorista_Id(Long motoristaId);
 
 
     @Query("SELECT COUNT(v) > 0 FROM Viagem v " +

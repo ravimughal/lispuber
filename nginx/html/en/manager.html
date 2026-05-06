@@ -1,1184 +1,944 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Gestor — LispUber</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
-<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
-<style>
-*,*::before,*::after{box-sizing:border-box}
-body{font-family:'DM Sans',sans-serif;margin:0;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
-.sora{font-family:'Sora',sans-serif}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gestor - LispUber</title>
 
-/* ── TOAST ── */
-#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;
-  background:#0f172a;color:#f8fafc;padding:7px 20px;border-radius:99px;font-size:12px;
-  z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);
-  transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s}
-#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.dark #toast{background:#f1f5f9;color:#0f172a}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
+  
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
+  <script src="/js/manager.js" defer></script>
 
-/* ── LAYOUT ── */
-.main-grid{display:grid;grid-template-columns:240px 1fr;flex:1;min-height:0}
-@media(max-width:768px){.main-grid{grid-template-columns:1fr}}
-#sidebar{width:240px;min-height:calc(100dvh - 54px);position:sticky;top:54px;align-self:start}
-@media(max-width:768px){
-  #sidebar{display:none;position:fixed;inset:0;top:54px;z-index:50;width:100%;min-height:auto}
-  #sidebar.open{display:flex;flex-direction:column}
-}
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif;margin:0;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+    .sora{font-family:'Sora',sans-serif}
 
-/* ── PANELS ── */
-.panel{display:none}
-.panel.active{display:block}
+    /* ── TOAST ── */
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;
+      background:#0f172a;color:#f8fafc;padding:7px 20px;border-radius:99px;font-size:12px;
+      z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);
+      transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s}
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .dark #toast{background:#f1f5f9;color:#0f172a}
 
-/* ── SIDEBAR ITEMS ── */
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;cursor:pointer;
-  font-size:13px;font-weight:500;color:#64748b;transition:all .15s;border:1px solid transparent}
-.nav-item:hover{background:#f1f5f9;color:#0f172a}
-.dark .nav-item:hover{background:#1e293b;color:#f1f5f9}
-.nav-item.active{background:#eff6ff;color:#0ea5e9;border-color:#bae6fd;font-weight:600}
-.dark .nav-item.active{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.3);color:#38bdf8}
-.nav-section{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:12px 14px 4px}
+    /* ── LAYOUT ── */
+    .main-grid{display:grid;grid-template-columns:240px 1fr;flex:1;min-height:0}
+    @media(max-width:768px){.main-grid{grid-template-columns:1fr}}
+    #sidebar{width:240px;min-height:calc(100dvh - 54px);position:sticky;top:54px;align-self:start}
+    @media(max-width:768px){
+      #sidebar{display:none;position:fixed;inset:0;top:54px;z-index:50;width:100%;min-height:auto}
+      #sidebar.open{display:flex;flex-direction:column}
+    }
 
-/* ── CARDS ── */
-.stat-card{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid #e2e8f0}
-.dark .stat-card{background:#1e293b;border-color:#334155}
+    /* ── PANELS ── */
+    .panel{display:none}
+    .panel.active{display:block}
 
-/* ── TABLE ── */
-.table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0}
-.dark .table-wrap{border-color:#334155}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:#f8fafc;color:#64748b;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid #e2e8f0}
-.dark th{background:#0f172a;color:#94a3b8;border-color:#334155}
-td{padding:11px 14px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:middle}
-.dark td{border-color:#1e293b;color:#cbd5e1}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#f8fafc}
-.dark tr:hover td{background:#1e293b}
+    /* ── SIDEBAR ITEMS ── */
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;cursor:pointer;
+      font-size:13px;font-weight:500;color:#64748b;transition:all .15s;border:1px solid transparent}
+    .nav-item:hover{background:#f1f5f9;color:#0f172a}
+    .dark .nav-item:hover{background:#1e293b;color:#f1f5f9}
+    .nav-item.active{background:#eff6ff;color:#0ea5e9;border-color:#bae6fd;font-weight:600}
+    .dark .nav-item.active{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.3);color:#38bdf8}
+    .nav-section{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:12px 14px 4px}
 
-/* ── BADGE ── */
-.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif}
-.badge-green{background:#dcfce7;color:#16a34a}.dark .badge-green{background:rgba(34,197,94,.15);color:#4ade80}
-.badge-blue{background:#dbeafe;color:#1d4ed8}.dark .badge-blue{background:rgba(59,130,246,.15);color:#60a5fa}
-.badge-amber{background:#fef3c7;color:#b45309}.dark .badge-amber{background:rgba(245,158,11,.15);color:#fbbf24}
-.badge-red{background:#fee2e2;color:#dc2626}.dark .badge-red{background:rgba(220,38,38,.15);color:#f87171}
-.badge-slate{background:#f1f5f9;color:#475569}.dark .badge-slate{background:#1e293b;color:#94a3b8}
+    /* ── CARDS ── */
+    .stat-card{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid #e2e8f0}
+    .dark .stat-card{background:#1e293b;border-color:#334155}
 
-/* ── FORM ── */
-.form-label{font-size:11px;font-weight:600;color:#64748b;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;display:block}
-.dark .form-label{color:#94a3b8}
-.form-input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-size:13px;color:#0f172a;outline:none;transition:border-color .15s,box-shadow .15s}
-.dark .form-input{background:#1e293b;border-color:#334155;color:#f1f5f9}
-.form-input:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(14,165,233,.12)}
-select.form-input option{background:#fff;color:#0f172a}
-.dark select.form-input option{background:#1e293b;color:#f1f5f9}
+    /* ── TABLE ── */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0}
+    .dark .table-wrap{border-color:#334155}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f8fafc;color:#64748b;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid #e2e8f0}
+    .dark th{background:#0f172a;color:#94a3b8;border-color:#334155}
+    td{padding:11px 14px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:middle}
+    .dark td{border-color:#1e293b;color:#cbd5e1}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+    .dark tr:hover td{background:#1e293b}
 
-/* ── MODAL ── */
-#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
-#modal-overlay.open{display:flex}
-@media(min-width:640px){#modal-overlay{align-items:center}}
-.modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;position:relative;box-shadow:0 -8px 40px rgba(0,0,0,.18)}
-@media(min-width:640px){.modal-box{border-radius:20px}}
-.dark .modal-box{background:#0f172a;border:1px solid #1e293b}
+    /* ── BADGE ── */
+    .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif}
+    .badge-green{background:#dcfce7;color:#16a34a}.dark .badge-green{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-blue{background:#dbeafe;color:#1d4ed8}.dark .badge-blue{background:rgba(59,130,246,.15);color:#60a5fa}
+    .badge-amber{background:#fef3c7;color:#b45309}.dark .badge-amber{background:rgba(245,158,11,.15);color:#fbbf24}
+    .badge-red{background:#fee2e2;color:#dc2626}.dark .badge-red{background:rgba(220,38,38,.15);color:#f87171}
+    .badge-slate{background:#f1f5f9;color:#475569}.dark .badge-slate{background:#1e293b;color:#94a3b8}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;border:none;transition:all .15s}
-.btn-primary{background:#0ea5e9;color:#fff}.btn-primary:hover{background:#0284c7}
-.btn-danger{background:#fee2e2;color:#dc2626}.btn-danger:hover{background:#fecaca}
-.dark .btn-danger{background:rgba(220,38,38,.15)}.dark .btn-danger:hover{background:rgba(220,38,38,.25)}
-.btn-ghost{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.btn-ghost:hover{border-color:#94a3b8}
-.dark .btn-ghost{background:#1e293b;color:#94a3b8;border-color:#334155}
-.btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
-.btn-icon{width:32px;height:32px;padding:0;border-radius:8px}
+    /* ── FORM ── */
+    .form-label{font-size:11px;font-weight:600;color:#64748b;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;display:block}
+    .dark .form-label{color:#94a3b8}
+    .form-input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-size:13px;color:#0f172a;outline:none;transition:border-color .15s,box-shadow .15s}
+    .dark .form-input{background:#1e293b;border-color:#334155;color:#f1f5f9}
+    .form-input:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(14,165,233,.12)}
+    select.form-input option{background:#fff;color:#0f172a}
+    .dark select.form-input option{background:#1e293b;color:#f1f5f9}
 
-/* ── REPORT DRILL ── */
-.drill-row{cursor:pointer;transition:background .12s}
-.drill-row:hover td{background:#eff6ff!important}
-.dark .drill-row:hover td{background:rgba(14,165,233,.08)!important}
+    /* ── MODAL ── */
+    #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+    #modal-overlay.open{display:flex}
+    @media(min-width:640px){#modal-overlay{align-items:center}}
+    .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;position:relative;box-shadow:0 -8px 40px rgba(0,0,0,.18)}
+    @media(min-width:640px){.modal-box{border-radius:20px}}
+    .dark .modal-box{background:#0f172a;border:1px solid #1e293b}
 
-/* ── CHART BAR ── */
-.bar-wrap{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:60px}
-.dark .bar-wrap{background:#334155}
-.bar-fill{height:100%;border-radius:99px;background:#0ea5e9;transition:width .6s ease}
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;border:none;transition:all .15s}
+    .btn-primary{background:#0ea5e9;color:#fff}.btn-primary:hover{background:#0284c7}
+    .btn-danger{background:#fee2e2;color:#dc2626}.btn-danger:hover{background:#fecaca}
+    .dark .btn-danger{background:rgba(220,38,38,.15)}.dark .btn-danger:hover{background:rgba(220,38,38,.25)}
+    .btn-ghost{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.btn-ghost:hover{border-color:#94a3b8}
+    .dark .btn-ghost{background:#1e293b;color:#94a3b8;border-color:#334155}
+    .btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
+    .btn-icon{width:32px;height:32px;padding:0;border-radius:8px}
 
-/* ── ANIMATIONS ── */
-@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.fade-in{animation:fadeInUp .28s ease forwards}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spin{animation:spin 1s linear infinite;display:inline-block}
+    /* ── REPORT DRILL ── */
+    .drill-row{cursor:pointer;transition:background .12s}
+    .drill-row:hover td{background:#eff6ff!important}
+    .dark .drill-row:hover td{background:rgba(14,165,233,.08)!important}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
-.dark ::-webkit-scrollbar-thumb{background:#334155}
+    /* ── CHART BAR ── */
+    .bar-wrap{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:60px}
+    .dark .bar-wrap{background:#334155}
+    .bar-fill{height:100%;border-radius:99px;background:#0ea5e9;transition:width .6s ease}
 
-/* mobile menu hamburger */
-#mob-menu-btn{display:none}
-@media(max-width:768px){#mob-menu-btn{display:flex}}
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .fade-in{animation:fadeInUp .28s ease forwards}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spin{animation:spin 1s linear infinite;display:inline-block}
 
-/* price simulator */
-.price-result{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bae6fd;border-radius:14px;padding:16px;text-align:center}
-.dark .price-result{background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(34,197,94,.08));border-color:#1e40af}
-</style>
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+    .dark ::-webkit-scrollbar-thumb{background:#334155}
+
+    /* mobile menu hamburger */
+    #mob-menu-btn{display:none}
+    @media(max-width:768px){#mob-menu-btn{display:flex}}
+
+    /* price simulator */
+    .price-result{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bae6fd;border-radius:14px;padding:16px;text-align:center}
+    .dark .price-result{background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(34,197,94,.08));border-color:#1e40af}
+  </style>
 </head>
+
+
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-<div id="toast"></div>
+  <div id="toast"></div>
 
-<!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
-<header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-30 flex-shrink-0 sticky top-0" style="height:54px">
-  <div class="flex items-center gap-3">
-    <button id="mob-menu-btn" onclick="toggleMobileMenu()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base">☰</button>
-    <a href="index" class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
-      <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
-      <span class="sora">Lisp</span>
-    </a>
-    <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Gestor</span>
-  </div>
-  <div class="flex items-center gap-2">
-    <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
-    <div class="relative">
-      <button id="langToggle"
-        class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
-        EN ▾
-      </button>
-
-      <div id="langMenu"
-        class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
-        <button data-lang="en"
-          class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
-          English
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+  <header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-30 flex-shrink-0 sticky top-0" style="height:54px">
+    <div class="flex items-center gap-3">
+      <button id="mob-menu-btn" onclick="toggleMobileMenu()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base">☰</button>
+      <a href="index" class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
+        <span class="sora">Lisp</span>
+      </a>
+      <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Gestor</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
+      <div class="relative">
+        <button id="langToggle"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+          EN ▾
         </button>
-        <button data-lang="pt"
-          class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
-          Português
+
+        <div id="langMenu"
+          class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+          <button data-lang="en"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+            English
+          </button>
+          <button data-lang="pt"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+            Português
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 pl-2 border-l border-slate-100 dark:border-slate-800">
+        <div id="user-avatar" class="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-sm">👤</div>
+        <span id="username" class="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 sora">Admin</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-grid flex-1">
+    <aside id="sidebar" class="bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col overflow-y-auto">
+      <div class="flex-1 py-3 px-3">
+
+        <!-- <div class="nav-section">Dashboard</div> -->
+        <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard')">
+          <span>📊</span><span>Visão Geral</span>
+        </div>
+
+        <div class="nav-section mt-2">Relatórios</div>
+        <div class="nav-item" id="nav-rel-frota" onclick="showPanel('rel-frota')">
+          <span>📈</span><span>Táxis &amp; Motoristas</span>
+        </div>
+        <div class="nav-item" id="nav-rel-fat" onclick="showPanel('rel-fat')">
+          <span>💰</span><span>Clientes &amp; Faturação</span>
+        </div>
+        <div class="nav-item" id="nav-reabast" onclick="showPanel('reabast')">
+          <span>⛽</span><span>Reabastecimentos</span>
+        </div>
+
+        <!-- <div class="nav-section mt-2">Visualizar</div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Pedidos</span>
+        </div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Viagens</span>
+        </div>
+        <div class="nav-item" id="nav-faturas" onclick="showPanel('faturas')">
+          <span>🧾</span><span>Faturas</span>
+        </div> -->
+
+        <div class="nav-section mt-2">Ver, Definir e Editar</div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Viagens</span>
+        </div>
+        <div class="nav-item" id="nav-taxis" onclick="showPanel('taxis')">
+          <span>🚕</span><span>Táxis</span>
+        </div>
+        <div class="nav-item" id="nav-motoristas" onclick="showPanel('motoristas')">
+          <span>👨‍✈️</span><span>Motoristas</span>
+        </div>
+        <!-- <div class="nav-item" id="nav-turnos" onclick="showPanel('turnos')">
+          <span>🕐</span><span>Turnos</span>
+        </div> -->
+        <div class="nav-item" id="nav-precos" onclick="showPanel('precos')">
+          <span>💶</span><span>Preços</span>
+        </div>
+      </div>
+      <div class="p-3 border-t border-slate-100 dark:border-slate-800">
+        <button onclick="toast('👋 Sessão terminada'), logout()" class="w-full nav-item text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/20">
+          <span>🚪</span><span>Terminar sessão</span>
         </button>
       </div>
-    </div>
-    <div class="flex items-center gap-2 pl-2 border-l border-slate-100 dark:border-slate-800">
-      <div class="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-sm">👤</div>
-      <span class="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 sora">Admin</span>
-    </div>
-  </div>
-</header>
+    </aside>
 
-<!-- ══ BODY ═══════════════════════════════════════════════════════════════ -->
-<div class="main-grid flex-1">
+    <!-- ── MAIN CONTENT ─────────────────────────────────────────────────────── -->
+    <main class="flex-1 overflow-y-auto min-w-0">
 
-  <!-- ── SIDEBAR ──────────────────────────────────────────────────────────── -->
-  <aside id="sidebar" class="bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col overflow-y-auto">
-    <div class="flex-1 py-3 px-3">
-
-      <div class="nav-section">Dashboard</div>
-      <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard')">
-        <span>📊</span><span>Visão Geral</span>
-      </div>
-
-      <div class="nav-section mt-2">Frota</div>
-      <div class="nav-item" id="nav-taxis" onclick="showPanel('taxis')">
-        <span>🚕</span><span>Táxis</span>
-        <span class="ml-auto badge badge-slate" id="cnt-taxis">4</span>
-      </div>
-      <div class="nav-item" id="nav-turnos" onclick="showPanel('turnos')">
-        <span>🕐</span><span>Turnos</span>
-      </div>
-      <div class="nav-item" id="nav-reabast" onclick="showPanel('reabast')">
-        <span>⛽</span><span>Reabastecimentos</span>
-      </div>
-
-      <div class="nav-section mt-2">Pessoal</div>
-      <div class="nav-item" id="nav-motoristas" onclick="showPanel('motoristas')">
-        <span>👨‍✈️</span><span>Motoristas</span>
-        <span class="ml-auto badge badge-slate" id="cnt-motoristas">3</span>
-      </div>
-
-      <div class="nav-section mt-2">Serviço</div>
-      <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
-        <span>🗺️</span><span>Viagens</span>
-      </div>
-      <div class="nav-item" id="nav-faturas" onclick="showPanel('faturas')">
-        <span>🧾</span><span>Faturas</span>
-      </div>
-      <div class="nav-item" id="nav-precos" onclick="showPanel('precos')">
-        <span>💶</span><span>Preços</span>
-      </div>
-
-      <div class="nav-section mt-2">Relatórios</div>
-      <div class="nav-item" id="nav-rel-frota" onclick="showPanel('rel-frota')">
-        <span>📈</span><span>Táxis &amp; Motoristas</span>
-      </div>
-      <div class="nav-item" id="nav-rel-fat" onclick="showPanel('rel-fat')">
-        <span>💰</span><span>Clientes &amp; Faturação</span>
-      </div>
-
-    </div>
-    <div class="p-3 border-t border-slate-100 dark:border-slate-800">
-      <button onclick="toast('👋 Sessão terminada')" class="w-full nav-item text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/20">
-        <span>🚪</span><span>Terminar sessão</span>
-      </button>
-    </div>
-  </aside>
-
-  <!-- ── MAIN CONTENT ─────────────────────────────────────────────────────── -->
-  <main class="flex-1 overflow-y-auto min-w-0">
-
-    <!-- ════ DASHBOARD ════════════════════════════════════════════════════ -->
-    <div id="panel-dashboard" class="panel active px-4 sm:px-6 py-5 fade-in">
-      <div class="flex items-center justify-between mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Visão Geral</h1>
-          <p class="text-xs text-slate-400 mt-0.5" id="today-date"></p>
+      <!-- ════ DASHBOARD ════════════════════════════════════════════════════ -->
+      <div id="panel-dashboard" class="panel active px-4 sm:px-6 py-5 fade-in">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Visão Geral</h1>
+          </div>
         </div>
-        <button onclick="showPanel('viagens')" class="btn btn-primary btn-sm">+ Nova viagem</button>
-      </div>
 
-      <!-- KPI GRID -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-        <div class="stat-card fade-in">
-          <div class="text-xl mb-1">🚕</div>
-          <div class="sora font-bold text-2xl text-slate-900 dark:text-white">4</div>
-          <div class="text-xs text-slate-400 mt-0.5">Táxis ativos</div>
-          <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 1 este mês</div>
+        <!-- KPI GRID -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="stat-card fade-in text-center">
+            <div class="text-xl mb-1">🚕</div>
+            <div id="total-taxis" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Táxis</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 1 este mês</div> -->
+          </div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.06s">
+            <div class="text-xl mb-1">👨‍✈️</div>
+            <div id="total-motoristas" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Motoristas</div>
+            <!-- <div class="mt-2 text-[11px] text-sky-500 font-medium">2 em turno</div> -->
+          </div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.12s">
+            <div class="text-xl mb-1">🗺️</div>
+            <div id="total-viagens" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Viagens</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ vs ontem</div> -->
+          </div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.18s">
+            <div class="text-xl mb-1">💶</div>
+            <div id="total-receita" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Receita</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 14% vs ontem</div> -->
+          </div>
         </div>
-        <div class="stat-card fade-in" style="animation-delay:.06s">
-          <div class="text-xl mb-1">👨‍✈️</div>
-          <div class="sora font-bold text-2xl text-slate-900 dark:text-white">3</div>
-          <div class="text-xs text-slate-400 mt-0.5">Motoristas</div>
-          <div class="mt-2 text-[11px] text-sky-500 font-medium">2 em turno</div>
-        </div>
-        <div class="stat-card fade-in" style="animation-delay:.12s">
-          <div class="text-xl mb-1">🗺️</div>
-          <div class="sora font-bold text-2xl text-slate-900 dark:text-white">12</div>
-          <div class="text-xs text-slate-400 mt-0.5">Viagens hoje</div>
-          <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ vs ontem</div>
-        </div>
-        <div class="stat-card fade-in" style="animation-delay:.18s">
-          <div class="text-xl mb-1">💶</div>
-          <div class="sora font-bold text-2xl text-slate-900 dark:text-white">€247</div>
-          <div class="text-xs text-slate-400 mt-0.5">Receita hoje</div>
-          <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 14% vs ontem</div>
-        </div>
-      </div>
 
-      <!-- TWO COLUMNS -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <!-- TWO COLUMNS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
 
-        <!-- Recent trips -->
+          <!-- Recent trips -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Últimas viagens</p>
+              <button onclick="showPanel('viagens')" class="text-[11px] text-sky-500 hover:underline">Ver todas →</button>
+            </div>
+            <div id="last-viagens" class="space-y-2"></div>
+          </div>
+
+          <!-- Fleet status -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Táxis</p>
+              <button onclick="showPanel('taxis')" class="text-[11px] text-sky-500 hover:underline">Gerir →</button>
+            </div>
+            <div id="fleet-status" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- Driver activity -->
         <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <div class="flex items-center justify-between mb-3">
-            <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Últimas viagens</p>
-            <button onclick="showPanel('viagens')" class="text-[11px] text-sky-500 hover:underline">Ver todas →</button>
-          </div>
-          <div class="space-y-2">
-            <div class="flex items-center gap-3 py-1">
-              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 flex items-center justify-center text-sm flex-shrink-0">🚗</div>
-              <div class="flex-1 min-w-0"><div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">Aeroporto → Campo Grande</div><div class="text-xs text-slate-400">12h00 · Carlos M. · 5 km</div></div>
-              <div class="text-sm font-semibold text-emerald-500 sora flex-shrink-0">€8.40</div>
-            </div>
-            <div class="flex items-center gap-3 py-1">
-              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 flex items-center justify-center text-sm flex-shrink-0">🛋️</div>
-              <div class="flex-1 min-w-0"><div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">Chiado → Parque Nações</div><div class="text-xs text-slate-400">10h15 · Ana F. · 8.2 km</div></div>
-              <div class="text-sm font-semibold text-emerald-500 sora flex-shrink-0">€17.20</div>
-            </div>
-            <div class="flex items-center gap-3 py-1">
-              <div class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900 flex items-center justify-center text-sm flex-shrink-0">👑</div>
-              <div class="flex-1 min-w-0"><div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">Belém → Sintra</div><div class="text-xs text-slate-400">09h00 · Rui S. · 28 km</div></div>
-              <div class="text-sm font-semibold text-emerald-500 sora flex-shrink-0">€62.00</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fleet status -->
-        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <div class="flex items-center justify-between mb-3">
-            <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Estado da frota</p>
-            <button onclick="showPanel('taxis')" class="text-[11px] text-sky-500 hover:underline">Gerir →</button>
-          </div>
-          <div class="space-y-2.5">
-            <div class="flex items-center justify-between text-sm">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-slate-600 dark:text-slate-300">AA-12-BB · Toyota Corolla</span></div>
-              <span class="badge badge-green">Em turno</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400"></span><span class="text-slate-600 dark:text-slate-300">CC-34-DD · Mercedes E-Class</span></div>
-              <span class="badge badge-green">Em turno</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400"></span><span class="text-slate-600 dark:text-slate-300">EE-56-FF · Tesla Model 3</span></div>
-              <span class="badge badge-amber">A carregar</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-slate-300"></span><span class="text-slate-600 dark:text-slate-300">GG-78-HH · Toyota Yaris</span></div>
-              <span class="badge badge-slate">Disponível</span>
-            </div>
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Motoristas hoje</p>
+          <div class="overflow-x-auto">
+            <table>
+              <thead><tr><th>Motorista</th><th>Turno</th><th>Viagens</th><th>Km</th><th>Receita</th><th>Estado</th></tr></thead>
+              <tbody id="driver-activity"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- Driver activity -->
-      <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-        <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Motoristas hoje</p>
-        <div class="overflow-x-auto">
+      <!-- ════ TÁXIS ═════════════════════════════════════════════════════════ -->
+      <div id="panel-taxis" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Táxis</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Frota da empresa</p>
+          </div>
+          <button onclick="openModal('modal-criarTaxi')" class="btn btn-primary">+ Registar táxi</button>
+        </div>
+
+        <div class="table-wrap">
           <table>
-            <thead><tr><th>Motorista</th><th>Turno</th><th>Viagens</th><th>Km</th><th>Receita</th><th>Estado</th></tr></thead>
-            <tbody>
-              <tr><td><div class="font-medium text-slate-800 dark:text-slate-200">Carlos Mendes</div></td><td class="text-slate-400">08:00–16:00</td><td>5</td><td>42.3</td><td class="text-emerald-500 font-semibold sora">€98</td><td><span class="badge badge-green">Online</span></td></tr>
-              <tr><td><div class="font-medium text-slate-800 dark:text-slate-200">Ana Ferreira</div></td><td class="text-slate-400">09:00–17:00</td><td>4</td><td>31.1</td><td class="text-emerald-500 font-semibold sora">€74</td><td><span class="badge badge-green">Online</span></td></tr>
-              <tr><td><div class="font-medium text-slate-800 dark:text-slate-200">Rui Santos</div></td><td class="text-slate-400">—</td><td>3</td><td>28.0</td><td class="text-emerald-500 font-semibold sora">€75</td><td><span class="badge badge-slate">Offline</span></td></tr>
+            <thead><tr><th>Matrícula</th><th>Marca / Modelo</th><th>Ano</th><th>Conforto</th><th>Motor</th><th>Estado</th><th>Ações</th></tr></thead>
+            <tbody id="taxis-tbody">
+
             </tbody>
           </table>
         </div>
       </div>
-    </div>
 
-    <!-- ════ TÁXIS ═════════════════════════════════════════════════════════ -->
-    <div id="panel-taxis" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Táxis</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Frota da empresa</p>
+      <!-- ════ MOTORISTAS ════════════════════════════════════════════════════ -->
+      <div id="panel-motoristas" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Motoristas</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Contas e dados pessoais</p>
+          </div>
+          <button onclick="openModal('modal-criarMotorista')" class="btn btn-primary">+ Registar motorista</button>
         </div>
-        <button onclick="openModal('modal-taxi')" class="btn btn-primary">+ Registar táxi</button>
-      </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Matrícula</th><th>Marca / Modelo</th><th>Ano</th><th>Conforto</th><th>Motor</th><th>Estado</th><th>Ações</th></tr></thead>
-          <tbody id="taxis-tbody">
-            <tr>
-              <td class="font-mono font-semibold text-slate-900 dark:text-white">AA-12-BB</td>
-              <td>Toyota Corolla</td><td>2021</td>
-              <td><span class="badge badge-slate">Básico</span></td>
-              <td><span class="badge badge-blue">⛽ Combustão</span></td>
-              <td><span class="badge badge-green">Em turno</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditTaxi({id:1,mat:'AA-12-BB',marca:'Toyota',modelo:'Corolla',ano:2021,conforto:'basico',motor:'combustao'})" class="btn btn-ghost btn-sm btn-icon" title="Editar">✏️</button>
-                <button onclick="toast('⚠️ Táxi em uso — não pode ser removido')" class="btn btn-danger btn-sm btn-icon" title="Remover">🗑️</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-mono font-semibold text-slate-900 dark:text-white">CC-34-DD</td>
-              <td>Mercedes E-Class</td><td>2022</td>
-              <td><span class="badge badge-amber">Luxuoso</span></td>
-              <td><span class="badge badge-blue">⛽ Combustão</span></td>
-              <td><span class="badge badge-green">Em turno</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditTaxi({id:2,mat:'CC-34-DD',marca:'Mercedes',modelo:'E-Class',ano:2022,conforto:'luxuoso',motor:'combustao'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="toast('⚠️ Táxi em uso — não pode ser removido')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-mono font-semibold text-slate-900 dark:text-white">EE-56-FF</td>
-              <td>Tesla Model 3</td><td>2023</td>
-              <td><span class="badge badge-amber">Luxuoso</span></td>
-              <td><span class="badge badge-green">⚡ Elétrico</span></td>
-              <td><span class="badge badge-amber">A carregar</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditTaxi({id:3,mat:'EE-56-FF',marca:'Tesla',modelo:'Model 3',ano:2023,conforto:'luxuoso',motor:'eletrico'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="toast('⚠️ Táxi em uso — não pode ser removido')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-            <tr>
-              <td class="font-mono font-semibold text-slate-900 dark:text-white">GG-78-HH</td>
-              <td>Toyota Yaris</td><td>2020</td>
-              <td><span class="badge badge-slate">Básico</span></td>
-              <td><span class="badge badge-blue">⛽ Combustão</span></td>
-              <td><span class="badge badge-slate">Disponível</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditTaxi({id:4,mat:'GG-78-HH',marca:'Toyota',modelo:'Yaris',ano:2020,conforto:'basico',motor:'combustao'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="confirmDelete('táxi GG-78-HH')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ════ MOTORISTAS ════════════════════════════════════════════════════ -->
-    <div id="panel-motoristas" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Motoristas</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Contas e dados pessoais</p>
-        </div>
-        <button onclick="openModal('modal-motorista')" class="btn btn-primary">+ Registar motorista</button>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Nome</th><th>NIF</th><th>Nascimento</th><th>Carta</th><th>Morada</th><th>Estado</th><th>Ações</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><div class="font-semibold text-slate-900 dark:text-white">Carlos Mendes</div><div class="text-xs text-slate-400">+351 912 345 678</div></td>
-              <td class="font-mono">253147896</td><td>1985</td><td class="font-mono text-xs">C-123456</td>
-              <td class="text-slate-400 text-xs">Lisboa, 1000-001</td>
-              <td><span class="badge badge-green">Online</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditMotorista({id:1,nome:'Carlos Mendes'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="toast('⚠️ Motorista com turnos — não pode ser removido')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-            <tr>
-              <td><div class="font-semibold text-slate-900 dark:text-white">Ana Ferreira</div><div class="text-xs text-slate-400">+351 923 456 789</div></td>
-              <td class="font-mono">178952634</td><td>1990</td><td class="font-mono text-xs">C-234567</td>
-              <td class="text-slate-400 text-xs">Amadora, 2700-123</td>
-              <td><span class="badge badge-green">Online</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditMotorista({id:2,nome:'Ana Ferreira'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="toast('⚠️ Motorista com turnos — não pode ser removido')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-            <tr>
-              <td><div class="font-semibold text-slate-900 dark:text-white">Rui Santos</div><div class="text-xs text-slate-400">+351 934 567 890</div></td>
-              <td class="font-mono">312784965</td><td>1978</td><td class="font-mono text-xs">C-345678</td>
-              <td class="text-slate-400 text-xs">Sintra, 2710-001</td>
-              <td><span class="badge badge-slate">Offline</span></td>
-              <td class="space-x-1">
-                <button onclick="openEditMotorista({id:3,nome:'Rui Santos'})" class="btn btn-ghost btn-sm btn-icon">✏️</button>
-                <button onclick="toast('⚠️ Motorista com turnos — não pode ser removido')" class="btn btn-danger btn-sm btn-icon">🗑️</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ════ TURNOS ════════════════════════════════════════════════════════ -->
-    <div id="panel-turnos" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Turnos</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Histórico de turnos e táxis reservados</p>
-        </div>
-        <div class="flex gap-2">
-          <input type="date" class="form-input text-xs py-1.5" id="turno-filter-date"/>
-          <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filtrar</button>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>NIF</th><th>Nascimento</th><th>Carta</th><th>Morada</th><th>Estado</th><th>Ações</th></tr></thead>
+            <tbody id="motoristas-tbody"></tbody>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Motorista</th><th>Táxi</th><th>Início</th><th>Fim</th><th>Duração</th><th>Viagens</th><th>Estado</th></tr></thead>
-          <tbody>
-            <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">AA-12-BB</td><td>08:00</td><td>16:00</td><td>8h</td><td>5</td><td><span class="badge badge-green">Ativo</span></td></tr>
-            <tr><td class="font-medium">Ana Ferreira</td><td class="font-mono text-xs">CC-34-DD</td><td>09:00</td><td>17:00</td><td>8h</td><td>4</td><td><span class="badge badge-green">Ativo</span></td></tr>
-            <tr><td class="font-medium">Rui Santos</td><td class="font-mono text-xs">EE-56-FF</td><td>00:00</td><td>08:00</td><td>8h</td><td>3</td><td><span class="badge badge-slate">Terminado</span></td></tr>
-            <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">GG-78-HH</td><td>16:00</td><td>00:00</td><td>8h</td><td>0</td><td><span class="badge badge-amber">Agendado</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- ════ REABASTECIMENTOS ══════════════════════════════════════════════ -->
-    <div id="panel-reabast" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Reabastecimentos</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Combustível e carregamentos elétricos</p>
+      <!-- ════ TURNOS ════════════════════════════════════════════════════════ -->
+      <div id="panel-turnos" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Turnos</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Histórico de turnos e táxis reservados</p>
+          </div>
+          <div class="flex gap-2">
+            <input type="date" class="form-input text-xs py-1.5" id="turno-filter-date"/>
+            <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filtrar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Motorista</th><th>Táxi</th><th>Início</th><th>Fim</th><th>Duração</th><th>Viagens</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">AA-12-BB</td><td>08:00</td><td>16:00</td><td>8h</td><td>5</td><td><span class="badge badge-green">Ativo</span></td></tr>
+              <tr><td class="font-medium">Ana Ferreira</td><td class="font-mono text-xs">CC-34-DD</td><td>09:00</td><td>17:00</td><td>8h</td><td>4</td><td><span class="badge badge-green">Ativo</span></td></tr>
+              <tr><td class="font-medium">Rui Santos</td><td class="font-mono text-xs">EE-56-FF</td><td>00:00</td><td>08:00</td><td>8h</td><td>3</td><td><span class="badge badge-slate">Terminado</span></td></tr>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">GG-78-HH</td><td>16:00</td><td>00:00</td><td>8h</td><td>0</td><td><span class="badge badge-amber">Agendado</span></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Táxi</th><th>Turno</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Qtd.</th><th>€ Pago</th><th>Km táxi</th></tr></thead>
-          <tbody>
-            <tr><td class="font-mono text-xs">AA-12-BB</td><td class="text-xs text-slate-400">#1001</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">10:00</td><td class="text-xs">10:20</td><td>42 L</td><td class="text-emerald-500 font-semibold">€68.04</td><td>48 320</td></tr>
-            <tr><td class="font-mono text-xs">EE-56-FF</td><td class="text-xs text-slate-400">#1003</td><td><span class="badge badge-green">⚡ Elét.</span></td><td class="text-xs">07:30</td><td class="text-xs">09:30</td><td>32 kWh</td><td class="text-emerald-500 font-semibold">€6.40</td><td>10 000</td></tr>
-            <tr><td class="font-mono text-xs">CC-34-DD</td><td class="text-xs text-slate-400">#1002</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">11:40</td><td class="text-xs">11:58</td><td>55 L</td><td class="text-emerald-500 font-semibold">€89.10</td><td>32 100</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- ════ VIAGENS ═══════════════════════════════════════════════════════ -->
-    <div id="panel-viagens" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Viagens</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Todas as viagens com clientes</p>
+      <!-- ════ REABASTECIMENTOS ══════════════════════════════════════════════ -->
+      <div id="panel-reabast" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Reabastecimentos</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Combustível e carregamentos elétricos</p>
+          </div>
         </div>
-        <div class="flex gap-2">
-          <input type="date" class="form-input text-xs py-1.5"/>
-          <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filtrar</button>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Táxi</th><th>Turno</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Qtd.</th><th>€ Pago</th><th>Km táxi</th></tr></thead>
+            <tbody>
+              <tr><td class="font-mono text-xs">AA-12-BB</td><td class="text-xs text-slate-400">#1001</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">10:00</td><td class="text-xs">10:20</td><td>42 L</td><td class="text-emerald-500 font-semibold">€68.04</td><td>48 320</td></tr>
+              <tr><td class="font-mono text-xs">EE-56-FF</td><td class="text-xs text-slate-400">#1003</td><td><span class="badge badge-green">⚡ Elét.</span></td><td class="text-xs">07:30</td><td class="text-xs">09:30</td><td>32 kWh</td><td class="text-emerald-500 font-semibold">€6.40</td><td>10 000</td></tr>
+              <tr><td class="font-mono text-xs">CC-34-DD</td><td class="text-xs text-slate-400">#1002</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">11:40</td><td class="text-xs">11:58</td><td>55 L</td><td class="text-emerald-500 font-semibold">€89.10</td><td>32 100</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Motorista</th><th>Táxi</th><th>Origem</th><th>Destino</th><th>Início</th><th>Fim</th><th>Km</th><th>Pax</th><th>Preço</th><th>Fatura</th></tr></thead>
-          <tbody>
-            <tr onclick="openModal('modal-viagem-detail')" class="drill-row cursor-pointer">
-              <td class="font-medium">Carlos M.</td><td class="font-mono text-xs">AA-12-BB</td>
-              <td class="text-xs max-w-[100px] truncate">Aeroporto</td><td class="text-xs max-w-[100px] truncate">Campo Grande</td>
-              <td class="text-xs">12:00</td><td class="text-xs">12:30</td><td>5.0</td><td>4</td>
-              <td class="text-emerald-500 font-semibold sora">€8.40</td>
-              <td><span class="badge badge-green">✓ Emitida</span></td>
-            </tr>
-            <tr onclick="openModal('modal-viagem-detail')" class="drill-row">
-              <td class="font-medium">Ana F.</td><td class="font-mono text-xs">CC-34-DD</td>
-              <td class="text-xs">Chiado</td><td class="text-xs">Parque Nações</td>
-              <td class="text-xs">10:15</td><td class="text-xs">10:45</td><td>8.2</td><td>2</td>
-              <td class="text-emerald-500 font-semibold sora">€17.20</td>
-              <td><span class="badge badge-green">✓ Emitida</span></td>
-            </tr>
-            <tr onclick="openModal('modal-viagem-detail')" class="drill-row">
-              <td class="font-medium">Rui S.</td><td class="font-mono text-xs">EE-56-FF</td>
-              <td class="text-xs">Belém</td><td class="text-xs">Sintra</td>
-              <td class="text-xs">09:00</td><td class="text-xs">09:45</td><td>28.0</td><td>1</td>
-              <td class="text-emerald-500 font-semibold sora">€62.00</td>
-              <td><span class="badge badge-slate">Pendente</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- ════ FATURAS ═══════════════════════════════════════════════════════ -->
-    <div id="panel-faturas" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Faturas</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Documentos fiscais emitidos</p>
-        </div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Nº Fatura</th><th>Data</th><th>Cliente NIF</th><th>Cliente Nome</th><th>Viagem</th><th>Valor</th><th>Ações</th></tr></thead>
-          <tbody>
-            <tr><td class="sora font-bold text-sky-500">2026/0001</td><td class="text-xs">2026-04-16 12:32</td><td class="font-mono text-xs">123456789</td><td>Maria Costa</td><td class="text-xs text-slate-400">Aeroporto→Campo Grande</td><td class="text-emerald-500 font-semibold sora">€8.40</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
-            <tr><td class="sora font-bold text-sky-500">2026/0002</td><td class="text-xs">2026-04-16 10:47</td><td class="font-mono text-xs">987654321</td><td>João Pinto</td><td class="text-xs text-slate-400">Chiado→Parque Nações</td><td class="text-emerald-500 font-semibold sora">€17.20</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- ════ PREÇOS ════════════════════════════════════════════════════════ -->
-    <div id="panel-precos" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="mb-5">
-        <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Preços</h1>
-        <p class="text-xs text-slate-400 mt-0.5">Tarifas por nível de conforto e simulador (US3)</p>
-      </div>
-
-      <!-- Price form -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">Tarifas base</p>
-          <div class="space-y-4">
-            <div>
-              <label class="form-label">💶 Básico — preço/minuto (€)</label>
-              <input id="price-basico" type="number" step="0.01" value="0.15" class="form-input"/>
-            </div>
-            <div>
-              <label class="form-label">💶 Luxuoso — preço/minuto (€)</label>
-              <input id="price-luxuoso" type="number" step="0.01" value="0.25" class="form-input"/>
-            </div>
-            <div>
-              <label class="form-label">🌙 Agravamento noturno (21h–6h) — %</label>
-              <input id="price-noite" type="number" step="1" value="20" class="form-input"/>
-            </div>
-            <button onclick="savePrices()" class="btn btn-primary w-full">Guardar tarifas</button>
+      <!-- ════ VIAGENS ═══════════════════════════════════════════════════════ -->
+      <div id="panel-viagens" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Viagens</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Todas as viagens com clientes</p>
           </div>
         </div>
 
-        <!-- Simulator -->
-        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">🧮 Simulador de viagem</p>
-          <div class="space-y-3">
-            <div>
-              <label class="form-label">Nível de conforto</label>
-              <select id="sim-conforto" class="form-input">
-                <option value="basico">Básico</option>
-                <option value="luxuoso">Luxuoso</option>
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
+        <!-- Date range -->
+        <div class="flex items-center gap-3 flex-wrap mb-3">
+          <div class="flex items-center gap-1">
+            <label class="text-xs text-slate-500">De:</label>
+            <input id="filter-start" type="date" class="form-input text-xs"/>
+          </div>
+
+          <div class="flex items-center gap-1">
+            <label class="text-xs text-slate-500">Até:</label>
+            <input id="filter-end" type="date" class="form-input text-xs"/>
+          </div>
+
+
+          <input id="filter-min-price" type="number" min="1"
+            placeholder="Min €"
+            class="form-input text-xs w-24"/>
+
+          <input id="filter-max-price" type="number" min="1"
+            placeholder="Max €"
+            class="form-input text-xs w-24"/>
+
+          <input id="filter-pax" type="number" min="1"
+            placeholder="Passageiros"
+            class="form-input text-xs w-32"/>
+
+          <input id="filter-origin" type="text"
+            placeholder="Origem"
+            class="form-input text-xs w-28"/>
+
+          <input id="filter-dest" type="text"
+            placeholder="Destino"
+            class="form-input text-xs w-28"/>
+
+          <!-- Actions -->
+          <div class="flex gap-2 ml-auto">
+            <button onclick="applyFilters()"
+              class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
+              Filtrar
+            </button>
+
+            <button onclick="resetFilters()"
+              class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
+              Reset
+            </button>
+          </div>
+
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Motorista</th><th>Táxi</th><th>Origem</th><th>Destino</th><th>Início</th><th>Fim</th><th>Km</th><th>Passageiros</th><th>Preço</th><th>Fatura</th></tr></thead>
+            <tbody id="viagens-body"></tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ FATURAS ═══════════════════════════════════════════════════════ -->
+      <div id="panel-faturas" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Faturas</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Documentos fiscais emitidos</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nº Fatura</th><th>Data</th><th>Cliente NIF</th><th>Cliente Nome</th><th>Viagem</th><th>Valor</th><th>Ações</th></tr></thead>
+            <tbody>
+              <tr><td class="sora font-bold text-sky-500">2026/0001</td><td class="text-xs">2026-04-16 12:32</td><td class="font-mono text-xs">123456789</td><td>Maria Costa</td><td class="text-xs text-slate-400">Aeroporto→Campo Grande</td><td class="text-emerald-500 font-semibold sora">€8.40</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
+              <tr><td class="sora font-bold text-sky-500">2026/0002</td><td class="text-xs">2026-04-16 10:47</td><td class="font-mono text-xs">987654321</td><td>João Pinto</td><td class="text-xs text-slate-400">Chiado→Parque Nações</td><td class="text-emerald-500 font-semibold sora">€17.20</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ PREÇOS ════════════════════════════════════════════════════════ -->
+      <div id="panel-precos" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="mb-5">
+          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Preços</h1>
+          <p class="text-xs text-slate-400 mt-0.5">Tarifas por nível de conforto e simulador (US3)</p>
+        </div>
+
+        <!-- Price form -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">Tarifas base</p>
+            <div class="space-y-4">
               <div>
-                <label class="form-label">Hora de início</label>
-                <input id="sim-inicio" type="time" value="20:00" class="form-input"/>
+                <label class="form-label">💶 Básico — preço/minuto (€)</label>
+                <input id="price-basico" type="number" placeholder="0.00" step="0.01" class="form-input"/>
               </div>
               <div>
-                <label class="form-label">Hora de fim</label>
-                <input id="sim-fim" type="time" value="21:30" class="form-input"/>
+                <label class="form-label">💶 Conforto — preço/minuto (€)</label>
+                <input id="price-conforto" type="number" placeholder="0.00" step="0.01" class="form-input"/>
+              </div> 
+              <div>
+                <label class="form-label">💶 Luxuoso — preço/minuto (€)</label>
+                <input id="price-luxuoso" type="number" placeholder="0.00" step="0.01" class="form-input"/>
               </div>
+              <div>
+                <label class="form-label">🌙 Taxa noturna (21h–6h) — %</label>
+                <input id="price-noite" type="number" placeholder="0" step="1" class="form-input"/>
+              </div>
+              <button onclick="savePrices()" class="btn btn-primary w-full">Guardar tarifas</button>
             </div>
-            <button onclick="runSimulator()" class="btn btn-primary w-full">Calcular custo</button>
-            <div id="sim-result" class="price-result hidden">
-              <div class="text-3xl font-bold sora text-emerald-600 dark:text-emerald-400" id="sim-total">€0.00</div>
-              <div class="text-xs text-slate-400 mt-1" id="sim-breakdown">—</div>
+          </div>
+
+          <!-- Current tariff table -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Tabela de tarifas atual</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Nível</th><th>€/min diurno</th><th>€/min noturno</th><th>Exemplo 30 min</th></tr></thead>
+                <tbody id="tariff-table">
+                  <tr><td><span class="badge badge-slate">Básico</span></td><td class="sora font-semibold">€0.15</td><td class="sora font-semibold">€0.18</td><td class="text-slate-400">€4.50 diurno / €5.40 noturno</td></tr>
+                  <tr><td><span class="badge badge-amber">Luxuoso</span></td><td class="sora font-semibold">€0.25</td><td class="sora font-semibold">€0.30</td><td class="text-slate-400">€7.50 diurno / €9.00 noturno</td></tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Current tariff table -->
-      <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-        <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Tabela de tarifas atual</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Nível</th><th>€/min diurno</th><th>€/min noturno</th><th>Exemplo 30 min</th></tr></thead>
-            <tbody id="tariff-table">
-              <tr><td><span class="badge badge-slate">Básico</span></td><td class="sora font-semibold">€0.15</td><td class="sora font-semibold">€0.18</td><td class="text-slate-400">€4.50 diurno / €5.40 noturno</td></tr>
-              <tr><td><span class="badge badge-amber">Luxuoso</span></td><td class="sora font-semibold">€0.25</td><td class="sora font-semibold">€0.30</td><td class="text-slate-400">€7.50 diurno / €9.00 noturno</td></tr>
-            </tbody>
-          </table>
+      <!-- ════ RELATÓRIO FROTA ═══════════════════════════════════════════════ -->
+      <div id="panel-rel-frota" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Táxis &amp; Motoristas</p>
+          </div>
+          <div class="flex gap-2">
+            De: <input type="date" id="rel-from" class="form-input text-xs py-1.5 mr-4" value="2026-04-16"/>
+            Até: <input type="date" id="rel-to"   class="form-input text-xs py-1.5 mr-6" value="2026-04-16"/>
+            <button onclick="updateRelatorio()" class="btn btn-primary btn-sm">
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- Totals row -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('viagens')">
+            <div class="text-2xl mb-1">🗺️</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-viagens">0</div>
+            <div class="text-xs text-slate-400">Total viagens</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('horas')">
+            <div class="text-2xl mb-1">⏱️</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-horas">0h 00m</div>
+            <div class="text-xs text-slate-400">Total em viagens</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('km')">
+            <div class="text-2xl mb-1">📍</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-km">0 km</div>
+            <div class="text-xs text-slate-400">Total quilómetros</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+        </div>
+
+        <!-- Drill area -->
+        <div id="drill-area" class="hidden bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 mb-4 fade-in">
+          <div class="flex items-center justify-between mb-3">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drill-title">Subtotais</p>
+            <button onclick="document.getElementById('drill-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600">✕ Fechar</button>
+          </div>
+          <div id="drill-content"></div>
+        </div>
+
+        <!-- Per driver table -->
+        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Por motorista</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Motorista</th><th>Viagens</th><th>Horas</th><th>Km</th><th>Euros</th></tr></thead>
+              <tbody id="rel-frota-body"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- ════ RELATÓRIO FROTA ═══════════════════════════════════════════════ -->
-    <div id="panel-rel-frota" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <!-- ════ RELATÓRIO CLIENTES ════════════════════════════════════════════ -->
+      <div id="panel-rel-fat" class="panel px-4 sm:px-6 py-5 fade-in">
+
+        <!-- HEADER -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Clientes & Faturação</p>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            De:
+            <input type="date" id="rel2-from" class="form-input text-xs" />
+            Até:
+            <input type="date" id="rel2-to" class="form-input text-xs" />
+
+            <button onclick="updateRelatorioClientes()" class="btn btn-primary btn-sm">
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- LEVEL 1: TOTAL -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+
+          <div class="stat-card text-center cursor-pointer"
+              onclick="drillClientes('total')">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-total">€0.00</div>
+            <div class="text-xs text-slate-400">Total faturado</div>
+          </div>
+
+          <div class="stat-card text-center">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-clients">0</div>
+            <div class="text-xs text-slate-400">Clientes ativos</div>
+          </div>
+
+          <div class="stat-card text-center">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-trips">0</div>
+            <div class="text-xs text-slate-400">Viagens</div>
+          </div>
+
+        </div>
+
+        <!-- DRILL AREA -->
+        <div id="drill2-area" class="hidden bg-white dark:bg-slate-800/60 p-4 rounded-2xl mb-4">
+          <div class="flex justify-between mb-2">
+            <p id="drill2-title" class="sora font-semibold text-sm"></p>
+            <button onclick="closeDrill()" class="text-xs">✕</button>
+          </div>
+          <div id="drill2-content"></div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="bg-white dark:bg-slate-800/60 rounded-2xl p-4">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Viagens</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="fat-table-body"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ MODAL OVERLAY ════════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal-box" id="modal-inner" onclick="event.stopPropagation()">
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL TEMPLATES ══════════════════════════════════════════════════════ -->
+
+  <!-- Taxi form template -->
+  <template id="tpl-editarTaxi">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Editar Táxi</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório · Táxis &amp; Motoristas</h1>
-          <p class="text-xs text-slate-400 mt-0.5">US14 — drill-down de totais</p>
+          <label class="form-label">Matrícula</label>
+          <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
+          <input id="f-taxi-id" type="number" readonly hidden/>
         </div>
-        <div class="flex gap-2">
-          <input type="date" id="rel-from" class="form-input text-xs py-1.5" value="2026-04-16"/>
-          <input type="date" id="rel-to"   class="form-input text-xs py-1.5" value="2026-04-16"/>
-          <button onclick="toast('📊 Relatório atualizado')" class="btn btn-primary btn-sm">Atualizar</button>
-        </div>
-      </div>
-
-      <!-- Totals row -->
-      <div class="grid grid-cols-3 gap-3 mb-5">
-        <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('viagens')">
-          <div class="text-2xl mb-1">🗺️</div>
-          <div class="sora font-bold text-2xl text-sky-500">12</div>
-          <div class="text-xs text-slate-400">Total viagens</div>
-          <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
-        </div>
-        <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('horas')">
-          <div class="text-2xl mb-1">⏱️</div>
-          <div class="sora font-bold text-2xl text-sky-500">4h 23m</div>
-          <div class="text-xs text-slate-400">Total em viagens</div>
-          <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
-        </div>
-        <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('km')">
-          <div class="text-2xl mb-1">📍</div>
-          <div class="sora font-bold text-2xl text-sky-500">101.3 km</div>
-          <div class="text-xs text-slate-400">Total quilómetros</div>
-          <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
-        </div>
-      </div>
-
-      <!-- Drill area -->
-      <div id="drill-area" class="hidden bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 mb-4 fade-in">
-        <div class="flex items-center justify-between mb-3">
-          <p class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drill-title">Subtotais</p>
-          <button onclick="document.getElementById('drill-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600">✕ Fechar</button>
-        </div>
-        <div id="drill-content"></div>
-      </div>
-
-      <!-- Per driver table -->
-      <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-        <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Por motorista</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Motorista</th><th>Viagens</th><th>Horas</th><th>Km</th><th>Barra</th></tr></thead>
-            <tbody>
-              <tr class="drill-row" onclick="toast('→ Detalhe de Carlos Mendes')">
-                <td class="font-medium">Carlos Mendes</td><td>5</td><td>1h 58m</td><td>42.3</td>
-                <td><div class="bar-wrap"><div class="bar-fill" style="width:84%"></div></div></td>
-              </tr>
-              <tr class="drill-row" onclick="toast('→ Detalhe de Ana Ferreira')">
-                <td class="font-medium">Ana Ferreira</td><td>4</td><td>1h 32m</td><td>31.1</td>
-                <td><div class="bar-wrap"><div class="bar-fill" style="width:61%"></div></div></td>
-              </tr>
-              <tr class="drill-row" onclick="toast('→ Detalhe de Rui Santos')">
-                <td class="font-medium">Rui Santos</td><td>3</td><td>0h 53m</td><td>27.9</td>
-                <td><div class="bar-wrap"><div class="bar-fill" style="width:47%"></div></div></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ════ RELATÓRIO CLIENTES ════════════════════════════════════════════ -->
-    <div id="panel-rel-fat" class="panel px-4 sm:px-6 py-5 fade-in">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório · Clientes &amp; Faturação</h1>
-          <p class="text-xs text-slate-400 mt-0.5">US15 — receita por período</p>
-        </div>
-        <div class="flex gap-2">
-          <input type="date" class="form-input text-xs py-1.5" value="2026-04-16"/>
-          <input type="date" class="form-input text-xs py-1.5" value="2026-04-16"/>
-          <button onclick="toast('📊 Relatório atualizado')" class="btn btn-primary btn-sm">Atualizar</button>
+          <label class="form-label">Ano de compra</label>
+          <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
         </div>
       </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
-        <div class="stat-card text-center">
-          <div class="sora font-bold text-2xl text-emerald-500">€247.00</div>
-          <div class="text-xs text-slate-400 mt-0.5">Receita hoje</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Marca</label>
+          <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
         </div>
-        <div class="stat-card text-center">
-          <div class="sora font-bold text-2xl text-emerald-500">€1 284</div>
-          <div class="text-xs text-slate-400 mt-0.5">Esta semana</div>
-        </div>
-        <div class="stat-card text-center">
-          <div class="sora font-bold text-2xl text-emerald-500">€5 832</div>
-          <div class="text-xs text-slate-400 mt-0.5">Este mês</div>
+        <div>
+          <label class="form-label">Modelo</label>
+          <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
         </div>
       </div>
-
-      <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 mb-4">
-        <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Faturas emitidas hoje</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Fatura</th><th>Hora</th><th>Cliente</th><th>NIF</th><th>Viagem</th><th>€</th></tr></thead>
-            <tbody>
-              <tr><td class="sora font-bold text-sky-500">2026/0001</td><td class="text-xs">12:32</td><td>Maria Costa</td><td class="font-mono text-xs">123456789</td><td class="text-xs text-slate-400">Aeroporto→Campo Grande</td><td class="text-emerald-500 font-semibold sora">€8.40</td></tr>
-              <tr><td class="sora font-bold text-sky-500">2026/0002</td><td class="text-xs">10:47</td><td>João Pinto</td><td class="font-mono text-xs">987654321</td><td class="text-xs text-slate-400">Chiado→Parque Nações</td><td class="text-emerald-500 font-semibold sora">€17.20</td></tr>
-            </tbody>
-          </table>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Nível de conforto</label>
+          <select id="f-taxi-conforto" class="form-input">
+            <option value="BASICO">Básico</option>
+            <option value="CONFORTO">Conforto</option>
+            <option value="LUXUOSO">Luxuoso</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tipo de motor</label>
+          <select id="f-taxi-motor" class="form-input">
+            <option value="COMBUSTAO">⛽ Combustão</option>
+            <option value="ELETRICO">⚡ Elétrico</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Kilómetros</label>
+          <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
         </div>
       </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="saveTaxi()" class="btn btn-primary flex-1">Editar Táxi</button>
+      </div>
+    </div>
+  </template>
 
-      <!-- Top clients -->
-      <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-        <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Clientes mais frequentes (mês)</p>
-        <div class="space-y-3">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-base">👤</div>
-            <div class="flex-1"><div class="text-sm font-medium text-slate-800 dark:text-slate-200">Maria Costa</div><div class="text-xs text-slate-400">14 viagens</div></div>
-            <div class="text-right"><div class="sora font-bold text-emerald-500">€182.40</div><div class="bar-wrap w-20"><div class="bar-fill" style="width:100%"></div></div></div>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-base">👤</div>
-            <div class="flex-1"><div class="text-sm font-medium text-slate-800 dark:text-slate-200">João Pinto</div><div class="text-xs text-slate-400">9 viagens</div></div>
-            <div class="text-right"><div class="sora font-bold text-emerald-500">€97.80</div><div class="bar-wrap w-20"><div class="bar-fill" style="width:54%"></div></div></div>
-          </div>
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center text-base">👤</div>
-            <div class="flex-1"><div class="text-sm font-medium text-slate-800 dark:text-slate-200">Sónia Leal</div><div class="text-xs text-slate-400">7 viagens</div></div>
-            <div class="text-right"><div class="sora font-bold text-emerald-500">€62.00</div><div class="bar-wrap w-20"><div class="bar-fill" style="width:34%"></div></div></div>
-          </div>
+    <!-- Taxi form template -->
+  <template id="tpl-criarTaxi">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Criar Táxi</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Matrícula</label>
+          <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="mat-err">Formato inválido</p>
+        </div>
+        <div>
+          <label class="form-label">Ano de compra</label>
+          <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
         </div>
       </div>
-    </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Marca</label>
+          <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
 
-  </main>
-</div>
+        </div>
+        <div>
+          <label class="form-label">Modelo</label>
+          <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
 
-<!-- ══ MODAL OVERLAY ════════════════════════════════════════════════════════ -->
-<div id="modal-overlay" onclick="handleOverlayClick(event)">
-  <div class="modal-box" id="modal-inner" onclick="event.stopPropagation()">
-    <div id="modal-content"></div>
-  </div>
-</div>
-
-<!-- ══ MODAL TEMPLATES ══════════════════════════════════════════════════════ -->
-
-<!-- Taxi form template -->
-<template id="tpl-taxi">
-  <div class="flex items-center justify-between mb-5">
-    <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Registar táxi</p>
-    <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
-  </div>
-  <div class="space-y-4">
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Matrícula *</label>
-        <input id="f-mat" type="text" placeholder="AA-12-BB" class="form-input" oninput="validateMat(this)"/>
-        <p class="text-[11px] text-red-400 mt-1 hidden" id="mat-err">Formato inválido</p>
+        </div>
       </div>
-      <div>
-        <label class="form-label">Ano de compra *</label>
-        <input id="f-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Nível de conforto</label>
+          <select id="f-taxi-conforto" class="form-input">
+            <option value="BASICO">Básico</option>
+            <option value="CONFORTO">Conforto</option>
+            <option value="LUXUOSO">Luxuoso</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tipo de motor</label>
+          <select id="f-taxi-motor" class="form-input">
+            <option value="COMBUSTAO">⛽ Combustão</option>
+            <option value="ELETRICO">⚡ Elétrico</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Kilómetros</label>
+          <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
+        </div>
       </div>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Marca *</label>
-        <select id="f-marca" class="form-input" onchange="updateModelos()">
-          <option value="">Selecionar…</option>
-          <option>Toyota</option><option>Mercedes</option><option>Tesla</option>
-          <option>BMW</option><option>Volkswagen</option><option>Renault</option>
-        </select>
-      </div>
-      <div>
-        <label class="form-label">Modelo *</label>
-        <select id="f-modelo" class="form-input">
-          <option value="">Selecionar marca primeiro</option>
-        </select>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="criarTaxi()" class="btn btn-primary flex-1">Criar Táxi</button>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Nível de conforto *</label>
-        <select id="f-conforto" class="form-input">
-          <option value="basico">Básico</option>
-          <option value="luxuoso">Luxuoso</option>
-        </select>
+  </template>
+
+  <!-- Motorista form template -->
+  <template id="tpl-editarMotorista">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Editar motorista</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+    </div>
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nome completo</label>
+          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+          <input id="f-id" type="number" readonly hidden/>
+        </div>
+        <div>
+          <label class="form-label">Nº Carta de condução</label>
+          <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Género</label>
+          <select id="f-genero" class="form-input">
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="NAO_INDICADO">Outro</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Data de nascimento</label>
+          <input id="f-nasc" type="date" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Código postal</label>
+          <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
+        </div>
+        <div>
+          <label class="form-label">Número Rua</label>
+          <input id="f-num" type="number" placeholder="37" class="form-input" />
+        </div>
       </div>
       <div>
-        <label class="form-label">Tipo de motor *</label>
-        <select id="f-motor" class="form-input">
-          <option value="combustao">⛽ Combustão</option>
-          <option value="eletrico">⚡ Elétrico</option>
-        </select>
+        <label class="form-label">Rua</label>
+        <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Senha</label>
+          <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="saveMotorista()" class="btn btn-primary flex-1">Editar conta</button>
       </div>
     </div>
-    <div class="flex gap-2 pt-2">
-      <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-      <button onclick="saveTaxi()" class="btn btn-primary flex-1">Guardar táxi</button>
+  </template>
+
+  <!-- Motorista form template -->
+  <template id="tpl-criarMotorista">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Criar motorista</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
     </div>
-  </div>
-</template>
-
-<!-- Motorista form template -->
-<template id="tpl-motorista">
-  <div class="flex items-center justify-between mb-5">
-    <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Registar motorista</p>
-    <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
-  </div>
-  <div class="space-y-3">
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Nome completo *</label>
-        <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nome completo</label>
+          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Data de nascimento</label>
+          <input id="f-nasc" type="date" class="form-input"/>
+        </div>
       </div>
-      <div>
-        <label class="form-label">NIF * (9 dígitos)</label>
-        <input id="f-nif" type="text" maxlength="9" placeholder="123456789" class="form-input" oninput="validateNIF(this)"/>
-        <p class="text-[11px] text-red-400 mt-1 hidden" id="nif-err">NIF inválido (9 dígitos positivos)</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nº Carta de condução</label>
+          <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Validade Carta</label>
+          <input id="f-validade-carta" type="date" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Género</label>
+          <select id="f-genero" class="form-input">
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="NAO_INDICADO">Outro</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Email</label>
+          <input id="f-email" type="text" placeholder="email@exemplo.com" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Código postal</label>
+          <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
+        </div>
+        <div>
+          <label class="form-label">Número Rua</label>
+          <input id="f-num" type="number" placeholder="37" class="form-input" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">NIF</label>
+          <input id="f-nif" type="text" placeholder="123456789" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Rua</label>
+          <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Senha (mín. 6 - ABC123)</label>
+          <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Mínimo 6 carateres com letras e dígitos</p>
+        </div>
+        <div>
+          <label class="form-label">Confirmar Senha</label>
+          <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="createMotorista()" class="btn btn-primary flex-1">Criar conta</button>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Género *</label>
-        <select id="f-genero" class="form-input">
-          <option value="M">Masculino</option>
-          <option value="F">Feminino</option>
-        </select>
-      </div>
-      <div>
-        <label class="form-label">Ano de nascimento *</label>
-        <input id="f-nasc" type="number" placeholder="1990" min="1900" max="2006" class="form-input"/>
+  </template>
+
+  <!-- Viagem detail template -->
+  <template id="tpl-viagem-detail">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white">Detalhe da viagem</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+    </div>
+    <div class="space-y-2.5 text-sm">
+      <div class="flex justify-between"><span class="text-slate-400">Motorista</span><span class="font-medium">Carlos Mendes</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Táxi</span><span class="font-mono font-medium">AA-12-BB · Toyota Corolla</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Origem</span><span class="font-medium">Aeroporto de Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Destino</span><span class="font-medium">Campo Grande, Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Início</span><span class="font-medium">12:00</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Fim</span><span class="font-medium">12:30</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Duração</span><span class="font-medium">30 minutos</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Km percorridos</span><span class="font-medium">5.0 km</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Nº passageiros</span><span class="font-medium">4</span></div>
+      <div class="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2.5 mt-2"><span class="font-semibold">Preço</span><span class="sora font-bold text-emerald-500 text-base">€8.40</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Fatura</span><span class="badge badge-green">2026/0001 ✓</span></div>
+    </div>
+    <button onclick="closeModal()" class="w-full btn btn-primary mt-4">Fechar</button>
+  </template>
+
+  <!-- Confirm delete template -->
+  <template id="tpl-confirm">
+    <div class="text-center py-2">
+      <div class="text-4xl mb-3">⚠️</div>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white mb-2">Confirmar remoção</p>
+      <p class="text-sm text-slate-400 mb-5" id="confirm-msg">Tem a certeza que quer remover este item?</p>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="toast('🗑️ Removido com sucesso');closeModal()" class="btn btn-danger flex-1">Remover</button>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Nº Carta de condução *</label>
-        <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
-      </div>
-      <div>
-        <label class="form-label">Telefone</label>
-        <input id="f-tel" type="text" placeholder="+351 912 345 678" class="form-input"/>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Código postal</label>
-        <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
-      </div>
-      <div>
-        <label class="form-label">Localidade (auto)</label>
-        <input id="f-localidade" type="text" placeholder="Lisboa" class="form-input" readonly/>
-      </div>
-    </div>
-    <div>
-      <label class="form-label">Morada</label>
-      <input id="f-morada" type="text" placeholder="Rua Exemplo, 123" class="form-input"/>
-    </div>
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="form-label">Senha * (mín. 6 car., letras+dígitos)</label>
-        <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
-        <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Mínimo 6 carateres com letras e dígitos</p>
-      </div>
-      <div>
-        <label class="form-label">Confirmar senha *</label>
-        <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
-      </div>
-    </div>
-    <div class="flex gap-2 pt-2">
-      <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-      <button onclick="saveMotorista()" class="btn btn-primary flex-1">Criar conta</button>
-    </div>
-  </div>
-</template>
-
-<!-- Viagem detail template -->
-<template id="tpl-viagem-detail">
-  <div class="flex items-center justify-between mb-5">
-    <p class="sora font-bold text-lg text-slate-900 dark:text-white">Detalhe da viagem</p>
-    <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
-  </div>
-  <div class="space-y-2.5 text-sm">
-    <div class="flex justify-between"><span class="text-slate-400">Motorista</span><span class="font-medium">Carlos Mendes</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Táxi</span><span class="font-mono font-medium">AA-12-BB · Toyota Corolla</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Origem</span><span class="font-medium">Aeroporto de Lisboa</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Destino</span><span class="font-medium">Campo Grande, Lisboa</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Início</span><span class="font-medium">12:00</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Fim</span><span class="font-medium">12:30</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Duração</span><span class="font-medium">30 minutos</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Km percorridos</span><span class="font-medium">5.0 km</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Nº passageiros</span><span class="font-medium">4</span></div>
-    <div class="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2.5 mt-2"><span class="font-semibold">Preço</span><span class="sora font-bold text-emerald-500 text-base">€8.40</span></div>
-    <div class="flex justify-between"><span class="text-slate-400">Fatura</span><span class="badge badge-green">2026/0001 ✓</span></div>
-  </div>
-  <button onclick="closeModal()" class="w-full btn btn-primary mt-4">Fechar</button>
-</template>
-
-<!-- Confirm delete template -->
-<template id="tpl-confirm">
-  <div class="text-center py-2">
-    <div class="text-4xl mb-3">⚠️</div>
-    <p class="sora font-bold text-lg text-slate-900 dark:text-white mb-2">Confirmar remoção</p>
-    <p class="text-sm text-slate-400 mb-5" id="confirm-msg">Tem a certeza que quer remover este item?</p>
-    <div class="flex gap-2">
-      <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-      <button onclick="toast('🗑️ Removido com sucesso');closeModal()" class="btn btn-danger flex-1">Remover</button>
-    </div>
-  </div>
-</template>
-
-<!-- ══ SCRIPT ════════════════════════════════════════════════════════════════ -->
-<script>
-// ── Theme ──────────────────────────────────────────────────────────────────
-function applyTheme(t){
-  document.documentElement.classList.toggle('dark',t==='dark');
-  document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙';
-}
-function toggleTheme(){
-  var t=localStorage.getItem('dash-theme')==='dark'?'light':'dark';
-  localStorage.setItem('dash-theme',t);applyTheme(t);
-}
-applyTheme(localStorage.getItem('dash-theme')||'light');
-
-// ── Toast ──────────────────────────────────────────────────────────────────
-var _tt;
-function toast(msg){
-  var el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2700);
-}
-
-// ── Today date ─────────────────────────────────────────────────────────────
-document.getElementById('today-date').textContent=new Date().toLocaleDateString('pt-PT',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-
-// ── Turno filter default ───────────────────────────────────────────────────
-var today=new Date().toISOString().split('T')[0];
-document.querySelectorAll('input[type=date]').forEach(function(el){el.value=today;});
-
-// ── Panel navigation ───────────────────────────────────────────────────────
-var PANELS=['dashboard','taxis','motoristas','turnos','reabast','viagens','faturas','precos','rel-frota','rel-fat'];
-function showPanel(id){
-  PANELS.forEach(function(p){
-    var el=document.getElementById('panel-'+p);
-    var nav=document.getElementById('nav-'+p);
-    if(el) el.classList.toggle('active',p===id);
-    if(nav) nav.classList.toggle('active',p===id);
-  });
-  // close mobile menu
-  document.getElementById('sidebar').classList.remove('open');
-  window.scrollTo(0,0);
-}
-
-// ── Mobile menu ─────────────────────────────────────────────────────────────
-function toggleMobileMenu(){document.getElementById('sidebar').classList.toggle('open');}
-
-// ── Modal ──────────────────────────────────────────────────────────────────
-var MODAL_MAP={
-  'modal-taxi':'tpl-taxi',
-  'modal-motorista':'tpl-motorista',
-  'modal-viagem-detail':'tpl-viagem-detail',
-  'modal-confirm':'tpl-confirm',
-};
-function openModal(id){
-  var tpl=MODAL_MAP[id];
-  if(!tpl) return;
-  var t=document.getElementById(tpl);
-  if(!t) return;
-  document.getElementById('modal-content').innerHTML=t.innerHTML;
-  document.getElementById('modal-overlay').classList.add('open');
-}
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
-function handleOverlayClick(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
-
-// ── Taxi form ─────────────────────────────────────────────────────────────
-var MODELOS={'Toyota':['Corolla','Yaris','Camry','Prius'],'Mercedes':['E-Class','C-Class','S-Class','GLE'],'Tesla':['Model 3','Model Y','Model S','Model X'],'BMW':['3 Series','5 Series','7 Series','X5'],'Volkswagen':['Passat','Golf','Tiguan','Arteon'],'Renault':['Megane','Talisman','Espace']};
-
-function updateModelos(){
-  var marca=document.getElementById('f-marca').value;
-  var sel=document.getElementById('f-modelo');
-  sel.innerHTML='<option value="">Selecionar…</option>';
-  (MODELOS[marca]||[]).forEach(function(m){
-    var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);
-  });
-}
-
-var MAT_RE=/^([A-Z]{2}-\d{2}-\d{2}|[A-Z]{2}-\d{2}-[A-Z]{2}|\d{2}-\d{2}-[A-Z]{2}|\d{2}-[A-Z]{2}-\d{2}|\d{2}-[A-Z]{2}-[A-Z]{2}|[A-Z]{2}-[A-Z]{2}-\d{2})$/i;
-function validateMat(el){
-  var ok=MAT_RE.test(el.value.toUpperCase());
-  document.getElementById('mat-err').classList.toggle('hidden',ok||!el.value);
-  return ok||!el.value;
-}
-
-function saveTaxi(){
-  var mat=document.getElementById('f-mat').value.toUpperCase();
-  if(!validateMat(document.getElementById('f-mat'))){toast('⚠️ Matrícula inválida');return;}
-  if(!document.getElementById('f-marca').value){toast('⚠️ Selecione a marca');return;}
-  if(!document.getElementById('f-modelo').value){toast('⚠️ Selecione o modelo');return;}
-  var ano=parseInt(document.getElementById('f-ano').value);
-  if(!ano||ano>2026||ano<1990){toast('⚠️ Ano de compra inválido');return;}
-  closeModal();
-  toast('✅ Táxi '+mat+' registado com sucesso!');
-  document.getElementById('cnt-taxis').textContent=parseInt(document.getElementById('cnt-taxis').textContent)+1;
-}
-
-function openEditTaxi(data){
-  openModal('modal-taxi');
-  setTimeout(function(){
-    document.getElementById('modal-taxi-title').textContent='Editar táxi';
-    document.getElementById('f-mat').value=data.mat;
-    document.getElementById('f-ano').value=data.ano;
-    document.getElementById('f-marca').value=data.marca;updateModelos();
-    setTimeout(function(){document.getElementById('f-modelo').value=data.modelo;},50);
-    document.getElementById('f-conforto').value=data.conforto;
-    document.getElementById('f-motor').value=data.motor;
-  },50);
-}
-
-// ── Motorista form ─────────────────────────────────────────────────────────
-function validateNIF(el){
-  var ok=/^\d{9}$/.test(el.value)&&parseInt(el.value)>0;
-  document.getElementById('nif-err').classList.toggle('hidden',ok||!el.value);
-}
-function validateSenha(el){
-  var v=el.value;
-  var ok=v.length>=6&&/[a-zA-Z]/.test(v)&&/\d/.test(v);
-  document.getElementById('senha-err').classList.toggle('hidden',ok||!v);
-}
-
-// Simulate postal code lookup
-var POSTAL_MAP={'1000':'Lisboa','2700':'Amadora','2710':'Sintra','4000':'Porto','8000':'Faro','3000':'Coimbra'};
-function lookupPostal(el){
-  var prefix=el.value.split('-')[0];
-  var loc=POSTAL_MAP[prefix];
-  var locEl=document.getElementById('f-localidade');
-  if(loc){locEl.value=loc;}else{locEl.value='';}
-}
-
-function saveMotorista(){
-  var nome=document.getElementById('f-nome').value.trim();
-  var nif=document.getElementById('f-nif').value;
-  var nasc=parseInt(document.getElementById('f-nasc').value);
-  var carta=document.getElementById('f-carta').value.trim();
-  var senha=document.getElementById('f-senha').value;
-  var senha2=document.getElementById('f-senha2').value;
-  if(!nome){toast('⚠️ Nome obrigatório');return;}
-  if(!/^\d{9}$/.test(nif)||parseInt(nif)<=0){toast('⚠️ NIF inválido');return;}
-  if(!nasc||new Date().getFullYear()-nasc<18){toast('⚠️ Motorista deve ter 18+ anos');return;}
-  if(!carta){toast('⚠️ Carta de condução obrigatória');return;}
-  if(senha.length<6||!/[a-zA-Z]/.test(senha)||!/\d/.test(senha)){toast('⚠️ Senha não cumpre requisitos');return;}
-  if(senha!==senha2){toast('⚠️ Senhas não coincidem');return;}
-  closeModal();
-  toast('✅ Motorista '+nome+' registado!');
-  document.getElementById('cnt-motoristas').textContent=parseInt(document.getElementById('cnt-motoristas').textContent)+1;
-}
-
-function openEditMotorista(data){
-  openModal('modal-motorista');
-  setTimeout(function(){
-    document.getElementById('modal-mot-title').textContent='Editar motorista';
-    document.getElementById('f-nome').value=data.nome;
-  },50);
-}
-
-// ── Confirm delete ─────────────────────────────────────────────────────────
-function confirmDelete(label){
-  MODAL_MAP['modal-confirm']='tpl-confirm';
-  openModal('modal-confirm');
-  setTimeout(function(){
-    var el=document.getElementById('confirm-msg');
-    if(el) el.textContent='Tem a certeza que quer remover o '+label+'? Esta ação é irreversível.';
-  },30);
-}
-
-// ── Prices / simulator ─────────────────────────────────────────────────────
-function savePrices(){
-  var pb=parseFloat(document.getElementById('price-basico').value);
-  var pl=parseFloat(document.getElementById('price-luxuoso').value);
-  var pn=parseFloat(document.getElementById('price-noite').value);
-  if(pb<=0||pl<=0||pn<0){toast('⚠️ Preços têm de ser positivos');return;}
-  // update tariff table
-  var noiteB=(pb*(1+pn/100)).toFixed(2);
-  var noiteL=(pl*(1+pn/100)).toFixed(2);
-  document.getElementById('tariff-table').innerHTML=
-    '<tr><td><span class="badge badge-slate">Básico</span></td><td class="sora font-semibold">€'+pb.toFixed(2)+'</td><td class="sora font-semibold">€'+noiteB+'</td><td class="text-slate-400">€'+(pb*30).toFixed(2)+' / €'+(noiteB*30).toFixed(2)+'</td></tr>'
-   +'<tr><td><span class="badge badge-amber">Luxuoso</span></td><td class="sora font-semibold">€'+pl.toFixed(2)+'</td><td class="sora font-semibold">€'+noiteL+'</td><td class="text-slate-400">€'+(pl*30).toFixed(2)+' / €'+(noiteL*30).toFixed(2)+'</td></tr>';
-  toast('💾 Tarifas guardadas com sucesso!');
-}
-
-function runSimulator(){
-  var conforto=document.getElementById('sim-conforto').value;
-  var inicio=document.getElementById('sim-inicio').value;
-  var fim=document.getElementById('sim-fim').value;
-  if(!inicio||!fim){toast('⚠️ Preencha início e fim');return;}
-
-  var pb=parseFloat(document.getElementById('price-basico').value)||0.15;
-  var pl=parseFloat(document.getElementById('price-luxuoso').value)||0.25;
-  var pn=parseFloat(document.getElementById('price-noite').value)||20;
-  var rate=conforto==='basico'?pb:pl;
-  var nightMult=1+pn/100;
-
-  function toMins(t){var p=t.split(':');return parseInt(p[0])*60+parseInt(p[1]);}
-  var startM=toMins(inicio), endM=toMins(fim);
-  if(endM<=startM) endM+=1440; // next day
-
-  var total=0,breakdown=[];
-  for(var m=startM;m<endM;m++){
-    var h=(m%1440)/60;
-    var isNight=h>=21||h<6;
-    total+=isNight?rate*nightMult:rate;
-  }
-  // simplified breakdown
-  var dayMins=0,nightMins=0;
-  for(var m2=startM;m2<endM;m2++){var h2=(m2%1440)/60;if(h2>=21||h2<6)nightMins++;else dayMins++;}
-  if(dayMins>0) breakdown.push(dayMins+'min ×€'+rate.toFixed(2)+'= €'+(dayMins*rate).toFixed(2));
-  if(nightMins>0) breakdown.push(nightMins+'min ×€'+(rate*nightMult).toFixed(2)+' (noturno)= €'+(nightMins*rate*nightMult).toFixed(2));
-
-  document.getElementById('sim-total').textContent='€'+total.toFixed(2);
-  document.getElementById('sim-breakdown').textContent=breakdown.join('  +  ');
-  document.getElementById('sim-result').classList.remove('hidden');
-}
-
-// ── Report drill ───────────────────────────────────────────────────────────
-function drillTotal(type){
-  var area=document.getElementById('drill-area');
-  var title=document.getElementById('drill-title');
-  var content=document.getElementById('drill-content');
-  area.classList.remove('hidden');
-  area.classList.add('fade-in');
-
-  var rows={
-    viagens:{t:'Subtotais de viagens por motorista',
-      html:'<table class="w-full text-sm"><thead><tr><th>Motorista</th><th>Táxi</th><th>Viagens</th></tr></thead><tbody>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe Carlos Mendes\')"><td class="p-2 font-medium">Carlos Mendes</td><td class="p-2 font-mono text-xs">AA-12-BB</td><td class="p-2">5</td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe Ana Ferreira\')"><td class="p-2 font-medium">Ana Ferreira</td><td class="p-2 font-mono text-xs">CC-34-DD</td><td class="p-2">4</td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe Rui Santos\')"><td class="p-2 font-medium">Rui Santos</td><td class="p-2 font-mono text-xs">EE-56-FF</td><td class="p-2">3</td></tr>'
-        +'</tbody></table>'},
-    horas:{t:'Subtotais de horas em viagens',
-      html:'<table class="w-full text-sm"><thead><tr><th>Motorista</th><th>Horas</th><th>Barra</th></tr></thead><tbody>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe de horas Carlos\')"><td class="p-2 font-medium">Carlos Mendes</td><td class="p-2">1h 58m</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe de horas Ana\')"><td class="p-2 font-medium">Ana Ferreira</td><td class="p-2">1h 32m</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:78%"></div></div></td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe de horas Rui\')"><td class="p-2 font-medium">Rui Santos</td><td class="p-2">0h 53m</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:45%"></div></div></td></tr>'
-        +'</tbody></table>'},
-    km:{t:'Subtotais de quilómetros percorridos',
-      html:'<table class="w-full text-sm"><thead><tr><th>Táxi</th><th>Km</th><th>Barra</th></tr></thead><tbody>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe km AA-12-BB\')"><td class="p-2 font-mono text-xs">AA-12-BB</td><td class="p-2">42.3 km</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:100%"></div></div></td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe km CC-34-DD\')"><td class="p-2 font-mono text-xs">CC-34-DD</td><td class="p-2">31.1 km</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:74%"></div></div></td></tr>'
-        +'<tr class="drill-row" onclick="toast(\'→ Detalhe km EE-56-FF\')"><td class="p-2 font-mono text-xs">EE-56-FF</td><td class="p-2">27.9 km</td><td class="p-2"><div class="bar-wrap"><div class="bar-fill" style="width:66%"></div></div></td></tr>'
-        +'</tbody></table>'},
-  };
-  title.textContent=rows[type].t;
-  content.innerHTML=rows[type].html;
-}
-</script>
+  </template>
 </body>
 </html>

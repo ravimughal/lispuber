@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Optional;
@@ -162,6 +163,7 @@ public class AuthService {
         }
 
         Motorista motorista = Mapper.converterParaMotorista(motoristaCreateDTO);
+        
         String senhaEncriptada = passwordEncoder.encode(motoristaCreateDTO.senha()); // encode à password
         motorista.setSenha(senhaEncriptada);
 
@@ -174,7 +176,7 @@ public class AuthService {
         String token = jwtUtility.generateToken(claims, motorista.getEmail(), validade);
 
         MotoristaResponseDTO motoristaDTO = new MotoristaResponseDTO(
-            null,
+            motorista.getId(),
             motorista.getNif(),
             motorista.getEmail(),
             motorista.getNome(),
@@ -185,8 +187,8 @@ public class AuthService {
             motorista.getCodigoPostal(),
             motorista.getNumCartaConducao(),
             motorista.getValidadeCartaConducao(),
-            null,
-            null
+            motorista.getCriadoEm(),
+            motorista.getAtualizadoEm()
         );
 
         Map<String, Object> response = new HashMap<>();
@@ -238,7 +240,7 @@ public class AuthService {
             role = UserRole.MOTORISTA.name();
 
             userDTO = new MotoristaResponseDTO(
-                null,
+                motorista.getId(),
                 motorista.getNif(),
                 motorista.getEmail(),
                 motorista.getNome(),
@@ -249,8 +251,8 @@ public class AuthService {
                 motorista.getCodigoPostal(),
                 motorista.getNumCartaConducao(),
                 motorista.getValidadeCartaConducao(),
-                null,
-                null
+                motorista.getCriadoEm(),
+                motorista.getAtualizadoEm()
             );
 
         } else if (utilizador instanceof Gestor gestor) {

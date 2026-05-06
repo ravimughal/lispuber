@@ -114,23 +114,11 @@ public class PedidoService {
         newPedido.setLatitudeDestino(pedidoDto.latitudeDestino());
         newPedido.setLatitudeOrigem(pedidoDto.latitudeOrigem());
         newPedido.setLongitudeDestino(pedidoDto.longitudeDestino());
-        newPedido.setLongitudeOrigem(pedidoDto.latitudeOrigem());
+        newPedido.setLongitudeOrigem(pedidoDto.longitudeOrigem());
         newPedido.setNumPassageiros(pedidoDto.numPassageiros());
         newPedido.setRuaDestino(pedidoDto.ruaDestino());
         newPedido.setRuaOrigem(pedidoDto.ruaOrigem());
         newPedido.setDataSolicitacao(dataAtual);
-
-        PrecoService precoService = new PrecoService(confortoRepository,taxaRepository);
-        Double preco;
-
-        try{//calcular o preço tendo em conta a distancia, hora do dia e nivel de conforto
-            preco=Double.valueOf(precoService.getPrecoPedido(pedidoDto.latitudeOrigem(),pedidoDto.longitudeOrigem(),
-                                    pedidoDto.latitudeDestino(),pedidoDto.longitudeDestino(), dataAtual, conforto.getNivelConforto()));
-        }catch(Exception e){
-            throw new Exception("Erro: Falha no calculo do preço da viagem.");
-        }
-
-        newPedido.setPreco(preco);
 
         newPedido.setEstadoPedido(EstadoPedido.PENDENTE);
         pedidoRepository.save(newPedido);
@@ -138,15 +126,24 @@ public class PedidoService {
     return Mapper.converterParaPedidoDTO(newPedido);
     }
 
-public List<PedidoResponseDTO> getPedidosPendentes(){
-    
-    List<Pedido> pedidosEncontrados=pedidoRepository.findByEstadoPedido(EstadoPedido.PENDENTE);
-    List<PedidoResponseDTO> pedidosDtoResponse = new ArrayList<>();
-    for(Pedido p:pedidosEncontrados){
-        pedidosDtoResponse.add(Mapper.converterParaPedidoDTO(p));
+    public List<PedidoResponseDTO> getPedidosPendentes(){
+        
+        List<Pedido> pedidosEncontrados=pedidoRepository.findByEstadoPedido(EstadoPedido.PENDENTE);
+        List<PedidoResponseDTO> pedidosDtoResponse = new ArrayList<>();
+        for(Pedido p:pedidosEncontrados){
+            pedidosDtoResponse.add(Mapper.converterParaPedidoDTO(p));
+        }
+        return pedidosDtoResponse;
     }
-    return pedidosDtoResponse;
-}
+
+    public List<PedidoResponseDTO> getPedidos(){
+        List<Pedido> pedidosEncontrados=pedidoRepository.findAll();
+        List<PedidoResponseDTO> pedidosDtoResponse = new ArrayList<>();
+        for(Pedido p:pedidosEncontrados){
+            pedidosDtoResponse.add(Mapper.converterParaPedidoDTO(p));
+        }
+        return pedidosDtoResponse;
+    }
 
 
 public PedidoResponseDTO obterPedidoById(Long pedidoId){
@@ -179,6 +176,22 @@ public List<PedidoResponseDTO> obterPedidosByCliente() {
     return res;
 }
 
+
+public List<PedidoResponseDTO> obterPedidosByMotorista() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (!(principal instanceof Motorista motoristaLogado)) {
+        throw new org.springframework.security.access.AccessDeniedException("Apenas motoristas podem criar pedidos.");
+    }    
+    Long motoristaId=motoristaLogado.getId();
+    List<Pedido> pedidos = pedidoRepository.findByMotoristaQueAceitou_Id(motoristaId);
+    List<PedidoResponseDTO> res = new ArrayList<PedidoResponseDTO>();
+    for (Pedido p:pedidos){
+        res.add(Mapper.converterParaPedidoDTO(p));
+    }
+
+    return res;
+}
 
 
 

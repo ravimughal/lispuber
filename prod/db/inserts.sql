@@ -1,13 +1,14 @@
 -- CONFORTO  (2 níveis permitidos pelo schema atual;
 --            descomente o ALTER TABLE acima para o 3.º)
 INSERT INTO conforto (nivel_conforto, preco) VALUES
-    ('BASICO',   5.00),
-    ('LUXUOSO',  12.50);
+ ('BASICO', 0.50),
+ ('CONFORTO', 0.75),
+ ('LUXUOSO', 1.0);
 
 
 -- UTILIZADOR
 INSERT INTO utilizador (nome, email, nif, genero, senha, data_nascimento) VALUES
-    ('Ana Ferreira',     'ana.ferreira@email.pt',     '123456789', 'FEMININO',    'hash_senha_1', '1990-03-15'),
+    ('Ana Ferreira',     'ana.ferreira@email.pt',     '123456781', 'FEMININO',    'hash_senha_1', '1990-03-15'),
     ('Bruno Costa',      'bruno.costa@email.pt',      '234567890', 'MASCULINO',   'hash_senha_2', '1985-07-22'),
     ('Carla Mendes',     'carla.mendes@email.pt',     '345678901', 'FEMININO',    'hash_senha_3', '1992-11-08'),
     ('Diogo Santos',     'diogo.santos@email.pt',     '456789012', 'MASCULINO',   'hash_senha_4', '1978-05-30'),
@@ -53,21 +54,21 @@ INSERT INTO turno (motorista_id, taxi_id, inicio, fim) VALUES
 
 
 -- PEDIDO
-INSERT INTO pedido (cliente_id, conforto_id, motorista_id, num_passageiros, preco, estado_pedido,
+INSERT INTO pedido (cliente_id, conforto_id, motorista_id, num_passageiros, estado_pedido,
                     rua_origem, latitude_origem, longitude_origem,
                     rua_destino, latitude_destino, longitude_destino) VALUES
-    (1, 1, 6,  2, 8.50,  'CONCLUIDO', 'Rua Augusta',          38.710000, -9.137000, 'Avenida Almirante Reis', 38.720000, -9.134000),
-    (3, 2, 8,  1, 15.00, 'CONCLUIDO', 'Praça do Comércio',    38.707000, -9.136000, 'Parque das Nações',      38.768000, -9.098000),
-    (5, 1, NULL,1, 6.00, 'PENDENTE',  'Intendente',           38.722000, -9.133000, 'Campo de Ourique',       38.714000, -9.158000),
-    (7, 2, 10, 3, 20.00, 'CONCLUIDO', 'Belém',                38.697000, -9.205000, 'Aeroporto de Lisboa',    38.774000, -9.134000),
-    (9, 1, 6,  2, 9.75,  'CANCELADO', 'Mouraria',             38.716000, -9.132000, 'Alfama',                 38.712000, -9.128000);
+    (1, 1, 6,  2,  'CONCLUIDO', 'Rua Augusta',          38.710000, -9.137000, 'Avenida Almirante Reis', 38.720000, -9.134000),
+    (3, 2, 8,  1, 'CONCLUIDO', 'Praça do Comércio',    38.707000, -9.136000, 'Parque das Nações',      38.768000, -9.098000),
+    (5, 1, NULL,1, 'PENDENTE',  'Intendente',           38.722000, -9.133000, 'Campo de Ourique',       38.714000, -9.158000),
+    (7, 2, 10, 3, 'CONCLUIDO', 'Belém',                38.697000, -9.205000, 'Aeroporto de Lisboa',    38.774000, -9.134000),
+    (9, 1, 6,  2, 'CANCELADO', 'Mouraria',             38.716000, -9.132000, 'Alfama',                 38.712000, -9.128000);
 
 
 -- VIAGEM
-INSERT INTO viagem (cliente_id, turno_id, pedido_id, inicio, fim, km_percorridos) VALUES
-    (1, 1, 1, '2025-06-01 08:30:00', '2025-06-01 08:52:00', 4.20),
-    (3, 2, 2, '2025-06-01 09:15:00', '2025-06-01 09:55:00', 11.80),
-    (7, 3, 4, '2025-06-01 15:00:00', '2025-06-01 15:45:00', 18.30);
+INSERT INTO viagem (cliente_id, turno_id, pedido_id, preco, inicio, fim, km_percorridos) VALUES
+    (1, 1, 1, 8.50, '2025-06-01 08:30:00', '2025-06-01 08:52:00', 4.20),
+    (3, 2, 2, 15.00, '2025-06-01 09:15:00', '2025-06-01 09:55:00', 11.80),
+    (7, 3, 4, 20.00, '2025-06-01 15:00:00', '2025-06-01 15:45:00', 18.30);
 
 
 -- FATURA
@@ -84,3 +85,6 @@ INSERT INTO reabastecimento (turno_id, data_inicio, data_fim, quantidade, euros_
     (3, '2025-06-01 18:30:00', '2025-06-01 18:45:00', 35.00, 54.25, 270.00),
     (4, '2025-06-02 12:30:00', '2025-06-02 12:40:00', 30.00, 46.50, 220.00),
     (5, '2025-06-02 14:00:00', '2025-06-02 14:12:00', 25.00, 35.00, 160.00);
+
+INSERT INTO configuracao_taxas (chave, valor) 
+VALUES ('TAXA_NOTURNA', 1.30);

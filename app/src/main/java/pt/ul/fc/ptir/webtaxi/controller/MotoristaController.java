@@ -45,21 +45,21 @@ public class MotoristaController {
     // PUT = atualização completa, PATCH = parcial — ambos usam o mesmo service
     // já que o service verifica null em cada campo
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('GESTOR') or  #id == authentication.principal.id")
+    @PreAuthorize("hasRole('GESTOR')")
     public ResponseEntity<MotoristaResponseDTO> atualizarMotorista(@PathVariable Long id, @RequestBody MotoristaCreateDTO dto) {
         return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
     }
 
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('GESTOR') or  #id == authentication.principal.id")
+    @PreAuthorize("hasRole('GESTOR')")
     public ResponseEntity<MotoristaResponseDTO> atualizarParcialmente(@PathVariable Long id, @RequestBody MotoristaCreateDTO dto) {
         return ResponseEntity.ok(motoristaService.atualizarMotorista(id, dto));
     }
 
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('GESTOR') or  #id == authentication.principal.id")
+    @PreAuthorize("hasRole('GESTOR')")
     public ResponseEntity<Void> removerMotorista(@PathVariable Long id) {
         motoristaService.removerMotorista(id);
         return ResponseEntity.noContent().build();

@@ -122,6 +122,20 @@ public class PrecoService {
     }
 
 
+    @Transactional
+    public Double getTaxaNoturna() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!(principal instanceof Gestor)) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                "Apenas gestores podem ver a taxa noturna."
+            );
+        }
+
+        return taxaRepository.findById("TAXA_NOTURNA").map(ConfiguracaoTaxa::getValor).orElse(0.0);
+    }
+
+
     //SO PARA GESTOR
     @Transactional
     public void atualizarPrecoPorMinutoEmConforto(Double preco, NivelConforto conforto){
@@ -151,7 +165,8 @@ public class PrecoService {
 
     @Transactional
     public Double obterTempoViagem(Double latOri, Double lonOri, Double latDest, Double lonDest) throws Exception {
-        
+        System.out.println("ORI: " + latOri + "," + lonOri);
+        System.out.println("DEST: " + latDest + "," + lonDest);
         String url = String.format(Locale.US,
             "https://router.project-osrm.org/route/v1/driving/%f,%f;%f,%f?overview=false",
             lonOri, latOri, lonDest, latDest);

@@ -52,10 +52,29 @@ public class TurnoService {
         Turno turno = new Turno();
         turno.setMotorista(motorista);
         turno.setDuracao(new Duracao(dto.inicio(), dto.fim()));
+
         // táxi fica null até selecionar-taxi ser chamado
 
         turnoRepository.save(turno);
         return Mapper.converterParaTurnoResponseDTO(turno);
+    }
+
+    @Transactional
+    public List<TurnoResponseDTO> listarTurnos() {
+        List<Turno> turnos = turnoRepository.findAll();
+
+        return turnos.stream()
+                .map(Mapper::converterParaTurnoResponseDTO)
+                .toList();
+    }
+
+    @Transactional
+    public List<TurnoResponseDTO> listarTurnosByMotorista(Long motoristaId) {
+        List<Turno> turnos = turnoRepository.findByMotoristaId(motoristaId);
+
+        return turnos.stream()
+                .map(Mapper::converterParaTurnoResponseDTO)
+                .toList();
     }
 
     public List<TaxiResponseDTO> listarTaxisDisponiveis(Long turnoId) {

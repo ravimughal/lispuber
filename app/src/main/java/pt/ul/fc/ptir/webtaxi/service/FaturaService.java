@@ -43,7 +43,7 @@ public class FaturaService {
             throw new IllegalStateException("A viagem não tem valor válido para faturação.");
         }
 
-        if (viagem.getCliente() == null || viagem.getCliente().getNif() == null) {
+        if (viagem.getPedido().getCliente() == null || viagem.getPedido().getCliente().getNif() == null) {
             throw new IllegalStateException("A viagem não tem cliente com NIF válido.");
         }
 

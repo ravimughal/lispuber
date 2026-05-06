@@ -6,11 +6,17 @@ import pt.ul.fc.ptir.webtaxi.exception.DataInicioDepoisDoFimException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Embeddable
 public class Duracao {
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime inicio;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime fim;
 
     public Duracao() {}
@@ -22,10 +28,12 @@ public class Duracao {
         this.fim = fim;
     }
 
+    @JsonIgnore
     public long getTotalEmMinutos() {
         return Duration.between(inicio, fim).toMinutes();
     }
-
+    
+    @JsonIgnore
     public long getTotalEmHoras() {
         return Duration.between(inicio, fim).toHours();
     }

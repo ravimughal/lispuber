@@ -58,7 +58,7 @@ public class PagamentoService {
         }
 
         // Price comes from pedido — this is what the user story expects
-        Double preco = viagem.getPedido().getPreco();
+        Double preco = viagem.getPreco();
 
         // Check if a payment already exists (retry case from US9 criterion b)
         var existing = pagamentoRepository.findByViagemId(viagemId);

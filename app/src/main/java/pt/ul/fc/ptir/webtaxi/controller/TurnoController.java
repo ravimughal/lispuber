@@ -29,6 +29,16 @@ public class TurnoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(turnoService.criarTurno(dto));
     }
 
+    @GetMapping("/")
+    public List<TurnoResponseDTO> listarTurnos() {
+        return turnoService.listarTurnos();
+    }
+
+    @GetMapping("/byMotorista/{motoristaId}")
+    public List<TurnoResponseDTO> listarTurnosByMotorista(@PathVariable Long motoristaId) {
+        return turnoService.listarTurnosByMotorista(motoristaId);
+    }
+
     @GetMapping("/{id}/taxis-disponiveis")
     public ResponseEntity<List<TaxiResponseDTO>> listarTaxisDisponiveis(@PathVariable Long id) {
         return ResponseEntity.ok(turnoService.listarTaxisDisponiveis(id));

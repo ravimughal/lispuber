@@ -55,6 +55,8 @@ public class TaxiService {
         if (taxiRepository.existsByMatricula(taxi.getMatricula()))
             throw new IllegalStateException("Já existe um táxi com esta matrícula. (matrícula " + taxi.getMatricula() + ")");
 
+        taxi.setCriadoEm(LocalDateTime.now());
+        taxi.setAtualizadoEm(LocalDateTime.now());
         taxi = taxiRepository.save(taxi);
         return Mapper.converterParaTaxiDTO(taxi);
     }
