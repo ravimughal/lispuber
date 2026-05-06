@@ -12,7 +12,7 @@ app servers:
 
 	sudo apt update
 	
-	apt install temurin-25-jdk
+	sudo apt install temurin-25-jdk
 
 	sudo apt install maven
 
