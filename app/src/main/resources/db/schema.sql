@@ -160,15 +160,15 @@ CREATE TABLE reabastecimento (
     turno_id        BIGINT    NOT NULL,
 
     data_inicio     TIMESTAMP NOT NULL,
-    data_fim        TIMESTAMP NOT NULL,
+    data_fim        TIMESTAMP,
 
-    quantidade      NUMERIC(10,2) NOT NULL CHECK (quantidade >= 0),
-    euros_pagos     NUMERIC(10,2) NOT NULL CHECK (euros_pagos >= 0),
-    kilometros      NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
+    quantidade      NUMERIC(10,2) CHECK (quantidade >= 0),
+    euros_pagos     NUMERIC(10,2) CHECK (euros_pagos >= 0),
+    kilometros      NUMERIC(10,2) CHECK (kilometros >= 0),
 
-    CHECK (data_fim > data_inicio),
+    CHECK (data_fim IS NULL OR data_fim > data_inicio),
 
-FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
+    FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
 
 CREATE TABLE pagamento (
