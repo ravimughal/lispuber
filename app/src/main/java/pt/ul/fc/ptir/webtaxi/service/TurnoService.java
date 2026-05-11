@@ -19,6 +19,7 @@ import pt.ul.fc.ptir.webtaxi.repository.TurnoRepository;
 
 import java.util.List;
 import java.time.LocalDateTime;
+import java.time.Duration;
 
 @Service
 public class TurnoService {
@@ -42,6 +43,12 @@ public class TurnoService {
 
         if (dto.inicio().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("O início do turno não pode ser no passado.");
+        }
+
+        if (!dto.fim().isAfter(dto.inicio())) {
+            throw new IllegalArgumentException("O fim do turno tem de ser depois do início do mesmo.");
+        } else if (Duration.between(dto.inicio(), dto.fim()).compareTo(Duration.ofHours(8)) > 0) { // Se o turno tiver mais de 8 horas
+            throw new IllegalArgumentException("O turno não pode ter mais de 8 horas.");
         }
 
         // Restrição 6 — motorista já tem turno nesse período
