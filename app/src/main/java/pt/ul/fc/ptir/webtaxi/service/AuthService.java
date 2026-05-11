@@ -5,10 +5,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 import pt.ul.fc.ptir.webtaxi.dto.*;
@@ -144,6 +142,10 @@ public class AuthService {
 
         if (motoristaCreateDTO.numCarta() == null || motoristaCreateDTO.numCarta().isBlank()) {
             throw new IllegalArgumentException("Erro: O número da carta de condução é obrigatório.");
+        }
+
+        if(!isCartaConducaoValid(motoristaCreateDTO.numCarta())){
+            throw new IllegalArgumentException("Erro: O formato do número da carta de condução tem de ser do tipo: AA-000000");
         }
         
         if (motoristaCreateDTO.validadeCarta() == null || motoristaCreateDTO.validadeCarta().isBefore(LocalDate.now())) {
@@ -292,6 +294,15 @@ public class AuthService {
             }
         }
         return true;
+    }
+    
+    private boolean isCartaConducaoValid(String cartaConducao){
+        String regex = "[a-zA-Z]{2}-[0-9]{6}";
+
+        if (cartaConducao.matches(regex)) {
+            return true;
+        } 
+        return false;   
     }
 
     private boolean isPasswordValid(String password){
