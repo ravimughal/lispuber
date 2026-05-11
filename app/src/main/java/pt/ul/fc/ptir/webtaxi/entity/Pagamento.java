@@ -1,7 +1,6 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity

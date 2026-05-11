@@ -1,9 +1,8 @@
 package pt.ul.fc.ptir.webtaxi.entity;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
-import org.springframework.cglib.core.Local;
 
 import jakarta.persistence.*;
 import pt.ul.fc.ptir.webtaxi.entity.enums.EstadoPedido;
