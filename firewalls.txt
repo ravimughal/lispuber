@@ -1,0 +1,46 @@
+As firewalls estão dividivas entre regras gcloud-rules e iptables:
+
+    gcloud compute firewall-rules list (para ver as da google)
+    gcloud compute firewall-rules describe NOME (para ver a info de cada uma)
+
+    sudo iptables -S (maioritariamente para não contactar sem ser contactado, algo que o gcloud não tem forma de fazer)
+    (usar gcloud compute instances reset app1-vm --zone=europe-southwest1-c caso sudo iptables -F corra mal)
+
+    App (esta so na 1 e 2):
+        sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.31/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.32/32 -j ACCEPT
+        sudo iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+        sudo iptables -A OUTPUT -p tcp -d 5.148.170.168 --dport 443 -j ACCEPT
+        sudo iptables -P OUTPUT DROP
+
+    Nginx:
+        sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+        sudo iptables -P OUTPUT DROP
+        sudo iptables -A OUTPUT -d 10.204.0.21/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.22/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.23/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.24/32 -j ACCEPT
+        sudo iptables -A OUTPUT -d 10.204.0.25/32 -j ACCEPT
+    
+    Db:
+        sudo iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+        sudo iptables -P OUTPUT DROP
+
+
+
+Lista de comandos para verificar firewalls:
+    (app) curl 'http://router.project-osrm.org/nearest/v1/driving/13.388860,52.517037?number=3&bearings=0,20'
+    (app) curl 'https://router.project-osrm.org/nearest/v1/driving/13.388860,52.517037?number=3&bearings=0,20'
+    
+    (app) curl https://swtch.com/ 
+
+    (todos) ping 1.1.1.1
+
+    (app e nginx e bastion) nmap -Pn -p 5432 10.204.0.31
+
+    (db e nginx e bastion) nmap -Pn -p 8080 10.204.0.21
+
+    (todos menos nginx) nmap -Pn -p 443 10.204.0.11
+    (todos menos nginx) nmap -Pn -p 80 10.204.0.11

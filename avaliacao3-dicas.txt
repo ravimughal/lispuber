@@ -1,0 +1,22 @@
+
+    # aula
+    correr com users diferentes em cada máquina e com permissões poucas permissões (não sudo), não pode matar outros processos:
+	- sudo -M username programa
+
+	apontar ficheiros do enable para o available, em vez de copiar
+
+	sudo nginx -t para ver se está tudo bem
+
+    ver se google firewalls está tudo certo, bloquear sources, etc
+
+	ver se db estão firewals bem configuradas
+	abrir  para apenas comunicar entre si e receber pedidos
+
+	permitir falar com apis no backend
+
+	nos loadbalancers apenas permitir receber, não responder, sem receber
+
+	fazer um nmap
+
+	trazer scripts feitos para demonstrar na avaliação para a semana
+	
