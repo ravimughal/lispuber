@@ -128,14 +128,14 @@
         <div class="text-center py-4">
           <div class="text-4xl mb-2">🚗</div>
           <p class="sora font-semibold text-slate-700 dark:text-slate-200 text-sm">You're offline</p>
-          <p class="text-xs text-slate-400 mt-1">Go online to start receiving ride requests</p>
+          <p class="text-x text-slate-400 mt-2">Verify you are in a shift before going online!</p>
         </div>
-        <div class="grid grid-cols-4 gap-2 mt-2">
+        <!-- <div class="grid grid-cols-4 gap-2 mt-2">
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-rides">0</div><div class="text-[10px] text-slate-400 mt-0.5">Rides</div></div>
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-km">0.0</div><div class="text-[10px] text-slate-400 mt-0.5">km</div></div>
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-hrs">0h 0m</div><div class="text-[10px] text-slate-400 mt-0.5">Online</div></div>
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-earn">€0</div><div class="text-[10px] text-slate-400 mt-0.5">Earned</div></div>
-        </div>
+        </div> -->
       </div>
 
       <!-- WAITING -->
@@ -143,11 +143,11 @@
         <div class="text-3xl mb-2 spin">⟳</div>
         <p class="sora font-semibold text-slate-900 dark:text-white text-sm">Waiting for requests…</p>
         <p class="text-xs text-slate-400 mt-1">You'll be notified when a rider is nearby</p>
-        <div class="grid grid-cols-3 gap-2 mt-4">
+        <!-- <div class="grid grid-cols-3 gap-2 mt-4">
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-rides2">0</div><div class="text-[10px] text-slate-400 mt-0.5">Rides</div></div>
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-km2">0.0</div><div class="text-[10px] text-slate-400 mt-0.5">km</div></div>
           <div class="stat-card"><div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-earn2">€0</div><div class="text-[10px] text-slate-400 mt-0.5">Earned</div></div>
-        </div>
+        </div> -->
       </div>
 
       <!-- INCOMING REQUEST -->
@@ -159,13 +159,11 @@
             <div>
               <div class="sora font-semibold text-slate-900 dark:text-white text-sm" id="req-name">—</div>
               <div class="flex items-center gap-1 text-xs text-slate-400">
-                <span class="text-yellow-400">⭐</span><span id="req-rating">—</span>
-                <span class="mx-1">·</span><span id="req-rides">—</span>
+                <span class="text-yellow-400">👤</span><span id="req-rating">—</span>
               </div>
             </div>
             <div class="ml-auto text-right">
               <div class="sora font-bold text-emerald-500 text-sm" id="req-fare">—</div>
-              <div class="text-[11px] text-slate-400" id="req-type">—</div>
             </div>
           </div>
           <div class="space-y-1.5 mb-3">
@@ -179,11 +177,11 @@
             </div>
           </div>
           <div class="flex items-center gap-2 text-[11px] text-slate-400 mb-3">
-            <span>📍 <span id="req-distance">—</span> away</span>
+            <span>📍 <span id="req-distance"></span> away</span>
             <span>·</span>
-            <span>🛣️ <span id="req-trip-km">—</span></span>
+            <span>🛣️ <span id="req-trip-km"></span></span>
             <span>·</span>
-            <span>⏱️ <span id="req-eta">—</span></span>
+            <span>⏱️ <span id="req-eta"></span></span>
           </div>
           <div class="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
             <div id="req-timer-bar" class="h-full bg-sky-500 rounded-full" style="width:100%;transition:width .2s linear"></div>
@@ -226,10 +224,10 @@
             </div>
           </div>
 
-          <div class="flex items-center justify-between text-sm mb-3">
+          <!-- <div class="flex items-center justify-between text-sm mb-3">
             <span class="text-slate-400 text-xs">Fare</span>
             <span class="sora font-bold text-emerald-500" id="acc-fare">—</span>
-          </div>
+          </div> -->
 
           <!-- Instructions -->
           <div class="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
@@ -263,11 +261,11 @@
             <span class="text-slate-500 dark:text-slate-400 truncate" id="active-dest">—</span>
           </div>
         </div>
-        <div class="grid grid-cols-3 gap-2 mb-3">
+        <!-- <div class="grid grid-cols-3 gap-2 mb-3">
           <div class="stat-card"><div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-fare">—</div><div class="text-[10px] text-slate-400 mt-0.5">Fare</div></div>
           <div class="stat-card"><div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-km">—</div><div class="text-[10px] text-slate-400 mt-0.5">Distance</div></div>
           <div class="stat-card"><div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-eta">—</div><div class="text-[10px] text-slate-400 mt-0.5">ETA</div></div>
-        </div>
+        </div> -->
         <button onclick="completeRide()" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold sora" style="box-shadow:0 4px 14px rgba(34,197,94,.3)">
           Complete Ride ✓
         </button>
@@ -276,12 +274,12 @@
       <!-- MANAGEMENT -->
       <div id="panel-management" class="hidden fade-in">
         <div class="flex items-center justify-between mb-3">
-          <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400">Management</p>
+          <p class="sora text-[12px] font-semibold tracking-widest uppercase text-slate-400">Management:</p>
           <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
         </div>
         <div class="flex mb-3 bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
-          <button id="tab-faturas" onclick="switchManagementTab('faturas')" class="flex-1 text-xs py-2 rounded-lg font-semibold bg-white dark:bg-slate-900 shadow">Faturas</button>
-          <button id="tab-turnos"  onclick="switchManagementTab('turnos')"  class="flex-1 text-xs py-2 rounded-lg font-semibold text-slate-400">Turnos</button>
+          <button id="tab-faturas" onclick="switchManagementTab('faturas')" class="flex-1 text-xs py-2 rounded-lg font-semibold bg-white dark:bg-slate-900 shadow">Invoices</button>
+          <button id="tab-turnos"  onclick="switchManagementTab('turnos')"  class="flex-1 text-xs py-2 rounded-lg font-semibold text-slate-400">Shifts</button>
         </div>
 
         <div id="content-faturas" class="space-y-2">
@@ -294,9 +292,10 @@
             <input id="turno-start" type="datetime-local" class="w-full mb-2 text-xs p-2 rounded border bg-white text-black dark:bg-slate-900 dark:text-white dark:border-slate-700"/>
             <input id="turno-end"   type="datetime-local" class="w-full mb-2 text-xs p-2 rounded border bg-white text-black dark:bg-slate-900 dark:text-white dark:border-slate-700"/>
             <button onclick="loadAvailableTaxis()" class="w-full text-xs bg-slate-200 dark:bg-slate-700 py-2 rounded-lg mb-2">Check Available Taxis</button>
-            <div style="margin-bottom: 40px;" id="taxi-list" class="space-y-2 mb-2"><p class="text-xs text-slate-400 text-center">No taxis loaded</p></div>
+            <div style="margin-bottom: 40px;" id="taxi-list" class="space-y-2 mb-2"><p class="text-xs text-slate-400 text-center"></p></div>
             <button onclick="createTurno()" class="w-full text-xs bg-emerald-500 text-white py-2 rounded-lg">Create Shift</button>
           </div>
+          <p class="sora text-[12px] font-semibold tracking-widest uppercase text-slate-400">Shifts Historic:</p>
           <div id="turnos-list"><p class="text-xs text-center text-slate-400 py-3">No shifts yet</p></div>
         </div>
       </div>
@@ -304,7 +303,7 @@
       <!-- HISTORY -->
       <div id="panel-history" class="hidden fade-in">
         <div class="flex items-center justify-between mb-3">
-          <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400">Ride History</p>
+          <p class="sora text-[12px] font-semibold tracking-widest uppercase text-slate-400">Ride History:</p>
           <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
         </div>
         <div id="history-list" class="space-y-2">
@@ -315,7 +314,7 @@
       <!-- PROFILE -->
       <div id="panel-profile" class="hidden fade-in">
         <div class="flex items-center justify-between mb-3">
-          <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400">My Profile</p>
+          <p class="sora text-[12px] font-semibold tracking-widest uppercase text-slate-400">My Profile:</p>
           <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
         </div>
         <div class="flex items-center gap-3 mb-4">
@@ -323,7 +322,8 @@
           <div>
             <div id="profile-name" class="sora font-semibold text-slate-900 dark:text-white"></div>
             <div id="profile-since" class="text-xs text-slate-400"></div>
-            <div class="flex items-center gap-1 text-xs mt-1"><span class="text-yellow-400">⭐</span><span class="font-semibold">4.92</span><span id="profile-rides" class="text-slate-400 ml-1"></span></div>
+            <!-- <div class="flex items-center gap-1 text-xs mt-1"><span class="text-yellow-400">⭐</span><span class="font-semibold">4.92</span><span id="profile-rides" class="text-slate-400 ml-1"></span></div> -->
+            <div class="flex items-center gap-1 text-xs mt-1"><span id="profile-rides" class="text-slate-400"></span></div>
           </div>
         </div>
         <div class="space-y-2">

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   
+  <script src="https://js.stripe.com/v3/"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
@@ -164,30 +165,30 @@
 
           <div class="my-4"></div>
 
-          <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1.5">Choose ride type:</p>
+          <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1.5 mt-10">Choose ride type:</p>
           <div id="card-economy" class="ride-card selected" onclick="selectRide('economy')">
             <div class="flex items-center gap-3"><span class="text-xl">🚗</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Economy</div><div class="text-[11px] text-slate-400">~4 min · up to 4</div></div>
+              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Economy</div><div class="text-[11px] text-slate-400"><span id="economy-time"></span><span> · Normal</span></div></div>
             </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-economy">€6.08</div><div class="text-[11px] text-slate-400" id="km-label">3.4 km</div></div>
+            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-economy"></div><div class="text-[11px] text-slate-400" id="km-economy"></div></div>
           </div>
           <div id="card-comfort" class="ride-card" onclick="selectRide('comfort')">
             <div class="flex items-center gap-3"><span class="text-xl">🛋️</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Comfort</div><div class="text-[11px] text-slate-400">~6 min · more space</div></div>
+              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Comfort</div><div class="text-[11px] text-slate-400"><span id="comfort-time"></span><span> · Better Car</span></div></div>
             </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-comfort">€9.12</div><div class="text-[11px] text-slate-400">3.4 km</div></div>
+            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-comfort"></div><div class="text-[11px] text-slate-400" id="km-comfort"></div></div>
           </div>
           <div id="card-premium" class="ride-card" onclick="selectRide('premium')">
             <div class="flex items-center gap-3"><span class="text-xl">👑</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Premium</div><div class="text-[11px] text-slate-400">~3 min · luxury</div></div>
+              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Premium</div><div class="text-[11px] text-slate-400"><span id="premium-time"></span><span> · Better Car & Faster</span></div></div>
             </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-premium">€14.52</div><div class="text-[11px] text-slate-400">3.4 km</div></div>
+            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-premium"></div><div class="text-[11px] text-slate-400" id="km-premium"></div></div>
           </div>
 
           <button id="confirm-btn" onclick="bookRide()"
             class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white text-sm font-semibold sora"
             style="box-shadow:0 4px 16px rgba(14,165,233,.3)">
-            Confirm ride — €6.08
+            Confirm ride
           </button>
         </div>
 
@@ -224,26 +225,26 @@
           <div class="w-11 h-11 rounded-full bg-sky-50 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-800 flex items-center justify-center text-2xl flex-shrink-0">👨</div>
           <div class="flex-1 min-w-0">
             <div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drv-name">—</div>
-            <div class="text-xs text-slate-400 mt-0.5" id="drv-car">—</div>
-            <div class="flex items-center gap-1 mt-0.5"><span class="text-sky-400 text-xs">★★★★★</span><span class="text-xs text-slate-400" id="drv-rating">—</span></div>
+            <!-- <div class="text-xs text-slate-400 mt-0.5" id="drv-car">—</div>
+            <div class="flex items-center gap-1 mt-0.5"><span class="text-sky-400 text-xs">★★★★★</span><span class="text-xs text-slate-400" id="drv-rating">—</span></div> -->
           </div>
           <div class="flex gap-1.5 flex-shrink-0">
-            <button onclick="toast('📞 Calling driver…')" class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">📞</button>
-            <button onclick="toast('💬 Chat opened')"     class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">💬</button>
+            <button onclick="toast('📞 Not available yet…')" class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">📞</button>
+            <button onclick="toast('💬 Not available yet…')"     class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">💬</button>
           </div>
         </div>
         <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 mb-3 border border-slate-100 dark:border-slate-700">
           <div class="flex justify-between text-xs text-slate-400 mb-2">
-            <span id="progress-phase">Driver en route</span>
+            <span id="progress-phase">Driver is driving</span>
             <span class="font-medium" id="progress-label">—</span>
           </div>
           <div class="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
             <div id="ride-progress" class="h-full bg-sky-500 rounded-full" style="width:5%;transition:width .5s ease"></div>
           </div>
-          <div class="grid grid-cols-3 gap-2 mt-3 text-center">
+          <div class="grid grid-cols-2 gap-2 mt-3 text-center">
             <div><div class="text-[10px] text-slate-400">Pickup</div><div class="text-xs sora font-semibold text-sky-500 mt-0.5" id="pickup-eta">—</div></div>
             <div><div class="text-[10px] text-slate-400">To</div><div class="text-xs sora font-semibold text-slate-700 dark:text-slate-300 mt-0.5 truncate" id="dest-label-track">—</div></div>
-            <div><div class="text-[10px] text-slate-400">Fare</div><div class="text-xs sora font-semibold text-slate-700 dark:text-slate-300 mt-0.5" id="fare-label-track">—</div></div>
+            <!-- <div><div class="text-[10px] text-slate-400">Fare</div><div class="text-xs sora font-semibold text-slate-700 dark:text-slate-300 mt-0.5" id="fare-label-track">—</div></div> -->
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2">
@@ -262,39 +263,11 @@
       <div class="text-center mb-6">
         <div class="text-5xl mb-3">🎉</div>
         <div class="sora font-bold text-xl text-slate-900 dark:text-white">Ride complete!</div>
-        <p class="text-sm text-slate-400 mt-1">How was your trip?</p>
+        <p class="text-base text-slate-400 mt-1">Payment (Stripe)</p>
       </div>
-      <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl p-5 mb-4">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-12 h-12 rounded-full bg-sky-50 dark:bg-sky-950/40 border-2 border-sky-200 dark:border-sky-800 flex items-center justify-center text-2xl">👨</div>
-          <div>
-            <div class="sora font-semibold text-slate-900 dark:text-white" id="rate-drv-name">—</div>
-            <div class="text-xs text-slate-400" id="rate-drv-car">—</div>
-          </div>
-          <div class="ml-auto text-right">
-            <div class="sora font-bold text-sky-500" id="rate-fare">—</div>
-            <div class="text-xs text-slate-400" id="rate-dest">—</div>
-          </div>
-        </div>
-        <div class="flex justify-center gap-2 mb-4">
-          <span class="star-btn text-slate-200 dark:text-slate-700" onclick="setStar(1)">★</span>
-          <span class="star-btn text-slate-200 dark:text-slate-700" onclick="setStar(2)">★</span>
-          <span class="star-btn text-slate-200 dark:text-slate-700" onclick="setStar(3)">★</span>
-          <span class="star-btn text-slate-200 dark:text-slate-700" onclick="setStar(4)">★</span>
-          <span class="star-btn text-slate-200 dark:text-slate-700" onclick="setStar(5)">★</span>
-        </div>
-        <input id="rate-comment" type="text" placeholder="Any comments? (optional)"
-          class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-sm text-slate-800 dark:text-slate-100 outline-none focus:border-sky-400 placeholder-slate-400"/>
-      </div>
-      <div class="flex flex-wrap gap-2 mb-5">
-        <button onclick="toggleCompliment(this)" class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 hover:border-sky-400 hover:text-sky-500">👍 Great driver</button>
-        <button onclick="toggleCompliment(this)" class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 hover:border-sky-400 hover:text-sky-500">🚗 Clean car</button>
-        <button onclick="toggleCompliment(this)" class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 hover:border-sky-400 hover:text-sky-500">🎵 Good music</button>
-        <button onclick="toggleCompliment(this)" class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 hover:border-sky-400 hover:text-sky-500">🤐 Quiet ride</button>
-        <button onclick="toggleCompliment(this)" class="px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 hover:border-sky-400 hover:text-sky-500">⚡ On time</button>
-      </div>
-      <button onclick="submitRating()" class="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold sora text-sm" style="box-shadow:0 4px 16px rgba(14,165,233,.3)">Submit rating</button>
-      <button onclick="submitRating()" class="w-full py-2 text-xs text-slate-400 hover:text-slate-600 mt-2">Skip</button>
+      <div id="payment-element"></div>
+
+      <button onclick="submitRating()" class="w-full py-3 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-semibold sora text-sm" style="box-shadow:0 4px 16px rgba(14,165,233,.3)">Pay</button>
     </div>
   </div>
 </div>
@@ -370,7 +343,7 @@
 
     <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">Support</p>
     <div class="space-y-1.5 mb-5">
-      <button onclick="toast('🆘 Support opened')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300">
+      <button onclick="toast('🆘 Support not implemented yet! Contact the developer directly.')" class="w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 hover:bg-sky-50 dark:hover:bg-sky-700/20 transition-colors">        
         <div class="w-8 h-8 rounded-lg bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-sm flex-shrink-0">🆘</div>
         <div class="flex-1"><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Help & Support</div></div>
         <span class="text-slate-300 dark:text-slate-600 text-sm">›</span>

@@ -9,6 +9,8 @@ DROP TABLE IF EXISTS gestor CASCADE;
 DROP TABLE IF EXISTS cliente CASCADE;
 DROP TABLE IF EXISTS utilizador CASCADE;
 DROP TABLE IF EXISTS conforto CASCADE;
+DROP TABLE IF EXISTS configuracao_taxas CASCADE;
+DROP TABLE IF EXISTS pagamento CASCADE;
 
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
@@ -54,8 +56,8 @@ CREATE TABLE motorista (
     rua                     VARCHAR(255) NOT NULL,
     rua_numero              INTEGER      NOT NULL,
     codigo_postal           VARCHAR(15)  NOT NULL,
-    criado_em               TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    atualizado_em           TIMESTAMP,
+    criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em       TIMESTAMP,
 
     FOREIGN KEY (id) REFERENCES utilizador(id) ON DELETE CASCADE
 );
@@ -142,7 +144,7 @@ CREATE TABLE viagem (
     CHECK (fim > inicio),
 
     FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
-    FOREIGN KEY (turno_id)   REFERENCES turno(id) ON DELETE CASCADE,
+    FOREIGN KEY (turno_id)   REFERENCES turno(id),
     FOREIGN KEY (pedido_id)  REFERENCES pedido(id)
 );
 
@@ -164,7 +166,7 @@ CREATE TABLE reabastecimento (
     turno_id        BIGINT    NOT NULL,
 
     data_inicio     TIMESTAMP NOT NULL,
-    data_fim        TIMESTAMP,
+    data_fim        TIMESTAMP NOT NULL,
 
     quantidade      NUMERIC(10,2) NOT NULL CHECK (quantidade >= 0),
     euros_pagos     NUMERIC(10,2) NOT NULL CHECK (euros_pagos >= 0),

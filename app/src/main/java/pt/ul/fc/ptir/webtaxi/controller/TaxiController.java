@@ -25,7 +25,7 @@ public class TaxiController {
 
 
     @GetMapping
-    @PreAuthorize("hasRole('GESTOR')")
+    @PreAuthorize("hasRole('GESTOR') or hasRole('MOTORISTA')")
     public ResponseEntity<List<TaxiResponseDTO>> listarTaxis() {
         return ResponseEntity.ok(taxiService.listarTaxis());
     }

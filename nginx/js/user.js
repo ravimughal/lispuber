@@ -93,12 +93,17 @@ function goTab(tab) {
 // ─────────────────────────────────────────────
 // PROFILE
 // ─────────────────────────────────────────────
+const genderMap = {
+  MASCULINO: "Male",
+  FEMININO: "Female",
+};
+
 function initProfile() {
   document.getElementById("profile-name").textContent  = user.nome  || "—";
   document.getElementById("profile-name2").textContent = user.nome  || "Me";
   document.getElementById("profile-email").textContent = user.email || "—";
   document.getElementById("profile-nif").textContent   = user.nif   || "—";
-  document.getElementById("profile-gender").textContent = user.genero || "—";
+  document.getElementById("profile-gender").textContent = genderMap[user.genero] || "Other";
   document.getElementById("profile-dob").textContent   = user.dataNascimento ? new Date(user.dataNascimento).toLocaleDateString() : "—";
 }
 
@@ -122,8 +127,19 @@ function renderRidesList() {
   if (!el) return;
   el.innerHTML = "";
   pedidos.forEach(p => {
+    const status =
+    p.estadoPedido === "CONCLUIDO"
+      ? "Concluded"
+      : "Pending";
+
     const fare = p.preco != null ? "€" + Number(p.preco).toFixed(2) : "";
-    const date = new Date(p.dataSolicitacao).toLocaleString([], { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+    const date = new Date(p.dataSolicitacao).toLocaleString([], {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
     const tipo = mapTipo(p.conforto?.nivelConforto);
     const icon = { economy:"🚗", comfort:"🛋️", premium:"👑" }[tipo];
     const btn = document.createElement("button");
@@ -136,7 +152,7 @@ function renderRidesList() {
     : (p.ruaOrigem || "—")} →   ${(p.ruaDestino || "—").length > 20
     ? (p.ruaDestino || "—").slice(0, 20) + "..."
     : (p.ruaDestino || "—")}</div>
-        <div class="text-xs text-slate-400 mt-0.5">${date} · ${p.estadoPedido}</div>
+        <div class="text-xs text-slate-400 mt-0.5">${date} · ${status}</div>
       </div>
       <div class="text-right flex-shrink-0">
         <div class="sora font-semibold text-sm text-slate-900 dark:text-white">${fare}</div>
@@ -159,7 +175,7 @@ function openReceipt(p) {
     : (p.ruaDestino || "—")}</span></div>
     <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Date</span><span>${date}</span></div>
     <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Comfort</span><span>${p.conforto?.nivelConforto || "—"}</span></div>
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Status</span><span>${p.estadoPedido}</span></div>
+    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Status</span><span>${status}</span></div>
     <div class="border-t border-slate-100 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-900 dark:text-white"><span>Total</span><span class="text-sky-500">${fare}</span></div>`;
   document.getElementById("receipt-modal").classList.remove("hidden");
 }
@@ -214,6 +230,7 @@ function calcStats() {
   document.getElementById("profile-spent").textContent = "€" + totalSpent.toFixed(2);
 }
 
+
 // ─────────────────────────────────────────────
 // FARE + RIDE TYPE
 // ─────────────────────────────────────────────
@@ -221,25 +238,138 @@ const FARES = { economy:{base:2,km:1.2}, comfort:{base:3,km:1.8}, premium:{base:
 let selectedRide = "economy", routeKm = 3.4;
 
 function mapTipo(nivel) {
-  return { BASICO:"economy", CONFORTO:"comfort", LUXO:"premium" }[nivel] || "economy";
+  return { BASICO:"economy", CONFORTO:"comfort", LUXO:"premium", LUXUOSO:"premium" }[nivel] || "economy";
 }
+
+function mapToBackendConforto(type) {
+  return { economy: "BASICO", comfort: "CONFORTO", premium: "LUXUOSO" }[type] || "BASICO";
+}
+
+let calculatedPrices = { economy: "0.00", comfort: "0.00", premium: "0.00" };
+
+
 function calcFare(type, km) {
   return (FARES[type].base + FARES[type].km * km).toFixed(2);
 }
+
+async function updateAllFares() {
+  if (!pickupLL || !destLL) return;
+
+  console.log("Chamada à API de Preços:", {
+    origem: pickupLL,
+    destino: destLL,
+    data: new Date().toISOString()
+  });
+
+  ["economy", "comfort", "premium"].forEach(t => {
+    const el = document.getElementById("fare-" + t);
+    if (el) el.textContent = "⏱️...";
+  });
+
+  const tipos = ["economy", "comfort", "premium"];
+  const dataIso = new Date().toISOString();
+
+  try {
+    const promises = tipos.map(tipo => 
+      api("POST", "/precos/calculate-preco-viagem", {
+        latOrigem: pickupLL[0],
+        lonOrigem: pickupLL[1],
+        latDestino: destLL[0],
+        lonDestino: destLL[1],
+        conforto: mapToBackendConforto(tipo),
+        data: dataIso
+      })
+    );
+
+    const resultados = await Promise.all(promises);
+
+    tipos.forEach((tipo, index) => {
+      const valor = resultados[index].preco != null ? resultados[index].preco : resultados[index];
+      calculatedPrices[tipo] = Number(valor).toFixed(2);
+      const el = document.getElementById("fare-" + tipo);
+      if (el) el.textContent = "€" + calculatedPrices[tipo];
+    });
+
+    const confirmBtn = document.getElementById("confirm-btn");
+    if (confirmBtn) confirmBtn.textContent = "Confirm ride — €" + calculatedPrices[selectedRide];
+
+  } catch (e) {
+    console.error("Erro na API de preços:", e);
+
+
+    if (e.message.includes("403") || e.message.includes("Forbidden") || token === null) {
+      toast("🔒 Sessão expirada. Redirecionando...");
+      setTimeout(() => {
+        ["token","role","user"].forEach(k => localStorage.removeItem(k));
+        window.location.href = "index";
+      }, 1500);
+      return;
+    }
+    
+    // Fallback local caso seja apenas uma falha temporária do servidor
+    tipos.forEach(t => {
+      calculatedPrices[t] = calcFare(t, routeKm);
+      const el = document.getElementById("fare-" + t);
+      if (el) el.textContent = "€" + calculatedPrices[t];
+    });
+    const confirmBtn = document.getElementById("confirm-btn");
+    if (confirmBtn) confirmBtn.textContent = "Confirm ride — €" + calculatedPrices[selectedRide];
+  }
+}
+
+async function iniciarPagamento() {
+  try {
+    const res = await fetch(`/api/pagamentos/viagem/${activeViagemId}/iniciar`, {
+      method: 'POST',
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }
+    });
+
+    console.log(res);
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`HTTP ${res.status} — ${err}`);
+    }
+
+    const data = await res.json();
+
+    // Init Stripe.js
+    stripe = Stripe(data.publishableKey);
+    elements = stripe.elements({ clientSecret: data.clientSecret });
+    const paymentEl = elements.create('payment', {
+      appearance: {
+        theme: 'default',
+      }
+    });
+    paymentEl.mount('#payment-element');
+
+  } catch (e) {
+    console.error("Erro ao iniciar pagamento:", e);
+  }
+}
+
 function selectRide(type) {
   selectedRide = type;
   ["economy","comfort","premium"].forEach(t => {
-    document.getElementById("card-" + t).classList.toggle("selected", t === type);
+    const el = document.getElementById("card-" + t);
+    if (el) el.classList.toggle("selected", t === type);
   });
-  document.getElementById("confirm-btn").textContent = "Confirm ride — €" + calcFare(type, routeKm);
+  
+  const currentPrice = calculatedPrices[type] !== "0.00" ? calculatedPrices[type] : calcFare(type, routeKm);
+  document.getElementById("confirm-btn").textContent = "Confirm ride — €" + currentPrice;
 }
-function setRouteKm(km) {
-  routeKm = km;
-  ["economy","comfort","premium"].forEach(t => {
-    document.getElementById("fare-" + t).textContent = "€" + calcFare(t, km);
-  });
-  document.getElementById("km-label").textContent = km.toFixed(1) + " km";
-  document.getElementById("confirm-btn").textContent = "Confirm ride — €" + calcFare(selectedRide, km);
+
+function setRouteKm(km, duration) {
+  document.getElementById("km-economy").textContent = km.toFixed(1) + " km";
+  document.getElementById("km-comfort").textContent = km.toFixed(1) + " km";
+  document.getElementById("km-premium").textContent = km.toFixed(1) + " km";
+
+  document.getElementById("economy-time").textContent = duration + " min";
+  document.getElementById("comfort-time").textContent = Math.round(duration * 1.2) + " min";
+  document.getElementById("premium-time").textContent = Math.round(duration * 0.8) + " min";
+
+  // Atualiza os preços chamando a API do backend
+  updateAllFares();
 }
 
 // ─────────────────────────────────────────────
@@ -335,8 +465,9 @@ function fetchRoute() {
     if (routeLine) map.removeLayer(routeLine);
     routeLine = L.polyline(coords, { color:"#0ea5e9", weight:4, opacity:.85 }).addTo(map);
     map.fitBounds(routeLine.getBounds(), { padding:[70,200] });
-    setRouteKm(data.routes[0].distance / 1000);
-  }).catch(() => setRouteKm(3.4));
+    console.log(data);
+    setRouteKm(data.routes[0].distance / 1000, Math.round(data.routes[0].duration / 60));
+  }).catch(() => setRouteKm(3.4, 5));
 }
 
 function searchDestination() {
@@ -441,16 +572,12 @@ async function startTracking(ride) {
   try {
     const drv = await api("GET", `/motoristas/${ride.motoristaId}`);
     document.getElementById("drv-name").textContent = drv.nome || "Driver";
-    document.getElementById("rate-drv-name").textContent = drv.nome || "Driver";
   } catch { document.getElementById("drv-name").textContent = "Driver"; }
 
-  document.getElementById("drv-car").textContent       = "—";
-  document.getElementById("drv-rating").textContent    = "—";
-  document.getElementById("rate-drv-car").textContent  = "—";
+  // document.getElementById("drv-car").textContent       = "—";
+  // document.getElementById("drv-rating").textContent    = "—";
   document.getElementById("dest-label-track").textContent = ride.ruaDestino?.split(",")[0] || "—";
-  document.getElementById("fare-label-track").textContent = ride.preco != null ? "€" + Number(ride.preco).toFixed(2) : "—";
-  document.getElementById("rate-fare").textContent = ride.preco != null ? "€" + Number(ride.preco).toFixed(2) : "—";
-  document.getElementById("rate-dest").textContent = ride.ruaDestino?.split(",")[0] || "—";
+  // document.getElementById("fare-label-track").textContent = ride.preco != null ? "€" + Number(ride.preco).toFixed(2) : "—";
 
   goTab("tracking");
   initTrackMap(ride);
@@ -563,7 +690,7 @@ function resetBookingUI() {
 // ─────────────────────────────────────────────
 let ratingStars = 0;
 
-function showRating() { goTab("rate"); ratingStars = 0; document.querySelectorAll(".star-btn").forEach(s => s.style.color = "#e2e8f0"); }
+function showRating() { goTab("rate"); ratingStars = 0; document.querySelectorAll(".star-btn").forEach(s => s.style.color = "#e2e8f0"); iniciarPagamento(); }
 function setStar(n) {
   ratingStars = n;
   document.querySelectorAll(".star-btn").forEach((s,i) => s.style.color = i < n ? "#f59e0b" : "#e2e8f0");
@@ -572,7 +699,7 @@ function toggleCompliment(btn) {
   ["border-sky-400","text-sky-500","bg-sky-50"].forEach(c => btn.classList.toggle(c));
 }
 function submitRating() {
-  toast("⭐ Thanks for your feedback!");
+  toast("✅ Payment valid!");
   resetBookingUI();
   if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
   if (routeLine)  { map.removeLayer(routeLine);  routeLine  = null; }

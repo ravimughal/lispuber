@@ -111,11 +111,11 @@ public class ViagemService {
         }
 
         long taxiId=turno.getTaxi().getId();
-        boolean taxiOcupado = viagemRepository.isTaxiOcupado(taxiId, turno_inicio);
+        // boolean taxiOcupado = viagemRepository.isTaxiOcupado(taxiId, turno_inicio);
 
-        if(taxiOcupado){
-            throw new IllegalStateException("Erro: O táxi com id: "+taxiId+" já está a ser usado numa viagem que está a decorrer.");
-        }
+        // if(taxiOcupado){
+        //     throw new IllegalStateException("Erro: O táxi com id: "+taxiId+" já está a ser usado numa viagem que está a decorrer.");
+        // }
         
         LocalDateTime dataAtual=LocalDateTime.now();
 

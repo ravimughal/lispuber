@@ -29,7 +29,7 @@ public interface ViagemRepository extends JpaRepository<Viagem, Long> {
     @Query("SELECT COUNT(v) > 0 FROM Viagem v " +
            "JOIN v.turno t " +
            "WHERE t.taxi.id = :taxiId " +
-           "AND (v.duracao.fim IS NULL OR v.duracao.fim > :inicioNova)")
+           "AND (v.duracao.fim > :inicioNova)")
     boolean isTaxiOcupado(@Param("taxiId") Long taxiId, 
                           @Param("inicioNova") LocalDateTime inicioNova);
 

@@ -22,7 +22,6 @@ public class ViagemController {
 
 
     @GetMapping
-    
     public ResponseEntity<List<ViagemResponseDTO>> listarViagens() {
         return ResponseEntity.ok(viagemService.listarViagens());
     }

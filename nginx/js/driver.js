@@ -133,8 +133,23 @@ let currentRequest  = null;   // pedido being shown
 let activeViagemId  = null;   // viagem after driver accepted
 let tripPollInterval = null;
 let clientConfirmPollInterval = null;
+let allTaxis = [];
+let currentTurno = null;
+
+async function getAllTaxis() {
+  try {
+    allTaxis = await api("GET", `/taxis`);
+  } catch (e) {
+    console.error("getAllTaxis:", e);
+  }
+}
 
 function toggleOnline() {
+  if (currentTurno == null) {
+    toast("⚠️ You do not have a shift yet. Create one in the Management panel.");
+    return;
+  }
+
   isOnline = !isOnline;
   const tog = document.getElementById("online-toggle");
   tog.classList.toggle("online", isOnline);
@@ -179,33 +194,74 @@ async function fetchPendingRequests() {
       showPanel("panel-waiting");
       return;
     }
+    console.log("Pending rides:", rides);
     showRideRequest(rides[0]);
   } catch (e) {
     console.error("fetchPendingRequests:", e);
   }
 }
 
-function showRideRequest(r) {
+async function updateAllFares(latOrigem, lonOrigem, latDestino, lonDestino, tipo) {
+  const dataIso = new Date().toISOString();
+
+  const resultado = await api("POST", "/precos/calculate-preco-viagem", {
+    latOrigem,
+    lonOrigem,
+    latDestino,
+    lonDestino,
+    conforto: tipo,
+    data: dataIso
+  });
+
+  return resultado;
+}
+
+const formatCoord = (v) =>
+  v != null ? Number(v).toFixed(7) : "0.0000000";
+
+async function showRideRequest(r) {
   currentRequest = r;
 
+  const origemLat = formatCoord(r.latitudeOrigem);
+  const origemLon = formatCoord(r.longitudeOrigem);
+  const destLat = formatCoord(r.latitudeDestino);
+  const destLon = formatCoord(r.longitudeDestino);
+  console.log("Calculating fare for coords:", { origemLat, origemLon, destLat, destLon, tipo: r.conforto });
+
+  const fare = await updateAllFares(
+    origemLat,
+    origemLon,
+    destLat,
+    destLon,
+    r.conforto.nivelConforto
+  );
+
   document.getElementById("req-name").textContent    = r.cliente?.nome || "Client";
-  document.getElementById("req-rating").textContent  = "4.8";
-  document.getElementById("req-rides").textContent   = "Client";
-  document.getElementById("req-fare").textContent    = r.preco != null ? "€" + Number(r.preco).toFixed(2) : "—";
-  document.getElementById("req-type").textContent    = r.conforto?.nivelConforto || "—";
+  document.getElementById("req-rating").textContent  = r.numPassageiros;
+  document.getElementById("req-fare").textContent = "€" + fare;
   document.getElementById("req-pickup").textContent  = r.ruaOrigem  || "—";
   document.getElementById("req-dest").textContent    = r.ruaDestino || "—";
-  document.getElementById("req-distance").textContent = "—";
-  document.getElementById("req-trip-km").textContent  = "—";
-  document.getElementById("req-eta").textContent      = "—";
 
   // Calc rough distance if coords exist
-  if (r.latitudeOrigem && driverLL) {
-    const dx = r.latitudeOrigem - driverLL[0];
-    const dy = r.longitudeOrigem - driverLL[1];
+  if (origemLat && driverLL) {
+    const dx = parseFloat(origemLat) - driverLL[0];
+    const dy = parseFloat(origemLon) - driverLL[1];
     const km = (Math.sqrt(dx*dx + dy*dy) * 111).toFixed(1);
     document.getElementById("req-distance").textContent = km + " km";
   }
+
+
+  const url = `https://router.project-osrm.org/route/v1/driving/${origemLat},${origemLon};${destLat},${destLon}?overview=full&geometries=geojson`;
+  fetch(url).then(r => r.json()).then(data => {
+    if (!data.routes?.length) return;
+    document.getElementById("req-trip-km").textContent = (data.routes[0].distance / 1000).toFixed(1) + " km";
+    document.getElementById("req-eta").textContent = Math.round(data.routes[0].duration / 60) + " min";
+  }).catch(err => {
+    console.error("OSRM error:", err);
+    document.getElementById("req-trip-km").textContent = "3.4 km";
+    document.getElementById("req-eta").textContent = "5 min";
+  });
+
 
   showPanel("panel-request");
   expandSheet();
@@ -226,7 +282,7 @@ async function acceptRide() {
     document.getElementById("acc-client-name").textContent  = currentRequest.cliente?.nome || "Client";
     document.getElementById("acc-pickup").textContent       = currentRequest.ruaOrigem  || "—";
     document.getElementById("acc-dest").textContent         = currentRequest.ruaDestino || "—";
-    document.getElementById("acc-fare").textContent         = currentRequest.preco != null ? "€" + Number(currentRequest.preco).toFixed(2) : "—";
+    // document.getElementById("acc-fare").textContent         = currentRequest.preco != null ? "€" + Number(currentRequest.preco).toFixed(2) : "—";
     showPanel("panel-accepted");
     expandSheet();
 
@@ -246,16 +302,33 @@ function pollForViagem(pedidoId) {
 
       if (pedido.estadoPedido === "EM_CURSO") {
         clearInterval(clientConfirmPollInterval);
-        const viagem = await api("POST", `/viagens`, {
-          clienteId: pedidoId.clienteId,
-          turnoId: 28,
-          pedidoId: pedidoId,
-          dataInicio: new Date().toISOString(),
-          kilometros: 10
-        });
-        activeViagemId = viagem.id;
+        try {
+          console.log("Creating viagem for pedidoId:", pedidoId); 
+          console.log("Current turno:", currentTurno);
+          console.log(new Date().toISOString());
+          const viagem = await api("POST", `/viagens`, {
+            clienteId: pedido.clienteId,
+            turnoId: currentTurno.id,
+            pedidoId: pedidoId,
+            dataInicio: new Date().toISOString(),
+            kilometros: 10
+          });
+          activeViagemId = viagem.id;
 
-        startActiveRide(viagem);
+          startActiveRide(viagem);
+        } catch (e) { 
+          console.error("Error creating viagem:", e);
+
+          // try to extract backend message if available
+          const message =
+            e?.message ||
+            e?.response?.message ||
+            e?.response?.data?.message ||
+            JSON.stringify(e);
+
+          console.error("Backend error message:", message);
+          toast(message);
+        }        
       }
     } catch (e) {
       console.error("pollForViagem:", e);
@@ -267,9 +340,9 @@ function startActiveRide(viagem) {
   document.getElementById("active-name").textContent   = currentRequest.cliente?.nome || "Client";
   document.getElementById("active-pickup").textContent = currentRequest.ruaOrigem  || "—";
   document.getElementById("active-dest").textContent   = currentRequest.ruaDestino || "—";
-  document.getElementById("active-fare").textContent   = currentRequest.preco != null ? "€" + Number(currentRequest.preco).toFixed(2) : "—";
-  document.getElementById("active-km").textContent     = "—";
-  document.getElementById("active-eta").textContent    = "—";
+  // document.getElementById("active-fare").textContent   = currentRequest.preco != null ? "€" + Number(currentRequest.preco).toFixed(2) : "—";
+  // document.getElementById("active-km").textContent     = "—";
+  // document.getElementById("active-eta").textContent    = "—";
 
   showPanel("panel-active");
   expandSheet();
@@ -331,8 +404,8 @@ let todayEarnings = 0, todayRides = 0, todayKm = 0;
 function updateTodayStats(fare) {
   todayEarnings += fare;
   todayRides++;
-  ["stat-rides","stat-rides2"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = todayRides; });
-  ["stat-earn","stat-earn2"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = "€" + todayEarnings.toFixed(2); });
+  // ["stat-rides","stat-rides2"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = todayRides; });
+  // ["stat-earn","stat-earn2"].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = "€" + todayEarnings.toFixed(2); });
 }
 
 // ─────────────────────────────────────────────
@@ -359,6 +432,8 @@ viagens.forEach(v => {
 });
 
 container.innerHTML = pedidos.map(p => {
+  console.log(viagens);
+  console.log(pedidos);
   const viagem = viagemByPedido[p.id];
 
   // 💰 preço
@@ -370,10 +445,13 @@ container.innerHTML = pedidos.map(p => {
     fare = "€" + Number(random).toFixed(2); // estimativa
   }
 
-  // 📅 data
   const date = p.dataSolicitacao
-    ? new Date(p.dataSolicitacao).toLocaleString([], {
-        day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"
+    ? new Date(p.dataSolicitacao).toLocaleString("pt-PT", {
+        day: "2-digit",
+        month: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
       })
     : "—";
 
@@ -385,6 +463,11 @@ container.innerHTML = pedidos.map(p => {
        </button>`
     : `<span class="text-xs text-slate-400">Estimativa</span>`;
 
+  const status =
+    p.estadoPedido === "CONCLUIDO"
+      ? "Concluded"
+      : "Pending";
+
   return `
     <div class="flex justify-between items-center p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
       <div>
@@ -392,10 +475,10 @@ container.innerHTML = pedidos.map(p => {
           ${p.ruaOrigem?.split(",")[0] || "—"} → ${p.ruaDestino?.split(",")[0] || "—"}
         </div>
         <div class="text-xs text-slate-400 mt-0.5">
-          ${date} · ${p.estadoPedido}
+          ${date} · ${status}
         </div>
         <div class="text-xs text-slate-400">
-          ${p.cliente?.nome || ""}
+          Client: ${p.cliente?.nome || ""}
         </div>
       </div>
 
@@ -485,10 +568,13 @@ async function loadTurnos() {
 
     turnos.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
 
+    currentTurno = turnos.find(t => isTurnoAtivo(t));
 
 container.innerHTML = turnos.map(t => {
   const ativo = isTurnoAtivo(t);
-
+  console.log("Turno", t.id, "ativo?", ativo);
+  const taxi = allTaxis.find(tx => tx.id === t.taxiId);
+  const matricula = taxi ? taxi.matricula : "—";
   return `
     <div class="p-3 rounded-xl border 
       ${ativo 
@@ -497,7 +583,7 @@ container.innerHTML = turnos.map(t => {
 
       <div class="flex justify-between items-center">
         <div class="text-sm font-semibold">
-          🚕 Taxi #${t.taxiId || "—"}
+          🚕 Taxi ${matricula}
         </div>
 
         ${ativo ? `
@@ -509,7 +595,9 @@ container.innerHTML = turnos.map(t => {
       </div>
 
       <div class="text-xs text-slate-400 mt-1">
-        ${t.inicio?.split("T")[0]} → ${t.fim?.split("T")[0] || "—"}
+        ${t.inicio?.split("T")[0]} ${t.inicio?.split("T")[1]?.slice(0, 5)}
+        →
+        ${t.fim?.split("T")[0] || "—"} ${t.fim?.split("T")[1]?.slice(0, 5) || ""}
       </div>
 
       <!-- 👇 MENU (ESTAVA EM FALTA) -->
@@ -547,7 +635,7 @@ async function loadAvailableTaxis() {
     const taxis = await api("GET", `/turnos/${turno.id}/taxis-disponiveis`);
     renderTaxiList(taxis);
   } catch (e) {
-    toast("❌ Failed to load taxis");
+    toast("❌ The selected time overlaps with an existing shift");
     console.error(e);
   }
 }
@@ -587,7 +675,7 @@ async function abrirCarregar(turnoId) {
 function isTurnoAtivo(t) {
   const now = new Date();
   const inicio = new Date(t.inicio);
-  const fim = t.fim ? new Date(t.fim) : null;
+  const fim = new Date(t.fim);
 
   return inicio <= now && (!fim || now <= fim);
 }
@@ -702,4 +790,6 @@ window.addEventListener("load", () => {
   initProfile();
   setDefaultTurnoTimes();
   loadHistory();
+  getAllTaxis();
+  loadTurnos();
 });

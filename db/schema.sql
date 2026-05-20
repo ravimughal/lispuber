@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS pagamento CASCADE;
 DROP TABLE IF EXISTS reabastecimento CASCADE;
 DROP TABLE IF EXISTS fatura CASCADE;
 DROP TABLE IF EXISTS viagem CASCADE;
@@ -10,6 +9,8 @@ DROP TABLE IF EXISTS gestor CASCADE;
 DROP TABLE IF EXISTS cliente CASCADE;
 DROP TABLE IF EXISTS utilizador CASCADE;
 DROP TABLE IF EXISTS conforto CASCADE;
+DROP TABLE IF EXISTS configuracao_taxas CASCADE;
+DROP TABLE IF EXISTS pagamento CASCADE;
 
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
@@ -82,6 +83,7 @@ CREATE TABLE taxi (
 
 
 
+
 CREATE TABLE turno (
     id           BIGSERIAL PRIMARY KEY,
     motorista_id BIGINT    NOT NULL,
@@ -104,7 +106,6 @@ CREATE TABLE pedido (
     motorista_id         BIGINT,
 
     num_passageiros      INTEGER       NOT NULL CHECK (num_passageiros > 0),
-    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
     estado_pedido        VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     data_solicitacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -136,6 +137,9 @@ CREATE TABLE viagem (
     fim                  TIMESTAMP,
 
     km_percorridos       NUMERIC(10,2) NOT NULL CHECK (km_percorridos >= 0),
+
+    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
+
 
     CHECK (fim > inicio),
 
@@ -170,20 +174,22 @@ CREATE TABLE reabastecimento (
 
     CHECK (data_fim > data_inicio),
 
-FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
+    FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
+
+
 
 CREATE TABLE pagamento (
     id                  BIGSERIAL     PRIMARY KEY,
     viagem_id           BIGINT        NOT NULL UNIQUE,
     stripe_payment_id   VARCHAR(255)  NOT NULL UNIQUE,
-
+    
     estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     valor               NUMERIC(10,2) NOT NULL,
     criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em       TIMESTAMP,
 
     CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO')),
-
+    
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
