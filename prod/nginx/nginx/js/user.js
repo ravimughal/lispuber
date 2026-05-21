@@ -335,10 +335,20 @@ async function iniciarPagamento() {
 
     // Init Stripe.js
     stripe = Stripe(data.publishableKey);
-    elements = stripe.elements({ clientSecret: data.clientSecret });
-    const paymentEl = elements.create('payment', {
-      appearance: {
-        theme: 'default',
+    
+    const appearance =  {
+      theme: 'night',
+      variables: {
+        colorText: '#ffffff',
+      }
+    }
+    elements = stripe.elements({ clientSecret: data.clientSecret, appearance });
+    
+     const paymentEl = elements.create('payment', {
+      paymentMethodOrder: ['card'],
+      layout: {
+        type: 'accordion',
+        visibleAccordionItemsCount: 1
       }
     });
     paymentEl.mount('#payment-element');
@@ -418,6 +428,8 @@ async function getAddress(lat, lng) {
 }
 
 function initBookingMap() {
+  document.getElementById("dest-input").value = "";
+  document.getElementById("pickup-input").value = "";
   map = L.map("map", { zoomControl:true, attributionControl:false });
   map.setView(pickupLL, 14);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom:19, crossOrigin:true }).addTo(map);
@@ -450,7 +462,7 @@ document.getElementById("pickup-input").value =
       if (pickupMarker) map.removeLayer(pickupMarker);
       pickupMarker = L.marker(pickupLL, { icon:pinIcon("#22c55e","A") }).addTo(map);
       map.setView(pickupLL, 14);
-      document.getElementById("pickup-input").value = "My location";
+      //document.getElementById("pickup-input").value = "My location";
       setPinMode("dest");
     }, () => setPinMode("pickup"));
   } else { setPinMode("pickup"); }
@@ -643,7 +655,7 @@ function initTrackMap(ride) {
     const rem = Math.max(0, Math.round((1-t)*14));
     document.getElementById("eta-text").textContent = rem > 0 ? rem+" min away" : "Arriving…";
     document.getElementById("pickup-eta").textContent = t < 0.45 ? Math.round((1-t/0.45)*4)+" min" : "Here!";
-    document.getElementById("progress-phase").textContent = t < 0.45 ? "Driver en route" : "In progress";
+    document.getElementById("progress-phase").textContent = t < 0.45 ? "Driver is driving" : "In progress";
     document.getElementById("ride-progress").style.width = Math.round(t*100) + "%";
   }, 2500);
 }
@@ -704,7 +716,7 @@ function submitRating() {
   if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
   if (routeLine)  { map.removeLayer(routeLine);  routeLine  = null; }
   document.getElementById("dest-input").value = "";
-  document.getElementById("pickup-input").value = "My location";
+  document.getElementById("pickup-input").value = "";
   document.getElementById("booking-sheet").classList.remove("expanded");
   destLL = null;
   setTimeout(() => map && map.invalidateSize(), 100);
