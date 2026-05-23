@@ -635,7 +635,7 @@ async function loadAvailableTaxis() {
     const taxis = await api("GET", `/turnos/${turno.id}/taxis-disponiveis`);
     renderTaxiList(taxis);
   } catch (e) {
-    toast("❌ The selected time overlaps with an existing shift");
+    toast("❌ The selected time overlaps with an existing shift or is bigger than 8 hours");
     console.error(e);
   }
 }
