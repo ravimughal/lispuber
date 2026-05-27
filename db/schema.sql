@@ -149,6 +149,19 @@ CREATE TABLE viagem (
 );
 
 
+CREATE TABLE avaliacao (
+    id          BIGSERIAL     PRIMARY KEY,
+    viagem_id   BIGINT        NOT NULL UNIQUE,
+    cliente_id  BIGINT        NOT NULL,
+    motorista_id BIGINT       NOT NULL,
+    classificacao INTEGER     NOT NULL CHECK (classificacao BETWEEN 1 AND 5),
+    comentario  VARCHAR(500),
+    criado_em   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (viagem_id)    REFERENCES viagem(id)    ON DELETE CASCADE,
+    FOREIGN KEY (cliente_id)   REFERENCES cliente(id)   ON DELETE CASCADE,
+    FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE fatura (
     id             BIGSERIAL PRIMARY KEY,
