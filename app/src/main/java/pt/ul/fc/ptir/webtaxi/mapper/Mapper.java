@@ -287,4 +287,29 @@ public class Mapper {
             publishableKey
         );
     }
+
+    // AVALIACAO
+    public static AvaliacaoResponseDTO converterParaAvaliacaoDTO(Avaliacao avaliacao) {
+        return new AvaliacaoResponseDTO(
+            avaliacao.getId(),
+            avaliacao.getViagem().getId(),
+            avaliacao.getCliente().getId(),
+            avaliacao.getCliente().getNome(),
+            avaliacao.getMotorista().getId(),
+            avaliacao.getMotorista().getNome(),
+            avaliacao.getClassificacao(),
+            avaliacao.getComentario(),
+            avaliacao.getCriadoEm()
+        );
+    }
+
+    public static Avaliacao converterParaAvaliacao(AvaliacaoRequestDTO dto, Viagem viagem, Cliente cliente, Motorista motorista) {
+        Avaliacao avaliacao = new Avaliacao();
+        avaliacao.setViagem(viagem);
+        avaliacao.setCliente(cliente);
+        avaliacao.setMotorista(motorista);
+        avaliacao.setClassificacao(dto.classificacao());
+        avaliacao.setComentario(dto.comentario());
+        return avaliacao;
+    }
 }
