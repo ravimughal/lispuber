@@ -83,7 +83,6 @@ CREATE TABLE taxi (
 
 
 
-
 CREATE TABLE turno (
     id           BIGSERIAL PRIMARY KEY,
     motorista_id BIGINT    NOT NULL,
@@ -149,18 +148,21 @@ CREATE TABLE viagem (
 );
 
 
+
 CREATE TABLE avaliacao (
-    id          BIGSERIAL     PRIMARY KEY,
-    viagem_id   BIGINT        NOT NULL UNIQUE,
-    cliente_id  BIGINT        NOT NULL,
-    motorista_id BIGINT       NOT NULL,
-    classificacao INTEGER     NOT NULL CHECK (classificacao BETWEEN 1 AND 5),
-    comentario  VARCHAR(500),
-    criado_em   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (viagem_id)    REFERENCES viagem(id)    ON DELETE CASCADE,
-    FOREIGN KEY (cliente_id)   REFERENCES cliente(id)   ON DELETE CASCADE,
+    id              BIGINT     PRIMARY KEY,
+    cliente_id      BIGINT    NOT NULL,
+    viagem_id       BIGINT    NOT NULL,
+    motorista_id    BIGINT    NOT NULL,
+    classificacao   INTEGER   NOT NULL CHECK (classificacao >= 1 AND classificacao <= 5),
+    comentario      VARCHAR(500),
+    criado_em       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
+    FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE,
     FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE CASCADE
 );
+
 
 
 CREATE TABLE fatura (
@@ -206,3 +208,15 @@ CREATE TABLE pagamento (
     
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
+
+
+
+INSERT INTO configuracao_taxas (chave, valor) 
+VALUES ('TAXA_NOTURNA', 1.30);
+
+
+
+INSERT INTO conforto (nivel_conforto, preco) VALUES
+    ('BASICO', 0.50),
+    ('CONFORTO', 0.75),
+    ('LUXUOSO', 1.0);

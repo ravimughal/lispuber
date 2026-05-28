@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ZONE="europe-southwest1-c"
-STATIC_IP="34.175.59.124"
+STATIC_IP="34.175.36.57"
 
 PRIMARY="nginx1-vm"
 BACKUP="nginx2-vm"

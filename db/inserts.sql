@@ -1,9 +1,3 @@
--- CONFORTO  (2 níveis permitidos pelo schema atual;
---            descomente o ALTER TABLE acima para o 3.º)
-INSERT INTO conforto (nivel_conforto, preco) VALUES
-    ('BASICO', 0.50),
-    ('CONFORTO', 0.75),
-    ('LUXUOSO', 1.0);
 
 
 -- UTILIZADOR
@@ -114,5 +108,15 @@ INSERT INTO reabastecimento (turno_id, data_inicio, data_fim, quantidade, euros_
     (4, '2025-06-02 12:30:00', '2025-06-02 12:40:00', 30.00, 46.50, 220.00),
     (5, '2025-06-02 14:00:00', '2025-06-02 14:12:00', 25.00, 35.00, 160.00);
 
-INSERT INTO configuracao_taxas (chave, valor) 
-VALUES ('TAXA_NOTURNA', 1.30);
+
+
+
+-- CONFORTO  (2 níveis permitidos pelo schema atual;
+--            descomente o ALTER TABLE acima para o 3.º)
+-- INSERT INTO conforto (nivel_conforto, preco) VALUES
+--     ('BASICO', 0.50),
+--     ('CONFORTO', 0.75),
+--     ('LUXUOSO', 1.0);
+
+-- INSERT INTO configuracao_taxas (chave, valor) 
+-- VALUES ('TAXA_NOTURNA', 1.30);

@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS pagamento CASCADE;
 DROP TABLE IF EXISTS reabastecimento CASCADE;
 DROP TABLE IF EXISTS fatura CASCADE;
 DROP TABLE IF EXISTS viagem CASCADE;
@@ -10,6 +9,8 @@ DROP TABLE IF EXISTS gestor CASCADE;
 DROP TABLE IF EXISTS cliente CASCADE;
 DROP TABLE IF EXISTS utilizador CASCADE;
 DROP TABLE IF EXISTS conforto CASCADE;
+DROP TABLE IF EXISTS configuracao_taxas CASCADE;
+DROP TABLE IF EXISTS pagamento CASCADE;
 
 CREATE TABLE conforto (
     id             BIGSERIAL     PRIMARY KEY,
@@ -104,7 +105,6 @@ CREATE TABLE pedido (
     motorista_id         BIGINT,
 
     num_passageiros      INTEGER       NOT NULL CHECK (num_passageiros > 0),
-    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
     estado_pedido        VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     data_solicitacao     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -137,6 +137,9 @@ CREATE TABLE viagem (
 
     km_percorridos       NUMERIC(10,2) NOT NULL CHECK (km_percorridos >= 0),
 
+    preco                NUMERIC(10,2) NOT NULL CHECK (preco >= 0),
+
+
     CHECK (fim > inicio),
 
     FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
@@ -145,18 +148,21 @@ CREATE TABLE viagem (
 );
 
 
+
 CREATE TABLE avaliacao (
-    id          BIGSERIAL     PRIMARY KEY,
-    viagem_id   BIGINT        NOT NULL UNIQUE,
-    cliente_id  BIGINT        NOT NULL,
-    motorista_id BIGINT       NOT NULL,
-    classificacao INTEGER     NOT NULL CHECK (classificacao BETWEEN 1 AND 5),
-    comentario  VARCHAR(500),
-    criado_em   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (viagem_id)    REFERENCES viagem(id)    ON DELETE CASCADE,
-    FOREIGN KEY (cliente_id)   REFERENCES cliente(id)   ON DELETE CASCADE,
+    id              BIGINT     PRIMARY KEY,
+    cliente_id      BIGINT    NOT NULL,
+    viagem_id       BIGINT    NOT NULL,
+    motorista_id    BIGINT    NOT NULL,
+    classificacao   INTEGER   NOT NULL CHECK (classificacao >= 1 AND classificacao <= 5),
+    comentario      VARCHAR(500),
+    criado_em       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (cliente_id) REFERENCES cliente(id) ON DELETE CASCADE,
+    FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE,
     FOREIGN KEY (motorista_id) REFERENCES motorista(id) ON DELETE CASCADE
 );
+
 
 
 CREATE TABLE fatura (
@@ -175,28 +181,42 @@ CREATE TABLE reabastecimento (
     turno_id        BIGINT    NOT NULL,
 
     data_inicio     TIMESTAMP NOT NULL,
-    data_fim        TIMESTAMP,
+    data_fim        TIMESTAMP NOT NULL,
 
-    quantidade      NUMERIC(10,2) CHECK (quantidade >= 0),
-    euros_pagos     NUMERIC(10,2) CHECK (euros_pagos >= 0),
-    kilometros      NUMERIC(10,2) CHECK (kilometros >= 0),
+    quantidade      NUMERIC(10,2) NOT NULL CHECK (quantidade >= 0),
+    euros_pagos     NUMERIC(10,2) NOT NULL CHECK (euros_pagos >= 0),
+    kilometros      NUMERIC(10,2) NOT NULL CHECK (kilometros >= 0),
 
-    CHECK (data_fim IS NULL OR data_fim > data_inicio),
+    CHECK (data_fim > data_inicio),
 
     FOREIGN KEY (turno_id) REFERENCES turno(id) ON DELETE CASCADE
 );
+
+
 
 CREATE TABLE pagamento (
     id                  BIGSERIAL     PRIMARY KEY,
     viagem_id           BIGINT        NOT NULL UNIQUE,
     stripe_payment_id   VARCHAR(255)  NOT NULL UNIQUE,
-
+    
     estado              VARCHAR(20)   NOT NULL DEFAULT 'PENDENTE',
     valor               NUMERIC(10,2) NOT NULL,
     criado_em           TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     atualizado_em       TIMESTAMP,
 
     CONSTRAINT pagamento_estado_check CHECK (estado IN ('PENDENTE', 'PAGO')),
-
+    
     FOREIGN KEY (viagem_id) REFERENCES viagem(id) ON DELETE CASCADE
 );
+
+
+
+INSERT INTO configuracao_taxas (chave, valor) 
+VALUES ('TAXA_NOTURNA', 1.30);
+
+
+
+INSERT INTO conforto (nivel_conforto, preco) VALUES
+    ('BASICO', 0.50),
+    ('CONFORTO', 0.75),
+    ('LUXUOSO', 1.0);

@@ -44,10 +44,10 @@
       background:#fff;border-radius:16px 16px 0 0;
       border-top:1px solid #f1f5f9;
       box-shadow:0 -4px 24px rgba(0,0,0,.10);
-      max-height:30vh;overflow-y:auto;scrollbar-width:none;
+      max-height:50vh;overflow-y:auto;scrollbar-width:none;
       transition:max-height .3s ease;
     }
-    .bottom-sheet.expanded{max-height:74vh}
+    .bottom-sheet.expanded{max-height:03em}
     .bottom-sheet::-webkit-scrollbar{display:none}
     .dark .bottom-sheet{background:#0f172a;border-color:#1e293b}
 
@@ -62,10 +62,10 @@
     .dark .scroll-area{scrollbar-color:#334155 transparent}
 
     .nav-tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-      flex:1;background:none;border:none;cursor:pointer;color:#94a3b8;padding:0}
-    .nav-tab.active{color:#0ea5e9}
-    .dark .nav-tab.active{color:#38bdf8}
-    .nav-tab:hover:not(.active){color:#0ea5e9}
+      flex:1;background:none;border:none;cursor:pointer;padding:0}
+    .nav-tab.active{background:oklch(68.5% 0.169 237.323)}
+    .dark .nav-tab.active{background:oklch(68.5% 0.169 237.323)}
+    .nav-tab:hover:not(.active){background: oklch(58.8% 0.158 241.966)}
 
     #track-map{position:absolute;inset:0;z-index:0}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
@@ -121,10 +121,15 @@
 
 <!-- HEADER -->
 <header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-20 flex-shrink-0" style="height:54px">
-  <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
-    <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
-  </a>
   <div class="flex items-center gap-2">
+    <a href="index" class="px-2 py-1.5 rounded-lg flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
+      <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
+      <span class="sora">Lisp</span>
+    </a>
+    <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Client</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button onclick="logout()" class="py-2 px-3 rounded-lg border border-slate-500 text-sm font-medium text-slate-400 hover:border-red-400  hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition">Logout</button>
     <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
     <div class="relative">
       <button id="langToggle" class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">EN ▾</button>
@@ -143,60 +148,141 @@
     <div id="map-mode-pill">📍 Tap to set pickup</div>
 
     <div class="bottom-sheet" id="booking-sheet">
-      <div style="padding:10px 0 4px;display:flex;justify-content:center;cursor:pointer" onclick="toggleSheet('booking-sheet')">
-        <div class="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
-      </div>
-      <div class="px-4 pb-5">
+<div
+  onclick="toggleSheet('booking-sheet'); rotateArrow()"
+  class="flex justify-center items-center py-3 cursor-pointer
+         hover:bg-slate-100 dark:hover:bg-slate-600
+         transition-colors rounded-t-2xl"
+>
 
-        <!-- BOOKING FORM -->
-        <div id="booking-form">
-          <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1">From:</p>
-          <div class="loc-input-wrap pin-active" id="wrap-pickup" onclick="setPinMode('pickup')">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs z-10">🟢</span>
-            <input id="pickup-input" type="text" placeholder="From where?" readonly
-              class="w-full pl-8 pr-16 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100 outline-none placeholder-slate-400"/>
-            <span class="pin-mode-badge">TAP MAP</span>
+  <div
+    id="sheet-arrow"
+    class="text-slate-400 text-xl transition-transform duration-300 ease-in-out
+           hover:text-slate-600 dark:hover:text-slate-200"
+  >
+     ⮟
+  </div>
+
+</div>
+      <div id="booking-form" class="px-4 pb-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <!-- FROM -->
+          <div>
+            <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1">
+              From:
+            </p>
+
+            <div class="loc-input-wrap pin-active relative" id="wrap-pickup" onclick="setPinMode('pickup')">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs z-10">🟢</span>
+
+              <input id="pickup-input" type="text" placeholder="From where?"
+                class="w-full pl-8 pr-16 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100 outline-none placeholder-slate-400"/>
+
+              <span class="pin-mode-badge">TAP MAP</span>
+            </div>
+            <div class="relative">
+  <div id="pickup-suggestions"
+       class="absolute z-50 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto hidden">
+  </div>
+</div>
           </div>
 
-          <div class="my-2"></div>
+          <!-- TO -->
+          <div>
+            <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1">
+              To:
+            </p>
 
-          <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1">To:</p>
-          <div class="loc-input-wrap" id="wrap-dest" onclick="setPinMode('dest')">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs z-10">🔴</span>
-            <input id="dest-input" type="text" placeholder="Where to?"
-              onkeydown="if(event.key==='Enter')searchDestination()"
-              onfocus="setPinMode('dest');expandSheet('booking-sheet')"
-              class="w-full pl-8 pr-16 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100 outline-none focus:border-sky-400 placeholder-slate-400"/>
-            <span class="pin-mode-badge">TAP MAP</span>
+            <div class="loc-input-wrap relative" id="wrap-dest" onclick="setPinMode('dest')">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs z-10">🔴</span>
+
+              <input id="dest-input" type="text" placeholder="Where to?"
+                onfocus="setPinMode('dest')"
+                class="w-full pl-8 pr-16 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-800 dark:text-slate-100 outline-none focus:border-sky-400 placeholder-slate-400"/>
+
+              <span class="pin-mode-badge">TAP MAP</span>
+            </div>
+            <div class="relative">
+  <div id="dest-suggestions"
+       class="absolute z-50 w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl mt-1 shadow-lg max-h-60 overflow-y-auto hidden">
+  </div>
+</div>
           </div>
+
+        </div>
 
           <div class="my-4"></div>
 
-          <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1.5 mt-10">Choose ride type:</p>
-          <div id="card-economy" class="ride-card selected" onclick="selectRide('economy')">
-            <div class="flex items-center gap-3"><span class="text-xl">🚗</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Economy</div><div class="text-[11px] text-slate-400"><span id="economy-time"></span><span> · Normal</span></div></div>
+        <p class="sora text-[14px] font-semibold tracking-widest text-slate-400 mb-1.5 mt-10">
+          Choose ride type:
+        </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+        <!-- ECONOMY -->
+        <div id="card-economy" class="ride-card selected" onclick="selectRide('economy')">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🚗</span>
+            <div>
+              <div class="sora font-semibold text-sm text-slate-900 dark:text-white">Economy</div>
+              <div class="text-[11px] text-slate-400">
+                <span id="economy-time"></span><span> · Normal</span>
+              </div>
             </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-economy"></div><div class="text-[11px] text-slate-400" id="km-economy"></div></div>
-          </div>
-          <div id="card-comfort" class="ride-card" onclick="selectRide('comfort')">
-            <div class="flex items-center gap-3"><span class="text-xl">🛋️</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Comfort</div><div class="text-[11px] text-slate-400"><span id="comfort-time"></span><span> · Better Car</span></div></div>
-            </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-comfort"></div><div class="text-[11px] text-slate-400" id="km-comfort"></div></div>
-          </div>
-          <div id="card-premium" class="ride-card" onclick="selectRide('premium')">
-            <div class="flex items-center gap-3"><span class="text-xl">👑</span>
-              <div><div class="sora font-semibold text-sm text-slate-900 dark:text-white">Premium</div><div class="text-[11px] text-slate-400"><span id="premium-time"></span><span> · Better Car & Faster</span></div></div>
-            </div>
-            <div class="text-right"><div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-premium"></div><div class="text-[11px] text-slate-400" id="km-premium"></div></div>
           </div>
 
-          <button id="confirm-btn" onclick="bookRide()"
-            class="w-full py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white text-sm font-semibold sora"
-            style="box-shadow:0 4px 16px rgba(14,165,233,.3)">
-            Confirm ride
-          </button>
+          <div class="text-right">
+            <div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-economy"></div>
+            <div class="text-[11px] text-slate-400" id="km-economy"></div>
+          </div>
+        </div>
+
+        <!-- COMFORT -->
+        <div id="card-comfort" class="ride-card" onclick="selectRide('comfort')">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🛋️</span>
+            <div>
+              <div class="sora font-semibold text-sm text-slate-900 dark:text-white">Comfort</div>
+              <div class="text-[11px] text-slate-400">
+                <span id="comfort-time"></span><span> · Better Car</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-comfort"></div>
+            <div class="text-[11px] text-slate-400" id="km-comfort"></div>
+          </div>
+        </div>
+
+        <!-- PREMIUM -->
+        <div id="card-premium" class="ride-card" onclick="selectRide('premium')">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">👑</span>
+            <div>
+              <div class="sora font-semibold text-sm text-slate-900 dark:text-white">Premium</div>
+              <div class="text-[11px] text-slate-400">
+                <span id="premium-time"></span><span> · Better Car & Faster</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-right">
+            <div class="sora font-semibold text-sm text-slate-900 dark:text-white" id="fare-premium"></div>
+            <div class="text-[11px] text-slate-400" id="km-premium"></div>
+          </div>
+        </div>
+
+      </div>
+
+<div class="w-full flex justify-center">
+  <button id="confirm-btn" onclick="bookRide()"
+    class="w-full mt-4  py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white text-sm font-semibold sora"
+    style="box-shadow:0 4px 16px rgba(14,165,233,.3)">
+    Confirm ride
+  </button>
+</div>
         </div>
 
         <!-- SEARCHING -->
@@ -357,7 +443,6 @@
         <span class="text-slate-300 dark:text-slate-600 text-sm">›</span>
       </button>
     </div>
-    <button onclick="logout()" class="w-full py-3 rounded-xl border border-red-200 dark:border-red-900/40 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 bg-white dark:bg-slate-800 mb-4">Logout</button>
   </div>
 </div>
 
@@ -374,13 +459,13 @@
 <!-- BOTTOM NAV -->
 <nav class="flex-shrink-0 flex bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20" style="height:56px" id="main-nav">
   <button class="nav-tab active" id="nav-home"     onclick="goTab('home')">
-    <span class="text-xl leading-none">🏠</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Home</span>
+    <span class="text-xl leading-none">🏠</span><span class="sora text-[10px] font-semibold tracking-wider uppercase">Home</span>
   </button>
   <button class="nav-tab"        id="nav-activity" onclick="goTab('activity')">
-    <span class="text-xl leading-none">📋</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Activity</span>
+    <span class="text-xl leading-none">📋</span><span class="sora text-[10px] font-semibold tracking-wider uppercase">Activity</span>
   </button>
   <button class="nav-tab"        id="nav-profile"  onclick="goTab('profile')">
-    <span class="text-xl leading-none">👤</span><span id="profile-name2" class="sora text-[9px] font-semibold tracking-wider uppercase"></span>
+    <span class="text-xl leading-none">👤</span><span id="profile-name2" class="sora text-[10px] font-semibold tracking-wider uppercase"></span>
   </button>
 </nav>
 

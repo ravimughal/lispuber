@@ -1,569 +1,944 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DASH Driver</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
-<style>
-  *,*::before,*::after{box-sizing:border-box}
-  body{font-family:'DM Sans',sans-serif;margin:0;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-  .sora{font-family:'Sora',sans-serif}
-  header,nav,button,a{transition:background-color .2s,border-color .18s,color .15s}
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manager - LispUber</title>
 
-  #map-wrap{flex:1;position:relative;overflow:hidden}
-  #map{position:absolute;inset:0;z-index:0}
-  .leaflet-control-attribution{display:none!important}
-  .leaflet-control-zoom{border-radius:10px!important;overflow:hidden;border:1px solid #e2e8f0!important}
-  .dark .leaflet-control-zoom{border-color:#334155!important}
-  .leaflet-control-zoom a{width:30px!important;height:30px!important;line-height:30px!important;font-size:16px!important;background:#fff!important;color:#374151!important}
-  .dark .leaflet-control-zoom a{background:#1e293b!important;color:#e2e8f0!important}
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap">
+  
+  <script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['DM Sans','sans-serif'],display:['Sora','sans-serif']}}}}</script>
+  <script src="/js/manager.js" defer></script>
 
-  /* Toast */
-  #toast{position:fixed;bottom:5rem;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;
-    background:#0f172a;color:#f8fafc;padding:7px 18px;border-radius:99px;font-size:12px;
-    z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);
-    transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s}
-  #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif;margin:0;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+    .sora{font-family:'Sora',sans-serif}
 
-  /* Bottom sheet */
-  .bottom-sheet{
-    position:absolute;bottom:0;left:0;right:0;z-index:10;
-    background:#fff;border-radius:16px 16px 0 0;
-    border-top:1px solid #f1f5f9;
-    box-shadow:0 -4px 24px rgba(0,0,0,.10);
-    max-height:46vh;
-    overflow-y:auto;
-    scrollbar-width:none;
-    transition:max-height .3s ease;
-  }
-  .bottom-sheet.expanded{max-height:72vh}
-  .bottom-sheet::-webkit-scrollbar{display:none}
-  .dark .bottom-sheet{background:#0f172a;border-color:#1e293b}
+    /* ── TOAST ── */
+    #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(40px);opacity:0;
+      background:#0f172a;color:#f8fafc;padding:7px 20px;border-radius:99px;font-size:12px;
+      z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25);
+      transition:transform .32s cubic-bezier(.34,1.56,.64,1),opacity .25s}
+    #toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .dark #toast{background:#f1f5f9;color:#0f172a}
 
-  /* Online toggle pill */
-  .online-toggle{
-    position:absolute;top:12px;left:50%;transform:translateX(-50%);
-    z-index:20;display:flex;align-items:center;gap:8px;
-    background:#fff;border-radius:99px;padding:8px 18px;
-    box-shadow:0 4px 20px rgba(0,0,0,.14);
-    border:1px solid #e2e8f0;
-    font-family:'Sora',sans-serif;font-size:13px;font-weight:600;
-    cursor:pointer;user-select:none;
-    transition:background .2s,border-color .2s;
-  }
-  .dark .online-toggle{background:#1e293b;border-color:#334155;color:#f1f5f9}
-  .online-toggle.online{border-color:#22c55e;background:#f0fdf4}
-  .dark .online-toggle.online{background:rgba(34,197,94,.12);border-color:#22c55e}
-  .online-dot{width:10px;height:10px;border-radius:50%;background:#94a3b8;transition:background .2s}
-  .online-toggle.online .online-dot{background:#22c55e;animation:pulse-dot 1.4s infinite}
-  @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.45}}
+    /* ── LAYOUT ── */
+    .main-grid{display:grid;grid-template-columns:240px 1fr;flex:1;min-height:0}
+    @media(max-width:768px){.main-grid{grid-template-columns:1fr}}
+    #sidebar{width:240px;min-height:calc(100dvh - 54px);position:sticky;top:54px;align-self:start}
+    @media(max-width:768px){
+      #sidebar{display:none;position:fixed;inset:0;top:54px;z-index:50;width:100%;min-height:auto}
+      #sidebar.open{display:flex;flex-direction:column}
+    }
 
-  /* Earnings pill top-right */
-  .earnings-pill{
-    position:absolute;top:12px;right:12px;z-index:20;
-    background:#fff;border-radius:99px;padding:6px 14px;
-    box-shadow:0 4px 16px rgba(0,0,0,.12);border:1px solid #e2e8f0;
-    font-family:'Sora',sans-serif;font-size:12px;font-weight:700;color:#16a34a;
-    display:flex;align-items:center;gap:6px;
-  }
-  .dark .earnings-pill{background:#1e293b;border-color:#334155}
+    /* ── PANELS ── */
+    .panel{display:none}
+    .panel.active{display:block}
 
-  /* Ride request card */
-  .ride-request{
-    border:2px solid #38bdf8;border-radius:14px;background:#f0f9ff;
-    padding:14px;margin-bottom:12px;
-  }
-  .dark .ride-request{background:rgba(14,165,233,.1);border-color:#38bdf8}
+    /* ── SIDEBAR ITEMS ── */
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;cursor:pointer;
+      font-size:13px;font-weight:500;color:#64748b;transition:all .15s;border:1px solid transparent}
+    .nav-item:hover{background:#f1f5f9;color:#0f172a}
+    .dark .nav-item:hover{background:#1e293b;color:#f1f5f9}
+    .nav-item.active{background:#eff6ff;color:#0ea5e9;border-color:#bae6fd;font-weight:600}
+    .dark .nav-item.active{background:rgba(14,165,233,.12);border-color:rgba(14,165,233,.3);color:#38bdf8}
+    .nav-section{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#94a3b8;padding:12px 14px 4px}
 
-  /* accept/decline */
-  .btn-accept{background:#22c55e;color:#fff;border-radius:12px;padding:10px;font-weight:700;font-size:13px;font-family:'Sora',sans-serif;border:none;cursor:pointer;flex:1}
-  .btn-accept:hover{background:#16a34a}
-  .btn-decline{background:#fee2e2;color:#dc2626;border-radius:12px;padding:10px;font-weight:700;font-size:13px;font-family:'Sora',sans-serif;border:none;cursor:pointer;flex:1}
-  .dark .btn-decline{background:rgba(220,38,38,.15);color:#f87171}
-  .btn-decline:hover{background:#fecaca}
+    /* ── CARDS ── */
+    .stat-card{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid #e2e8f0}
+    .dark .stat-card{background:#1e293b;border-color:#334155}
 
-  /* stat card */
-  .stat-card{background:#f8fafc;border-radius:14px;padding:12px 14px;text-align:center;border:1px solid #e2e8f0}
-  .dark .stat-card{background:#1e293b;border-color:#334155}
+    /* ── TABLE ── */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0}
+    .dark .table-wrap{border-color:#334155}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{background:#f8fafc;color:#64748b;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid #e2e8f0}
+    .dark th{background:#0f172a;color:#94a3b8;border-color:#334155}
+    td{padding:11px 14px;border-bottom:1px solid #f1f5f9;color:#374151;vertical-align:middle}
+    .dark td{border-color:#1e293b;color:#cbd5e1}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#f8fafc}
+    .dark tr:hover td{background:#1e293b}
 
-  @keyframes spin-loader{to{transform:rotate(360deg)}}
-  .spin{animation:spin-loader 1s linear infinite;display:inline-block}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .fade-in{animation:fadeIn .3s ease forwards}
-</style>
+    /* ── BADGE ── */
+    .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:600;font-family:'Sora',sans-serif}
+    .badge-green{background:#dcfce7;color:#16a34a}.dark .badge-green{background:rgba(34,197,94,.15);color:#4ade80}
+    .badge-blue{background:#dbeafe;color:#1d4ed8}.dark .badge-blue{background:rgba(59,130,246,.15);color:#60a5fa}
+    .badge-amber{background:#fef3c7;color:#b45309}.dark .badge-amber{background:rgba(245,158,11,.15);color:#fbbf24}
+    .badge-red{background:#fee2e2;color:#dc2626}.dark .badge-red{background:rgba(220,38,38,.15);color:#f87171}
+    .badge-slate{background:#f1f5f9;color:#475569}.dark .badge-slate{background:#1e293b;color:#94a3b8}
+
+    /* ── FORM ── */
+    .form-label{font-size:11px;font-weight:600;color:#64748b;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;display:block}
+    .dark .form-label{color:#94a3b8}
+    .form-input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid #e2e8f0;background:#fff;font-size:13px;color:#0f172a;outline:none;transition:border-color .15s,box-shadow .15s}
+    .dark .form-input{background:#1e293b;border-color:#334155;color:#f1f5f9}
+    .form-input:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(14,165,233,.12)}
+    select.form-input option{background:#fff;color:#0f172a}
+    .dark select.form-input option{background:#1e293b;color:#f1f5f9}
+
+    /* ── MODAL ── */
+    #modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;display:none;align-items:flex-end;justify-content:center}
+    #modal-overlay.open{display:flex}
+    @media(min-width:640px){#modal-overlay{align-items:center}}
+    .modal-box{background:#fff;border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;position:relative;box-shadow:0 -8px 40px rgba(0,0,0,.18)}
+    @media(min-width:640px){.modal-box{border-radius:20px}}
+    .dark .modal-box{background:#0f172a;border:1px solid #1e293b}
+
+    /* ── BUTTONS ── */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 18px;border-radius:10px;font-size:13px;font-weight:600;font-family:'Sora',sans-serif;cursor:pointer;border:none;transition:all .15s}
+    .btn-primary{background:#0ea5e9;color:#fff}.btn-primary:hover{background:#0284c7}
+    .btn-danger{background:#fee2e2;color:#dc2626}.btn-danger:hover{background:#fecaca}
+    .dark .btn-danger{background:rgba(220,38,38,.15)}.dark .btn-danger:hover{background:rgba(220,38,38,.25)}
+    .btn-ghost{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}.btn-ghost:hover{border-color:#94a3b8}
+    .dark .btn-ghost{background:#1e293b;color:#94a3b8;border-color:#334155}
+    .btn-sm{padding:5px 12px;font-size:11px;border-radius:8px}
+    .btn-icon{width:32px;height:32px;padding:0;border-radius:8px}
+
+    /* ── REPORT DRILL ── */
+    .drill-row{cursor:pointer;transition:background .12s}
+    .drill-row:hover td{background:#eff6ff!important}
+    .dark .drill-row:hover td{background:rgba(14,165,233,.08)!important}
+
+    /* ── CHART BAR ── */
+    .bar-wrap{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;min-width:60px}
+    .dark .bar-wrap{background:#334155}
+    .bar-fill{height:100%;border-radius:99px;background:#0ea5e9;transition:width .6s ease}
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    .fade-in{animation:fadeInUp .28s ease forwards}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .spin{animation:spin 1s linear infinite;display:inline-block}
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar{width:6px;height:6px}
+    ::-webkit-scrollbar-track{background:transparent}
+    ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px}
+    .dark ::-webkit-scrollbar-thumb{background:#334155}
+
+    /* mobile menu hamburger */
+    #mob-menu-btn{display:none}
+    @media(max-width:768px){#mob-menu-btn{display:flex}}
+
+    /* price simulator */
+    .price-result{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bae6fd;border-radius:14px;padding:16px;text-align:center}
+    .dark .price-result{background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(34,197,94,.08));border-color:#1e40af}
+  </style>
 </head>
-<body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
-<div id="toast"></div>
 
-<!-- HEADER -->
-<header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-20 flex-shrink-0" style="height:54px">
-  <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
-    <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
-  </a>
-  <div class="flex items-center gap-2">
-    <div class="flex items-center gap-1.5 text-xs">
-      <span class="text-yellow-400">⭐</span>
-      <span class="font-semibold text-slate-700 dark:text-slate-200" id="rating-display">4.92</span>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+  <div id="toast"></div>
+
+  <!-- ══ HEADER ══════════════════════════════════════════════════════════════ -->
+  <header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-30 flex-shrink-0 sticky top-0" style="height:54px">
+    <div class="flex items-center gap-3">
+      <button id="mob-menu-btn" onclick="toggleMobileMenu()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base">☰</button>
+      <a href="index" class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+        <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
+        <span class="sora">Lisp</span>
+      </a>
+      <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Gestor</span>
     </div>
-    <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-emerald-400">🌙</button>
-    <button onclick="showPanel('earnings')" class="relative w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-emerald-400">💰</button>
-    <button onclick="showPanel('profile')" class="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-emerald-400">👤</button>
-  </div>
-</header>
+    <div class="flex items-center gap-2">
+      <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
+      <div class="relative">
+        <button id="langToggle"
+          class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">
+          EN ▾
+        </button>
 
-<!-- MAP LAYER -->
-<div id="map-wrap">
-  <div id="map"></div>
-
-  <!-- Online toggle -->
-  <div class="online-toggle" id="online-toggle" onclick="toggleOnline()">
-    <div class="online-dot" id="online-dot"></div>
-    <span id="online-label">Go Online</span>
-  </div>
-
-  <!-- Earnings today pill -->
-  <div class="earnings-pill dark:text-emerald-400">
-    💵 <span id="today-earnings">€0.00</span>
-  </div>
-
-  <!-- BOTTOM SHEET -->
-  <div class="bottom-sheet" id="sheet">
-    <div style="padding:10px 0 4px;display:flex;justify-content:center;cursor:pointer" onclick="toggleSheet()">
-      <div class="w-10 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></div>
-    </div>
-    <div class="px-4 pb-5" id="sheet-content">
-      <!-- idle state -->
-      <div id="panel-idle">
-        <div class="text-center py-4">
-          <div class="text-4xl mb-2">🚗</div>
-          <p class="sora font-semibold text-slate-700 dark:text-slate-200 text-sm">You're offline</p>
-          <p class="text-xs text-slate-400 mt-1">Go online to start receiving ride requests</p>
+        <div id="langMenu"
+          class="hidden absolute right-0 mt-2 w-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg overflow-hidden z-50">
+          <button data-lang="en"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+            English
+          </button>
+          <button data-lang="pt"
+            class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800">
+            Português
+          </button>
         </div>
-        <!-- Today stats -->
-        <div class="grid grid-cols-3 gap-2 mt-2">
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-rides">0</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Rides</div>
+      </div>
+      <div class="flex items-center gap-2 pl-2 border-l border-slate-100 dark:border-slate-800">
+        <div id="user-avatar" class="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-sm">👤</div>
+        <span id="username" class="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 sora"></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-grid flex-1">
+    <aside id="sidebar" class="bg-white dark:bg-slate-900 border-r border-slate-100 dark:border-slate-800 flex flex-col overflow-y-auto">
+      <div class="flex-1 py-3 px-3">
+
+        <!-- <div class="nav-section">Dashboard</div> -->
+        <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard')">
+          <span>📊</span><span>Visão Geral</span>
+        </div>
+
+        <div class="nav-section mt-2">Relatórios</div>
+        <div class="nav-item" id="nav-rel-frota" onclick="showPanel('rel-frota')">
+          <span>📈</span><span>Táxis &amp; Motoristas</span>
+        </div>
+        <div class="nav-item" id="nav-rel-fat" onclick="showPanel('rel-fat')">
+          <span>💰</span><span>Clientes &amp; Faturação</span>
+        </div>
+        <div class="nav-item" id="nav-reabast" onclick="showPanel('reabast')">
+          <span>⛽</span><span>Reabastecimentos</span>
+        </div>
+
+        <!-- <div class="nav-section mt-2">Visualizar</div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Pedidos</span>
+        </div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Viagens</span>
+        </div>
+        <div class="nav-item" id="nav-faturas" onclick="showPanel('faturas')">
+          <span>🧾</span><span>Faturas</span>
+        </div> -->
+
+        <div class="nav-section mt-2">Ver, Definir e Editar</div>
+        <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
+          <span>🗺️</span><span>Viagens</span>
+        </div>
+        <div class="nav-item" id="nav-taxis" onclick="showPanel('taxis')">
+          <span>🚕</span><span>Táxis</span>
+        </div>
+        <div class="nav-item" id="nav-motoristas" onclick="showPanel('motoristas')">
+          <span>👨‍✈️</span><span>Motoristas</span>
+        </div>
+        <!-- <div class="nav-item" id="nav-turnos" onclick="showPanel('turnos')">
+          <span>🕐</span><span>Turnos</span>
+        </div> -->
+        <div class="nav-item" id="nav-precos" onclick="showPanel('precos')">
+          <span>💶</span><span>Preços</span>
+        </div>
+      </div>
+      <div class="p-3 border-t border-slate-100 dark:border-slate-800">
+        <button onclick="toast('👋 Sessão terminada'), logout()" class="w-full nav-item text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/20">
+          <span>🚪</span><span>Terminar sessão</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── MAIN CONTENT ─────────────────────────────────────────────────────── -->
+    <main class="flex-1 overflow-y-auto min-w-0">
+
+      <!-- ════ DASHBOARD ════════════════════════════════════════════════════ -->
+      <div id="panel-dashboard" class="panel active px-4 sm:px-6 py-5 fade-in">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Visão Geral</h1>
           </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-km">0.0</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">km driven</div>
+        </div>
+
+        <!-- KPI GRID -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="stat-card fade-in text-center">
+            <div class="text-xl mb-1">🚕</div>
+            <div id="total-taxis" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Táxis</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 1 este mês</div> -->
           </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-hrs">0h 0m</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Online time</div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.06s">
+            <div class="text-xl mb-1">👨‍✈️</div>
+            <div id="total-motoristas" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Motoristas</div>
+            <!-- <div class="mt-2 text-[11px] text-sky-500 font-medium">2 em turno</div> -->
+          </div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.12s">
+            <div class="text-xl mb-1">🗺️</div>
+            <div id="total-viagens" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Viagens</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ vs ontem</div> -->
+          </div>
+          <div class="stat-card fade-in text-center" style="animation-delay:.18s">
+            <div class="text-xl mb-1">💶</div>
+            <div id="total-receita" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
+            <div class="text-s text-slate-400 mt-0.5">Total de Receita</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 14% vs ontem</div> -->
+          </div>
+        </div>
+
+        <!-- TWO COLUMNS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+
+          <!-- Recent trips -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Últimas viagens</p>
+              <button onclick="showPanel('viagens')" class="text-[11px] text-sky-500 hover:underline">Ver todas →</button>
+            </div>
+            <div id="last-viagens" class="space-y-2"></div>
+          </div>
+
+          <!-- Fleet status -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Táxis</p>
+              <button onclick="showPanel('taxis')" class="text-[11px] text-sky-500 hover:underline">Gerir →</button>
+            </div>
+            <div id="fleet-status" class="space-y-2.5"></div>
+          </div>
+        </div>
+
+        <!-- Driver activity -->
+        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Motoristas hoje</p>
+          <div class="overflow-x-auto">
+            <table>
+              <thead><tr><th>Motorista</th><th>Turno</th><th>Viagens</th><th>Km</th><th>Receita</th><th>Estado</th></tr></thead>
+              <tbody id="driver-activity"></tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <!-- online waiting state -->
-      <div id="panel-waiting" class="hidden text-center py-4">
-        <div class="text-3xl mb-2 spin">⟳</div>
-        <p class="sora font-semibold text-slate-900 dark:text-white text-sm">Waiting for requests…</p>
-        <p class="text-xs text-slate-400 mt-1">You'll be notified when a rider is nearby</p>
-        <div class="grid grid-cols-3 gap-2 mt-4">
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-rides2">0</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Rides</div>
+      <!-- ════ TÁXIS ═════════════════════════════════════════════════════════ -->
+      <div id="panel-taxis" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Táxis</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Frota da empresa</p>
           </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-km2">0.0</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">km</div>
-          </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-base text-slate-900 dark:text-white" id="stat-earn2">€0</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Earned</div>
-          </div>
+          <button onclick="openModal('modal-criarTaxi')" class="btn btn-primary">+ Registar táxi</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Matrícula</th><th>Marca / Modelo</th><th>Ano</th><th>Conforto</th><th>Motor</th><th>Estado</th><th>Ações</th></tr></thead>
+            <tbody id="taxis-tbody">
+
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- incoming ride request -->
-      <div id="panel-request" class="hidden fade-in">
-        <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">New Request</p>
-        <div class="ride-request">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-xl">👤</div>
-            <div>
-              <div class="sora font-semibold text-slate-900 dark:text-white text-sm" id="req-name">Ana Costa</div>
-              <div class="flex items-center gap-1 text-xs text-slate-400">
-                <span class="text-yellow-400">⭐</span><span id="req-rating">4.8</span>
-                <span class="mx-1">·</span>
-                <span id="req-rides">143 rides</span>
-              </div>
-            </div>
-            <div class="ml-auto text-right">
-              <div class="sora font-bold text-emerald-500 text-sm" id="req-fare">€8.40</div>
-              <div class="text-[11px] text-slate-400" id="req-type">Economy</div>
-            </div>
+      <!-- ════ MOTORISTAS ════════════════════════════════════════════════════ -->
+      <div id="panel-motoristas" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Motoristas</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Contas e dados pessoais</p>
           </div>
-          <div class="space-y-1.5 mb-3">
-            <div class="flex items-center gap-2 text-xs">
-              <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
-              <span class="text-slate-600 dark:text-slate-300 truncate" id="req-pickup">Av. da Liberdade, Lisboa</span>
-            </div>
-            <div class="flex items-center gap-2 text-xs">
-              <span class="w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
-              <span class="text-slate-600 dark:text-slate-300 truncate" id="req-dest">Aeroporto de Lisboa</span>
-            </div>
-          </div>
-          <div class="flex items-center gap-2 text-[11px] text-slate-400 mb-3">
-            <span>📍 <span id="req-distance">1.2 km</span> away</span>
-            <span>·</span>
-            <span>🛣️ <span id="req-trip-km">8.5 km</span> trip</span>
-            <span>·</span>
-            <span>⏱️ ~<span id="req-eta">18 min</span></span>
-          </div>
-          <!-- timer bar -->
-          <div class="h-1 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
-            <div id="req-timer-bar" class="h-full bg-sky-500 rounded-full" style="width:100%;transition:width .2s linear"></div>
+          <button onclick="openModal('modal-criarMotorista')" class="btn btn-primary">+ Registar motorista</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nome</th><th>NIF</th><th>Nascimento</th><th>Carta</th><th>Morada</th><th>Estado</th><th>Ações</th></tr></thead>
+            <tbody id="motoristas-tbody"></tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ TURNOS ════════════════════════════════════════════════════════ -->
+      <div id="panel-turnos" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Turnos</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Histórico de turnos e táxis reservados</p>
           </div>
           <div class="flex gap-2">
-            <button class="btn-decline" onclick="declineRide()">✕ Decline</button>
-            <button class="btn-accept" onclick="acceptRide()">✓ Accept</button>
+            <input type="date" class="form-input text-xs py-1.5" id="turno-filter-date"/>
+            <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filtrar</button>
           </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Motorista</th><th>Táxi</th><th>Início</th><th>Fim</th><th>Duração</th><th>Viagens</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">AA-12-BB</td><td>08:00</td><td>16:00</td><td>8h</td><td>5</td><td><span class="badge badge-green">Ativo</span></td></tr>
+              <tr><td class="font-medium">Ana Ferreira</td><td class="font-mono text-xs">CC-34-DD</td><td>09:00</td><td>17:00</td><td>8h</td><td>4</td><td><span class="badge badge-green">Ativo</span></td></tr>
+              <tr><td class="font-medium">Rui Santos</td><td class="font-mono text-xs">EE-56-FF</td><td>00:00</td><td>08:00</td><td>8h</td><td>3</td><td><span class="badge badge-slate">Terminado</span></td></tr>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">GG-78-HH</td><td>16:00</td><td>00:00</td><td>8h</td><td>0</td><td><span class="badge badge-amber">Agendado</span></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- active ride -->
-      <div id="panel-active" class="hidden fade-in">
-        <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-2">Active ride</p>
-        <div class="flex items-center gap-3 mb-3">
-          <div class="w-10 h-10 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-xl">👤</div>
+      <!-- ════ REABASTECIMENTOS ══════════════════════════════════════════════ -->
+      <div id="panel-reabast" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <div class="sora font-semibold text-slate-900 dark:text-white text-sm" id="active-name">Ana Costa</div>
-            <div class="text-xs text-slate-400">Heading to destination</div>
-          </div>
-          <div class="ml-auto flex gap-2">
-            <button onclick="toast('📞 Calling rider...')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-base hover:bg-emerald-100">📞</button>
-            <button onclick="toast('💬 Message sent')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-base hover:bg-sky-100">💬</button>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Reabastecimentos</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Combustível e carregamentos elétricos</p>
           </div>
         </div>
-        <div class="space-y-1.5 bg-slate-50 dark:bg-slate-800 rounded-xl p-3 mb-3">
-          <div class="flex items-center gap-2 text-xs">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></span>
-            <span class="text-slate-500 dark:text-slate-400 truncate" id="active-pickup">Av. da Liberdade, Lisboa</span>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="w-2 h-2 rounded-full bg-red-400 flex-shrink-0"></span>
-            <span class="text-slate-500 dark:text-slate-400 truncate" id="active-dest">Aeroporto de Lisboa</span>
-          </div>
-        </div>
-        <div class="grid grid-cols-3 gap-2 mb-3">
-          <div class="stat-card">
-            <div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-fare">€8.40</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Fare</div>
-          </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-km">8.5 km</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">Distance</div>
-          </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-sm text-slate-900 dark:text-white" id="active-eta">18 min</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">ETA</div>
-          </div>
-        </div>
-        <button onclick="completeRide()" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold sora" style="box-shadow:0 4px 14px rgba(34,197,94,.3)">
-          Complete Ride ✓
-        </button>
-      </div>
-
-      <!-- earnings panel -->
-      <div id="panel-earnings" class="hidden fade-in">
-        <div class="flex items-center justify-between mb-3">
-          <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400">Earnings</p>
-          <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
-        </div>
-        <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-2xl p-4 text-center mb-3">
-          <div class="text-3xl font-bold sora text-emerald-600 dark:text-emerald-400" id="earn-total">€0.00</div>
-          <div class="text-xs text-slate-400 mt-1">Today's earnings</div>
-        </div>
-        <div class="grid grid-cols-2 gap-2 mb-3">
-          <div class="stat-card">
-            <div class="sora font-bold text-slate-900 dark:text-white" id="earn-week">€0.00</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">This week</div>
-          </div>
-          <div class="stat-card">
-            <div class="sora font-bold text-slate-900 dark:text-white" id="earn-month">€0.00</div>
-            <div class="text-[10px] text-slate-400 mt-0.5">This month</div>
-          </div>
-        </div>
-        <div class="space-y-2" id="earn-history">
-          <p class="text-xs text-center text-slate-400 py-3">No rides yet today</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Táxi</th><th>Turno</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Qtd.</th><th>€ Pago</th><th>Km táxi</th></tr></thead>
+            <tbody>
+              <tr><td class="font-mono text-xs">AA-12-BB</td><td class="text-xs text-slate-400">#1001</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">10:00</td><td class="text-xs">10:20</td><td>42 L</td><td class="text-emerald-500 font-semibold">€68.04</td><td>48 320</td></tr>
+              <tr><td class="font-mono text-xs">EE-56-FF</td><td class="text-xs text-slate-400">#1003</td><td><span class="badge badge-green">⚡ Elét.</span></td><td class="text-xs">07:30</td><td class="text-xs">09:30</td><td>32 kWh</td><td class="text-emerald-500 font-semibold">€6.40</td><td>10 000</td></tr>
+              <tr><td class="font-mono text-xs">CC-34-DD</td><td class="text-xs text-slate-400">#1002</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">11:40</td><td class="text-xs">11:58</td><td>55 L</td><td class="text-emerald-500 font-semibold">€89.10</td><td>32 100</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- profile panel -->
-      <div id="panel-profile" class="hidden fade-in">
-        <div class="flex items-center justify-between mb-3">
-          <p class="sora text-[10px] font-semibold tracking-widest uppercase text-slate-400">My Profile</p>
-          <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
-        </div>
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-14 h-14 rounded-2xl bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-3xl">👨‍✈️</div>
+      <!-- ════ VIAGENS ═══════════════════════════════════════════════════════ -->
+      <div id="panel-viagens" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <div class="sora font-semibold text-slate-900 dark:text-white">Carlos Mendes</div>
-            <div class="text-xs text-slate-400">Driver since Jan 2024</div>
-            <div class="flex items-center gap-1 text-xs mt-1"><span class="text-yellow-400">⭐</span><span class="font-semibold">4.92</span><span class="text-slate-400 ml-1">· 312 rides</span></div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Viagens</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Todas as viagens com clientes</p>
           </div>
         </div>
-        <div class="space-y-2">
-          <div class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-            <span class="text-slate-500">🚗 Vehicle</span><span class="font-medium text-slate-800 dark:text-slate-200">Toyota Corolla · AA-12-BB</span>
+
+        <!-- Date range -->
+        <div class="flex items-center gap-3 flex-wrap mb-3">
+          <div class="flex items-center gap-1">
+            <label class="text-xs text-slate-500">De:</label>
+            <input id="filter-start" type="date" class="form-input text-xs"/>
           </div>
-          <div class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-            <span class="text-slate-500">📱 Phone</span><span class="font-medium text-slate-800 dark:text-slate-200">+351 912 345 678</span>
+
+          <div class="flex items-center gap-1">
+            <label class="text-xs text-slate-500">Até:</label>
+            <input id="filter-end" type="date" class="form-input text-xs"/>
           </div>
-          <div class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-            <span class="text-slate-500">🪪 License</span><span class="font-medium text-emerald-500">Verified ✓</span>
+
+
+          <input id="filter-min-price" type="number" min="1"
+            placeholder="Min €"
+            class="form-input text-xs w-24"/>
+
+          <input id="filter-max-price" type="number" min="1"
+            placeholder="Max €"
+            class="form-input text-xs w-24"/>
+
+          <input id="filter-pax" type="number" min="1"
+            placeholder="Passageiros"
+            class="form-input text-xs w-32"/>
+
+          <input id="filter-origin" type="text"
+            placeholder="Origem"
+            class="form-input text-xs w-28"/>
+
+          <input id="filter-dest" type="text"
+            placeholder="Destino"
+            class="form-input text-xs w-28"/>
+
+          <!-- Actions -->
+          <div class="flex gap-2 ml-auto">
+            <button onclick="applyFilters()"
+              class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
+              Filtrar
+            </button>
+
+            <button onclick="resetFilters()"
+              class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
+              Reset
+            </button>
           </div>
-          <div class="flex items-center justify-between py-2.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm">
-            <span class="text-slate-500">💳 Payout</span><span class="font-medium text-slate-800 dark:text-slate-200">Bank ···· 3921</span>
-          </div>
+
         </div>
-        <button onclick="toast('🔒 Logging out...')" class="mt-4 w-full py-2.5 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-semibold sora hover:bg-red-50 dark:hover:bg-red-900/20">
-          Log out
-        </button>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Motorista</th><th>Táxi</th><th>Origem</th><th>Destino</th><th>Início</th><th>Fim</th><th>Km</th><th>Passageiros</th><th>Preço</th><th>Fatura</th></tr></thead>
+            <tbody id="viagens-body"></tbody>
+            </tbody>
+          </table>
+        </div>
       </div>
 
+      <!-- ════ FATURAS ═══════════════════════════════════════════════════════ -->
+      <div id="panel-faturas" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Faturas</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Documentos fiscais emitidos</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nº Fatura</th><th>Data</th><th>Cliente NIF</th><th>Cliente Nome</th><th>Viagem</th><th>Valor</th><th>Ações</th></tr></thead>
+            <tbody>
+              <tr><td class="sora font-bold text-sky-500">2026/0001</td><td class="text-xs">2026-04-16 12:32</td><td class="font-mono text-xs">123456789</td><td>Maria Costa</td><td class="text-xs text-slate-400">Aeroporto→Campo Grande</td><td class="text-emerald-500 font-semibold sora">€8.40</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
+              <tr><td class="sora font-bold text-sky-500">2026/0002</td><td class="text-xs">2026-04-16 10:47</td><td class="font-mono text-xs">987654321</td><td>João Pinto</td><td class="text-xs text-slate-400">Chiado→Parque Nações</td><td class="text-emerald-500 font-semibold sora">€17.20</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ════ PREÇOS ════════════════════════════════════════════════════════ -->
+      <div id="panel-precos" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="mb-5">
+          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Preços</h1>
+          <p class="text-xs text-slate-400 mt-0.5">Tarifas por nível de conforto e simulador (US3)</p>
+        </div>
+
+        <!-- Price form -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">Tarifas base</p>
+            <div class="space-y-4">
+              <div>
+                <label class="form-label">💶 Básico — preço/minuto (€)</label>
+                <input id="price-basico" type="number" placeholder="0.00" step="0.01" class="form-input"/>
+              </div>
+              <div>
+                <label class="form-label">💶 Conforto — preço/minuto (€)</label>
+                <input id="price-conforto" type="number" placeholder="0.00" step="0.01" class="form-input"/>
+              </div> 
+              <div>
+                <label class="form-label">💶 Luxuoso — preço/minuto (€)</label>
+                <input id="price-luxuoso" type="number" placeholder="0.00" step="0.01" class="form-input"/>
+              </div>
+              <div>
+                <label class="form-label">🌙 Taxa noturna (21h–6h) — %</label>
+                <input id="price-noite" type="number" placeholder="0" step="1" class="form-input"/>
+              </div>
+              <button onclick="savePrices()" class="btn btn-primary w-full">Guardar tarifas</button>
+            </div>
+          </div>
+
+          <!-- Current tariff table -->
+          <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Tabela de tarifas atual</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Nível</th><th>€/min diurno</th><th>€/min noturno</th><th>Exemplo 30 min</th></tr></thead>
+                <tbody id="tariff-table">
+                  <tr><td><span class="badge badge-slate">Básico</span></td><td class="sora font-semibold">€0.15</td><td class="sora font-semibold">€0.18</td><td class="text-slate-400">€4.50 diurno / €5.40 noturno</td></tr>
+                  <tr><td><span class="badge badge-amber">Luxuoso</span></td><td class="sora font-semibold">€0.25</td><td class="sora font-semibold">€0.30</td><td class="text-slate-400">€7.50 diurno / €9.00 noturno</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ RELATÓRIO FROTA ═══════════════════════════════════════════════ -->
+      <div id="panel-rel-frota" class="panel px-4 sm:px-6 py-5 fade-in">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Táxis &amp; Motoristas</p>
+          </div>
+          <div class="flex gap-2">
+            De: <input type="date" id="rel-from" class="form-input text-xs py-1.5 mr-4" value="2026-04-16"/>
+            Até: <input type="date" id="rel-to"   class="form-input text-xs py-1.5 mr-6" value="2026-04-16"/>
+            <button onclick="updateRelatorio()" class="btn btn-primary btn-sm">
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- Totals row -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('viagens')">
+            <div class="text-2xl mb-1">🗺️</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-viagens">0</div>
+            <div class="text-xs text-slate-400">Total viagens</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('horas')">
+            <div class="text-2xl mb-1">⏱️</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-horas">0h 00m</div>
+            <div class="text-xs text-slate-400">Total em viagens</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+          <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('km')">
+            <div class="text-2xl mb-1">📍</div>
+            <div class="sora font-bold text-2xl text-sky-500" id="stat-km">0 km</div>
+            <div class="text-xs text-slate-400">Total quilómetros</div>
+            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+          </div>
+        </div>
+
+        <!-- Drill area -->
+        <div id="drill-area" class="hidden bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 mb-4 fade-in">
+          <div class="flex items-center justify-between mb-3">
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drill-title">Subtotais</p>
+            <button onclick="document.getElementById('drill-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600">✕ Fechar</button>
+          </div>
+          <div id="drill-content"></div>
+        </div>
+
+        <!-- Per driver table -->
+        <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Por motorista</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Motorista</th><th>Viagens</th><th>Horas</th><th>Km</th><th>Euros</th></tr></thead>
+              <tbody id="rel-frota-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ RELATÓRIO CLIENTES ════════════════════════════════════════════ -->
+      <div id="panel-rel-fat" class="panel px-4 sm:px-6 py-5 fade-in">
+
+        <!-- HEADER -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <div>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Clientes & Faturação</p>
+          </div>
+
+          <div class="flex gap-2 items-center">
+            De:
+            <input type="date" id="rel2-from" class="form-input text-xs" />
+            Até:
+            <input type="date" id="rel2-to" class="form-input text-xs" />
+
+            <button onclick="updateRelatorioClientes()" class="btn btn-primary btn-sm">
+              Atualizar
+            </button>
+          </div>
+        </div>
+
+        <!-- LEVEL 1: TOTAL -->
+        <div class="grid grid-cols-3 gap-3 mb-5">
+
+          <div class="stat-card text-center cursor-pointer"
+              onclick="drillClientes('total')">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-total">€0.00</div>
+            <div class="text-xs text-slate-400">Total faturado</div>
+          </div>
+
+          <div class="stat-card text-center">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-clients">0</div>
+            <div class="text-xs text-slate-400">Clientes ativos</div>
+          </div>
+
+          <div class="stat-card text-center">
+            <div class="sora font-bold text-2xl text-emerald-500" id="fat-trips">0</div>
+            <div class="text-xs text-slate-400">Viagens</div>
+          </div>
+
+        </div>
+
+        <!-- DRILL AREA -->
+        <div id="drill2-area" class="hidden bg-white dark:bg-slate-800/60 p-4 rounded-2xl mb-4">
+          <div class="flex justify-between mb-2">
+            <p id="drill2-title" class="sora font-semibold text-sm"></p>
+            <button onclick="closeDrill()" class="text-xs">✕</button>
+          </div>
+          <div id="drill2-content"></div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="bg-white dark:bg-slate-800/60 rounded-2xl p-4">
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Viagens</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="fat-table-body"></tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ══ MODAL OVERLAY ════════════════════════════════════════════════════════ -->
+  <div id="modal-overlay" onclick="handleOverlayClick(event)">
+    <div class="modal-box" id="modal-inner" onclick="event.stopPropagation()">
+      <div id="modal-content"></div>
     </div>
   </div>
-</div>
 
-<!-- BOTTOM NAV -->
-<nav class="flex-shrink-0 grid grid-cols-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20" style="height:56px">
-  <button onclick="showPanel('idle')" class="flex flex-col items-center justify-center gap-0.5 text-emerald-500">
-    <span class="text-xl leading-none">🗺️</span>
-    <span class="sora text-[9px] font-semibold tracking-wider uppercase">Map</span>
-  </button>
-  <button onclick="showPanel('earnings')" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
-    <span class="text-xl leading-none">💰</span>
-    <span class="sora text-[9px] font-semibold tracking-wider uppercase">Earnings</span>
-  </button>
-  <button onclick="toast('📋 Activity coming soon')" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
-    <span class="text-xl leading-none">📋</span>
-    <span class="sora text-[9px] font-semibold tracking-wider uppercase">History</span>
-  </button>
-  <button onclick="showPanel('profile')" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
-    <span class="text-xl leading-none">👤</span>
-    <span class="sora text-[9px] font-semibold tracking-wider uppercase">Profile</span>
-  </button>
-</nav>
+  <!-- ══ MODAL TEMPLATES ══════════════════════════════════════════════════════ -->
 
-<script>
-// ── Theme ──────────────────────────────────────────────────────────────────
-function applyTheme(t){
-  document.documentElement.classList.toggle('dark',t==='dark');
-  document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙';
-}
-function toggleTheme(){
-  var t=localStorage.getItem('dash-theme')==='dark'?'light':'dark';
-  localStorage.setItem('dash-theme',t);applyTheme(t);
-}
-applyTheme(localStorage.getItem('dash-theme')||'light');
+  <!-- Taxi form template -->
+  <template id="tpl-editarTaxi">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Editar Táxi</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Matrícula</label>
+          <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
+          <input id="f-taxi-id" type="number" readonly hidden/>
+        </div>
+        <div>
+          <label class="form-label">Ano de compra</label>
+          <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Marca</label>
+          <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Modelo</label>
+          <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Nível de conforto</label>
+          <select id="f-taxi-conforto" class="form-input">
+            <option value="BASICO">Básico</option>
+            <option value="CONFORTO">Conforto</option>
+            <option value="LUXUOSO">Luxuoso</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tipo de motor</label>
+          <select id="f-taxi-motor" class="form-input">
+            <option value="COMBUSTAO">⛽ Combustão</option>
+            <option value="ELETRICO">⚡ Elétrico</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Kilómetros</label>
+          <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="saveTaxi()" class="btn btn-primary flex-1">Editar Táxi</button>
+      </div>
+    </div>
+  </template>
 
-// ── Toast ──────────────────────────────────────────────────────────────────
-var _tt;
-function toast(msg){
-  var el=document.getElementById('toast');
-  el.textContent=msg;el.classList.add('show');
-  clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2500);
-}
+    <!-- Taxi form template -->
+  <template id="tpl-criarTaxi">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Criar Táxi</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
+    </div>
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Matrícula</label>
+          <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="mat-err">Formato inválido</p>
+        </div>
+        <div>
+          <label class="form-label">Ano de compra</label>
+          <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Marca</label>
+          <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
 
-// ── Sheet ──────────────────────────────────────────────────────────────────
-var sheetExp=false;
-function toggleSheet(){
-  sheetExp=!sheetExp;
-  document.getElementById('sheet').classList.toggle('expanded',sheetExp);
-  setTimeout(function(){map&&map.invalidateSize();},320);
-}
+        </div>
+        <div>
+          <label class="form-label">Modelo</label>
+          <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
 
-// ── State ──────────────────────────────────────────────────────────────────
-var isOnline=false;
-var todayEarnings=0, todayRides=0, todayKm=0;
-var onlineStart=null, onlineSecs=0, onlineTimer=null;
-var reqTimer=null;
-var currentRequest=null;
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label class="form-label">Nível de conforto</label>
+          <select id="f-taxi-conforto" class="form-input">
+            <option value="BASICO">Básico</option>
+            <option value="CONFORTO">Conforto</option>
+            <option value="LUXUOSO">Luxuoso</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Tipo de motor</label>
+          <select id="f-taxi-motor" class="form-input">
+            <option value="COMBUSTAO">⛽ Combustão</option>
+            <option value="ELETRICO">⚡ Elétrico</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Kilómetros</label>
+          <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="criarTaxi()" class="btn btn-primary flex-1">Criar Táxi</button>
+      </div>
+    </div>
+  </template>
 
-var SAMPLE_REQUESTS=[
-  {name:'Ana Costa',rating:'4.8',rides:'143 rides',fare:'€8.40',type:'Economy',pickup:'Av. da Liberdade, Lisboa',dest:'Aeroporto de Lisboa',dist:'1.2 km',tripKm:'8.5 km',eta:'18 min'},
-  {name:'Rui Ferreira',rating:'4.6',rides:'87 rides',fare:'€5.20',type:'Economy',pickup:'Chiado, Lisboa',dest:'Marquês de Pombal',dist:'0.4 km',tripKm:'3.1 km',eta:'9 min'},
-  {name:'Sofia Lopes',rating:'5.0',rides:'321 rides',fare:'€12.90',type:'Comfort',pickup:'Parque das Nações',dest:'Sintra',dist:'2.1 km',tripKm:'28 km',eta:'35 min'},
-  {name:'Miguel Alves',rating:'4.7',rides:'55 rides',fare:'€6.60',type:'Economy',pickup:'Intendente, Lisboa',dest:'Belém',dist:'0.8 km',tripKm:'5.2 km',eta:'14 min'},
-];
+  <!-- Motorista form template -->
+  <template id="tpl-editarMotorista">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Editar motorista</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+    </div>
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nome completo</label>
+          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+          <input id="f-id" type="number" readonly hidden/>
+        </div>
+        <div>
+          <label class="form-label">Nº Carta de condução</label>
+          <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Género</label>
+          <select id="f-genero" class="form-input">
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="NAO_INDICADO">Outro</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Data de nascimento</label>
+          <input id="f-nasc" type="date" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Código postal</label>
+          <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
+        </div>
+        <div>
+          <label class="form-label">Número Rua</label>
+          <input id="f-num" type="number" placeholder="37" class="form-input" />
+        </div>
+      </div>
+      <div>
+        <label class="form-label">Rua</label>
+        <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Senha</label>
+          <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="saveMotorista()" class="btn btn-primary flex-1">Editar conta</button>
+      </div>
+    </div>
+  </template>
 
-function toggleOnline(){
-  isOnline=!isOnline;
-  var tog=document.getElementById('online-toggle');
-  tog.classList.toggle('online',isOnline);
-  document.getElementById('online-label').textContent=isOnline?'Online':'Go Online';
-  if(isOnline){
-    onlineStart=Date.now();
-    onlineTimer=setInterval(updateOnlineTime,1000);
-    showPanelInner('panel-waiting');
-    toast('🟢 You\'re online — waiting for requests');
-    // simulate incoming request after 4s
-    setTimeout(simulateRequest, 4000);
-  } else {
-    clearInterval(onlineTimer);
-    showPanelInner('panel-idle');
-    toast('🔴 You\'re offline');
-  }
-}
+  <!-- Motorista form template -->
+  <template id="tpl-criarMotorista">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Criar motorista</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+    </div>
+    <div class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nome completo</label>
+          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Data de nascimento</label>
+          <input id="f-nasc" type="date" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Nº Carta de condução</label>
+          <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Validade Carta</label>
+          <input id="f-validade-carta" type="date" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Género</label>
+          <select id="f-genero" class="form-input">
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMININO">Feminino</option>
+            <option value="NAO_INDICADO">Outro</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Email</label>
+          <input id="f-email" type="text" placeholder="email@exemplo.com" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Código postal</label>
+          <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
+        </div>
+        <div>
+          <label class="form-label">Número Rua</label>
+          <input id="f-num" type="number" placeholder="37" class="form-input" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">NIF</label>
+          <input id="f-nif" type="text" placeholder="123456789" class="form-input"/>
+        </div>
+        <div>
+          <label class="form-label">Rua</label>
+          <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="form-label">Senha (mín. 6 - ABC123)</label>
+          <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Mínimo 6 carateres com letras e dígitos</p>
+        </div>
+        <div>
+          <label class="form-label">Confirmar Senha</label>
+          <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="createMotorista()" class="btn btn-primary flex-1">Criar conta</button>
+      </div>
+    </div>
+  </template>
 
-function updateOnlineTime(){
-  onlineSecs=Math.floor((Date.now()-onlineStart)/1000);
-  var h=Math.floor(onlineSecs/3600),m=Math.floor((onlineSecs%3600)/60);
-  document.getElementById('stat-hrs').textContent=h+'h '+m+'m';
-}
+  <!-- Viagem detail template -->
+  <template id="tpl-viagem-detail">
+    <div class="flex items-center justify-between mb-5">
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white">Detalhe da viagem</p>
+      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+    </div>
+    <div class="space-y-2.5 text-sm">
+      <div class="flex justify-between"><span class="text-slate-400">Motorista</span><span class="font-medium">Carlos Mendes</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Táxi</span><span class="font-mono font-medium">AA-12-BB · Toyota Corolla</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Origem</span><span class="font-medium">Aeroporto de Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Destino</span><span class="font-medium">Campo Grande, Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Início</span><span class="font-medium">12:00</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Fim</span><span class="font-medium">12:30</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Duração</span><span class="font-medium">30 minutos</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Km percorridos</span><span class="font-medium">5.0 km</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Nº passageiros</span><span class="font-medium">4</span></div>
+      <div class="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2.5 mt-2"><span class="font-semibold">Preço</span><span class="sora font-bold text-emerald-500 text-base">€8.40</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Fatura</span><span class="badge badge-green">2026/0001 ✓</span></div>
+    </div>
+    <button onclick="closeModal()" class="w-full btn btn-primary mt-4">Fechar</button>
+  </template>
 
-function simulateRequest(){
-  if(!isOnline) return;
-  currentRequest=SAMPLE_REQUESTS[Math.floor(Math.random()*SAMPLE_REQUESTS.length)];
-  var r=currentRequest;
-  document.getElementById('req-name').textContent=r.name;
-  document.getElementById('req-rating').textContent=r.rating;
-  document.getElementById('req-rides').textContent=r.rides;
-  document.getElementById('req-fare').textContent=r.fare;
-  document.getElementById('req-type').textContent=r.type;
-  document.getElementById('req-pickup').textContent=r.pickup;
-  document.getElementById('req-dest').textContent=r.dest;
-  document.getElementById('req-distance').textContent=r.dist;
-  document.getElementById('req-trip-km').textContent=r.tripKm;
-  document.getElementById('req-eta').textContent=r.eta;
-
-  // expand sheet for request
-  sheetExp=true;document.getElementById('sheet').classList.add('expanded');
-  showPanelInner('panel-request');
-  setTimeout(function(){map&&map.invalidateSize();},320);
-
-  // countdown bar 15s
-  var pct=100, bar=document.getElementById('req-timer-bar');
-  bar.style.width='100%';
-  clearInterval(reqTimer);
-  reqTimer=setInterval(function(){
-    pct-=(100/75);
-    bar.style.width=Math.max(0,pct)+'%';
-    if(pct<=0){clearInterval(reqTimer);declineRide();}
-  },200);
-}
-
-function acceptRide(){
-  clearInterval(reqTimer);
-  if(!currentRequest) return;
-  var r=currentRequest;
-  document.getElementById('active-name').textContent=r.name;
-  document.getElementById('active-pickup').textContent=r.pickup;
-  document.getElementById('active-dest').textContent=r.dest;
-  document.getElementById('active-fare').textContent=r.fare;
-  document.getElementById('active-km').textContent=r.tripKm;
-  document.getElementById('active-eta').textContent=r.eta;
-  showPanelInner('panel-active');
-  toast('✅ Ride accepted — navigate to pickup');
-}
-
-function declineRide(){
-  clearInterval(reqTimer);
-  showPanelInner('panel-waiting');
-  toast('⏭️ Request skipped');
-  // next request in 6s
-  if(isOnline) setTimeout(simulateRequest,6000);
-}
-
-function completeRide(){
-  if(!currentRequest) return;
-  var fare=parseFloat(currentRequest.fare.replace('€',''));
-  var km=parseFloat(currentRequest.tripKm);
-  todayEarnings+=fare; todayRides++; todayKm+=km;
-  document.getElementById('today-earnings').textContent='€'+todayEarnings.toFixed(2);
-  document.getElementById('stat-rides').textContent=todayRides;
-  document.getElementById('stat-km').textContent=todayKm.toFixed(1);
-  document.getElementById('stat-rides2').textContent=todayRides;
-  document.getElementById('stat-km2').textContent=todayKm.toFixed(1);
-  document.getElementById('stat-earn2').textContent='€'+todayEarnings.toFixed(0);
-  // earnings panel
-  document.getElementById('earn-total').textContent='€'+todayEarnings.toFixed(2);
-  document.getElementById('earn-week').textContent='€'+(todayEarnings+47.2).toFixed(2);
-  document.getElementById('earn-month').textContent='€'+(todayEarnings+312.8).toFixed(2);
-  // add history item
-  var hist=document.getElementById('earn-history');
-  if(hist.querySelector('p')) hist.innerHTML='';
-  hist.insertAdjacentHTML('afterbegin',
-    '<div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 text-xs">'
-    +'<div><div class="font-medium text-slate-700 dark:text-slate-200">'+currentRequest.name+'</div>'
-    +'<div class="text-slate-400 mt-0.5">'+currentRequest.pickup.split(',')[0]+' → '+currentRequest.dest.split(',')[0]+'</div></div>'
-    +'<div class="sora font-bold text-emerald-500">'+currentRequest.fare+'</div></div>'
-  );
-  sheetExp=false;document.getElementById('sheet').classList.remove('expanded');
-  showPanelInner('panel-waiting');
-  setTimeout(function(){map&&map.invalidateSize();},320);
-  toast('💰 +'+currentRequest.fare+' earned!');
-  currentRequest=null;
-  if(isOnline) setTimeout(simulateRequest,5000);
-}
-
-// ── Panel helpers ──────────────────────────────────────────────────────────
-var PANELS=['panel-idle','panel-waiting','panel-request','panel-active','panel-earnings','panel-profile'];
-function showPanelInner(id){
-  PANELS.forEach(function(p){
-    var el=document.getElementById(p);
-    if(el) el.classList.toggle('hidden',p!==id);
-  });
-}
-function showPanel(name){
-  if(name==='idle'){showPanelInner(isOnline?'panel-waiting':'panel-idle');return;}
-  if(name==='earnings'||name==='profile'){
-    sheetExp=true;document.getElementById('sheet').classList.add('expanded');
-    setTimeout(function(){map&&map.invalidateSize();},320);
-    showPanelInner('panel-'+name);return;
-  }
-}
-function hidePanel(){
-  sheetExp=false;document.getElementById('sheet').classList.remove('expanded');
-  setTimeout(function(){map&&map.invalidateSize();},320);
-  showPanelInner(isOnline?'panel-waiting':'panel-idle');
-}
-
-// ── Map ────────────────────────────────────────────────────────────────────
-var map,driverMarker;
-var driverLL=[38.7223,-9.1393];
-
-function driverIcon(){
-  return L.divIcon({
-    className:'',
-    html:'<div style="width:34px;height:34px;border-radius:50%;background:#22c55e;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;font-size:16px;">🚗</div>',
-    iconSize:[34,34],iconAnchor:[17,17]
-  });
-}
-
-function initMap(){
-  map=L.map('map',{zoomControl:true,attributionControl:false});
-  map.setView(driverLL,15);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,crossOrigin:true}).addTo(map);
-  driverMarker=L.marker(driverLL,{icon:driverIcon()}).addTo(map);
-
-  if(navigator.geolocation){
-    navigator.geolocation.watchPosition(function(p){
-      driverLL=[p.coords.latitude,p.coords.longitude];
-      driverMarker.setLatLng(driverLL);
-      map.setView(driverLL,15);
-    },function(){},{enableHighAccuracy:true});
-  } else {
-    // simulate gentle movement for demo
-    setInterval(function(){
-      driverLL[0]+=(Math.random()-.5)*0.0003;
-      driverLL[1]+=(Math.random()-.5)*0.0003;
-      driverMarker.setLatLng(driverLL);
-    },2000);
-  }
-}
-
-window.addEventListener('load',initMap);
-</script>
+  <!-- Confirm delete template -->
+  <template id="tpl-confirm">
+    <div class="text-center py-2">
+      <div class="text-4xl mb-3">⚠️</div>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white mb-2">Confirmar remoção</p>
+      <p class="text-sm text-slate-400 mb-5" id="confirm-msg">Tem a certeza que quer remover este item?</p>
+      <div class="flex gap-2">
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
+        <button onclick="toast('🗑️ Removido com sucesso');closeModal()" class="btn btn-danger flex-1">Remover</button>
+      </div>
+    </div>
+  </template>
 </body>
 </html>
