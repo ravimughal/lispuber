@@ -123,7 +123,7 @@
 
   <div class="online-toggle" id="online-toggle" onclick="toggleOnline()">
     <div class="online-dot" id="online-dot"></div>
-    <span id="online-label">Go Online</span>
+    <span id="online-label"></span>
   </div>
 
   <!-- BOTTOM SHEET -->
@@ -287,16 +287,8 @@
           <p class="sora text-[12px] font-semibold tracking-widest uppercase text-slate-400">Management:</p>
           <button onclick="hidePanel()" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
         </div>
-        <div class="flex mb-3 bg-slate-100 dark:bg-slate-800 rounded-xl p-1">
-          <button id="tab-faturas" onclick="switchManagementTab('faturas')" class="flex-1 text-xs py-2 rounded-lg font-semibold bg-white dark:bg-slate-900 shadow">Invoices</button>
-          <button id="tab-turnos"  onclick="switchManagementTab('turnos')"  class="flex-1 text-xs py-2 rounded-lg font-semibold text-slate-400">Shifts</button>
-        </div>
 
-        <div id="content-faturas" class="space-y-2">
-          <div id="faturas-list"><p class="text-xs text-center text-slate-400 py-3">No invoices yet</p></div>
-        </div>
-
-        <div id="content-turnos" class="hidden space-y-2">
+        <div id="content-turnos" class="space-y-2">
           <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700">
             <p class="text-xs font-semibold mb-2">Create Shift</p>
             <input id="turno-start" type="datetime-local" class="w-full mb-2 text-xs p-2 rounded border bg-white text-black dark:bg-slate-900 dark:text-white dark:border-slate-700"/>
@@ -356,17 +348,47 @@
 <!-- BOTTOM NAV -->
 <nav class="flex-shrink-0 grid grid-cols-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20" style="height:56px">
   <button onclick="goPanel('idle')" id="nav-idle"      class="nav-tab active flex flex-col items-center justify-center gap-0.5 active">
-    <span class="text-xl leading-none">🗺️</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Map</span>
+    <span class="text-xl leading-none">🗺️</span><span class="sora text-[10px] font-semibold tracking-wider uppercase text-gray-700 dark:text-white">Map</span>
   </button>
   <button onclick="goPanel('management')" id="nav-management" class="nav-tab flex flex-col items-center justify-center gap-0.5">
-    <span class="text-xl leading-none">⚙️</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Management</span>
+    <span class="text-xl leading-none">⚙️</span><span class="sora text-[10px] font-semibold tracking-wider uppercase text-gray-700 dark:text-white">Management</span>
   </button>
   <button onclick="goPanel('history')"    id="nav-history"    class="nav-tab flex flex-col items-center justify-center gap-0.5">
-    <span class="text-xl leading-none">📋</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">History</span>
+    <span class="text-xl leading-none">📋</span><span class="sora text-[10px] font-semibold tracking-wider uppercase text-gray-700 dark:text-white">History</span>
   </button>
   <button onclick="goPanel('profile')"    id="nav-profile"    class="nav-tab flex flex-col items-center justify-center gap-0.5">
-    <span class="text-xl leading-none">👤</span><span id="profile-name2" class="sora text-[9px] font-semibold tracking-wider uppercase"></span>
+    <span class="text-xl leading-none">👤</span><span id="profile-name2" class="sora text-[10px] font-semibold tracking-wider uppercase text-gray-700 dark:text-white"></span>
   </button>
 </nav>
+
+<div id="invoice-modal" class="fixed inset-0 hidden items-center justify-center bg-black/50 z-50">
+  <div class="bg-white dark:bg-slate-900 w-[90%] max-w-md rounded-2xl p-5 shadow-xl relative">
+
+    <!-- close -->
+    <button onclick="closeInvoiceModal()"
+      class="absolute top-3 right-3 text-slate-400 hover:text-red-500 text-lg">
+      ✕
+    </button>
+
+    <!-- title -->
+    <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-3 text-center">
+      🧾 Fatura:
+    </h2>
+
+    <!-- content -->
+    <div class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+      <div><span class="font-medium">Número:</span> <span id="inv-num"></span></div>
+      <div><span class="font-medium">Viagem ID:</span> <span id="inv-ride"></span></div>
+      <div><span class="font-medium">Preço:</span> €<span id="inv-price"></span></div>
+    </div>
+
+    <!-- button -->
+    <button onclick="closeInvoiceModal()"
+      class="mt-5 w-full py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold">
+      Fechar
+    </button>
+
+  </div>
+</div>
 </body>
 </html>

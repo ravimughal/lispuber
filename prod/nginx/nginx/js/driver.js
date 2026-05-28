@@ -28,6 +28,7 @@ let _tt;
 let routeLine = null;
 let pickupMarker = null;
 let destMarker = null;
+let driverAnim = null;
 
 function toast(msg) {
   const el = document.getElementById("toast");
@@ -171,9 +172,29 @@ hour12: false
         minute: "2-digit",
         hour12: false
       });
-    document.getElementById("online-label").textContent = isOnline ? "Online " + "(" + horasInicio + " - " + horasFim + ")" : "Go Online " + "(" + horasInicio + " - " + horasFim + ")";
+    document.getElementById("online-label").innerHTML = isOnline ? `
+      <div class="flex flex-col items-center justify-center text-center">
+        <div>Online</div>
+        <div class="text-xs text-slate-400">(${horasInicio} - ${horasFim})</div>
+      </div>
+    ` : `
+      <div class="flex flex-col items-center justify-center text-center">
+        <div>Go Online</div>
+        <div class="text-xs text-slate-400">(${horasInicio} - ${horasFim})</div>
+      </div>
+    `;
   } else { 
-    document.getElementById("online-label").textContent = isOnline ? "Online (Sem Turno)" : "Go Online (Sem Turno)";
+    document.getElementById("online-label").innerHTML = isOnline ? `
+      <div class="flex flex-col items-center justify-center text-center">
+        <div>Online</div>
+        <div class="text-xs text-slate-400">(Sem Turno)</div>
+      </div>
+    ` : `
+      <div class="flex flex-col items-center justify-center text-center">
+        <div>Go Online</div>
+        <div class="text-xs text-slate-400">(Sem Turno)</div>
+      </div>
+    `;
   }
   console.log("Toggled online:", document.querySelector(".nav-tab.active"));
   if (isOnline) {
@@ -351,6 +372,63 @@ function fetchRoute() {
         destMarker = L.marker([currentRequest.latitudeDestino, currentRequest.longitudeDestino], {
           icon: pinIcon("#ef4444", "B")
         }).addTo(map);
+        const startLat = currentRequest.latitudeOrigem - 0.01;
+const startLng = currentRequest.longitudeOrigem - 0.01;
+
+const pickupLat = currentRequest.latitudeOrigem;
+const pickupLng = currentRequest.longitudeOrigem;
+
+const destLat = currentRequest.latitudeDestino;
+const destLng = currentRequest.longitudeDestino;
+
+if (driverMarker) {
+  map.removeLayer(driverMarker);
+}
+
+driverMarker = L.marker([startLat, startLng], {
+  icon: driverIcon()
+}).addTo(map);
+
+
+let step = 0;
+const totalSteps = 20;
+
+clearInterval(driverAnim);
+
+driverAnim = setInterval(() => {
+  step++;
+  const t = step / totalSteps;
+
+  let lat, lng;
+
+  // Phase 1: start → pickup
+  if (t < 0.5) {
+    const r = t / 0.5;
+
+    lat = startLat + (pickupLat - startLat) * r;
+    lng = startLng + (pickupLng - startLng) * r;
+  }
+
+  // Phase 2: pickup → destination
+  else {
+    const r = (t - 0.5) / 0.5;
+
+    lat = pickupLat + (destLat - pickupLat) * r;
+    lng = pickupLng + (destLng - pickupLng) * r;
+  }
+
+  driverMarker.setLatLng([lat, lng]);
+
+  // optional: keep map following driver
+  map.panTo([lat, lng], { animate: true });
+
+  if (step >= totalSteps) {
+    clearInterval(driverAnim);
+  }
+      if (!document.getElementById("panel-waiting").classList.contains("hidden")) {
+        clearInterval(driverAnim);
+      }
+}, 2500);
     console.log(data);
   }).catch(err => {
     console.error("Error fetching route:", err);
@@ -577,6 +655,20 @@ container.innerHTML = pedidos.map(p => {
   }
 }
 
+function openInvoiceModal(data) {
+  document.getElementById("inv-num").textContent = data.numSequencial;
+  document.getElementById("inv-ride").textContent = data.viagemId;
+  document.getElementById("inv-price").textContent = (data.preco).toFixed(2);
+
+  document.getElementById("invoice-modal").classList.remove("hidden");
+  document.getElementById("invoice-modal").classList.add("flex");
+}
+
+function closeInvoiceModal() {
+  document.getElementById("invoice-modal").classList.add("hidden");
+  document.getElementById("invoice-modal").classList.remove("flex");
+}
+
 // ─────────────────────────────────────────────
 // FATURAS
 // ─────────────────────────────────────────────
@@ -595,11 +687,16 @@ async function criarFatura(viagemId) {
 
     const precoEuro = (fatura.preco / 100).toFixed(2);
 
-    toast(`🧾 Fatura #${fatura.numSequencial} criada (€${precoEuro})`);
+    toast(`Emitida agora!`);
+    openInvoiceModal(fatura);
+
 
   } catch (e) {
     console.error(e);
-    toast("❌ Já emitida");
+    toast("Emitida anteriormente!");
+    const faturas = await api("GET", "/faturas/motorista/" + user.id);
+    const fatura = faturas.find(f => f.viagemId === viagemId);
+    openInvoiceModal(fatura);
   }
 }
 
@@ -653,7 +750,12 @@ async function loadTurnos() {
     currentTurno = turnos.find(t => isTurnoAtivo(t));
 
     if (!currentTurno) {
-      document.getElementById("online-label").textContent =  "Go Online " + "(Sem Turno)";
+    document.getElementById("online-label").innerHTML = `
+      <div class="flex flex-col items-center justify-center text-center">
+        <div>Go Online</div>
+        <div class="text-xs text-slate-400">(Sem Turno)</div>
+      </div>
+    `;
     } else {
       const horasInicio = new Date(currentTurno.inicio).toLocaleTimeString([], {
         hour: "2-digit",
@@ -667,7 +769,12 @@ async function loadTurnos() {
         hour12: false
       });
 
-      document.getElementById("online-label").textContent =  "Go Online " + " (" + horasInicio + " - " + horasFim + ")";
+      document.getElementById("online-label").innerHTML = `
+        <div class="flex flex-col items-center justify-center text-center">
+          <div>Go Online</div>
+          <div class="text-xs text-slate-400">(${horasInicio} - ${horasFim})</div>
+        </div>
+      `;
     }
   
 
