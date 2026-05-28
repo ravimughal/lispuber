@@ -370,8 +370,6 @@ function renderMotoristas(motoristas) {
 async function deleteMotorista(id) {
   const token = localStorage.getItem("token");
 
-  if (!confirm("Tem a certeza que quer remover este motorista?")) return;
-
   try {
     const res = await fetch(`/api/motoristas/${id}`, {
       method: 'DELETE',
@@ -379,19 +377,26 @@ async function deleteMotorista(id) {
         'Authorization': 'Bearer ' + token
       }
     });
+    // TODO: ajustar no backend para que 
+    console.log("STATUS:", res.status);
+    console.log("STATUS TEXT:", res.statusText); // não retorna texto motivo do backend
 
-    console.log("Delete response:", res);
+    // tentar ler resposta
+    const text = await res.text();
 
-    if (!res.ok) throw new Error('Erro ao remover motorista');
+    console.log("BACKEND RESPONSE:");
+    console.log(text);
 
-    toast('✅ Motorista removido com sucesso');
+    if (!res.ok) {
+      toast(`❌ ${text || 'Erro ao remover motorista'}`);
+      return;
+    }
 
-    // reload list after delete
-    loadMotoristas(); 
+    toast("✅ Motorista removido");
 
   } catch (err) {
     console.error(err);
-    toast('❌ Não foi possível remover o motorista');
+    toast("❌ Erro de conexão");
   }
 }
 

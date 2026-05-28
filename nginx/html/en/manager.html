@@ -830,82 +830,115 @@
 
   <!-- Motorista form template -->
   <template id="tpl-criarMotorista">
-    <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Create Driver</p>
-      <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
+  <div class="flex items-center justify-between mb-5">
+    <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">
+      Create Driver
+    </p>
+    <button onclick="closeModal()"
+      class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">
+      ✕
+    </button>
+  </div>
+
+  <div class="space-y-3">
+
+    <div>
+      <label class="form-label">Full Name</label>
+      <input id="f-nome" type="text" placeholder="First Last" class="form-input"/>
     </div>
-    <div class="space-y-3">
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Full Name</label>
-          <input id="f-nome" type="text" placeholder="First Last" class="form-input"/>
-        </div>
-        <div>
-          <label class="form-label">Date of Birth</label>
-          <input id="f-nasc" type="date" class="form-input"/>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">License Number</label>
-          <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
-        </div>
-        <div>
-          <label class="form-label">License Validity</label>
-          <input id="f-validade-carta" type="date" class="form-input"/>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Gender</label>
-          <select id="f-genero" class="form-input">
-            <option value="MASCULINO">Male</option>
-            <option value="FEMININO">Female</option>
-            <option value="NAO_INDICADO">Other</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Email</label>
-          <input id="f-email" type="text" placeholder="email@exemplo.com" class="form-input"/>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Postal Code</label>
-          <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
-        </div>
-        <div>
-          <label class="form-label">Street Number</label>
-          <input id="f-num" type="number" placeholder="37" class="form-input" />
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">NIF</label>
-          <input id="f-nif" type="text" placeholder="123456789" class="form-input"/>
-        </div>
-        <div>
-          <label class="form-label">Street</label>
-          <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="form-label">Password (min. 6 - ABC123)</label>
-          <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
-          <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Minimum 6 characters with letters and digits</p>
-        </div>
-        <div>
-          <label class="form-label">Confirm Password</label>
-          <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
-        </div>
-      </div>
-      <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
-        <button onclick="createMotorista()" class="btn btn-primary flex-1">Create Account</button>
-      </div>
+
+
+    <div>
+      <label class="form-label">Email</label>
+      <input id="f-email" type="text" placeholder="email@exemplo.com" class="form-input"/>
     </div>
-  </template>
+
+    <div>
+      <label class="form-label">Password (min. 6 - ABC123)</label>
+      <input id="f-senha" type="password"
+        placeholder="••••••"
+        class="form-input"
+        oninput="validateSenha(this)"/>
+      <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">
+        Minimum 6 characters with letters and digits
+      </p>
+    </div>
+
+    <div>
+      <label class="form-label">Confirm Password</label>
+      <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
+    </div>
+        <div>
+      <label class="form-label">Street</label>
+      <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+    </div>
+        <div class="grid grid-cols-2 gap-3">
+
+      <div>
+        <label class="form-label">Postal Code</label>
+        <input id="f-cp" type="text"
+          placeholder="1000-001"
+          class="form-input"
+          oninput="lookupPostal(this)"/>
+      </div>
+
+      <div>
+        <label class="form-label">Street Number</label>
+        <input id="f-num" type="number" placeholder="37" class="form-input"/>
+      </div>
+
+    </div>
+
+
+    <div class="grid grid-cols-2 gap-3">
+
+      <div>
+        <label class="form-label">Date of Birth</label>
+        <input id="f-nasc" type="date" class="form-input"/>
+      </div>
+
+      <div>
+        <label class="form-label">License Number</label>
+        <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
+      </div>
+
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+
+      <div>
+        <label class="form-label">License Validity</label>
+        <input id="f-validade-carta" type="date" class="form-input"/>
+      </div>
+
+      <div>
+        <label class="form-label">Gender</label>
+        <select id="f-genero" class="form-input">
+          <option value="MASCULINO">Male</option>
+          <option value="FEMININO">Female</option>
+          <option value="NAO_INDICADO">Other</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div>
+      <label class="form-label">NIF</label>
+      <input id="f-nif" type="text" placeholder="123456789" class="form-input"/>
+    </div>
+
+    <div class="flex gap-2 pt-2">
+      <button onclick="closeModal()" class="btn btn-ghost flex-1">
+        Cancel
+      </button>
+
+      <button onclick="createMotorista()" class="btn btn-primary flex-1">
+        Create Account
+      </button>
+    </div>
+
+  </div>
+</template>
 
   <!-- Viagem detail template -->
   <template id="tpl-viagem-detail">

@@ -403,7 +403,7 @@ function setRouteKm(km, duration) {
 // ─────────────────────────────────────────────
 // MAP
 // ─────────────────────────────────────────────
-let map, pickupMarker, destMarker, routeLine;
+let map, pickupMarker, destMarker, routeLine = null;
 let pickupLL = [38.7223, -9.1393], destLL = null;
 let pinMode = "pickup";
 let pillTimer;
@@ -465,6 +465,7 @@ function initBookingMap() {
     const ll = [e.latlng.lat, e.latlng.lng];
     if (pinMode === "pickup") {
       pickupLL = ll;
+      if (pickupMarker) map.removeLayer(pickupMarker);
       pickupMarker = L.marker(pickupLL, { icon:pinIcon("#22c55e","A") }).addTo(map);
   const address = await getAddress(ll[0], ll[1]);
   document.getElementById("pickup-input").value = address;
@@ -581,6 +582,14 @@ function fetchRoute() {
       }
       routeLine = L.polyline(coords, { color:"#0ea5e9", weight:4, opacity:.85 }).addTo(map);
     map.fitBounds(routeLine.getBounds(), { padding:[70,200] });
+        pickupMarker = L.marker(pickupLL, {
+          icon: pinIcon("#22c55e", "A")
+        }).addTo(map);
+
+        destMarker = L.marker(destLL, {
+          icon: pinIcon("#ef4444", "B")
+        }).addTo(map);
+        const startLat = currentRequest.latitudeOrigem - 0.01;
     console.log(data);
     setRouteKm(data.routes[0].distance / 1000, Math.round(data.routes[0].duration / 60));
   }).catch(() => setRouteKm(3.4, 5));
@@ -665,7 +674,7 @@ function swapLocations() {
 // ─────────────────────────────────────────────
 let activePedidoId = null, activeViagemId = null;
 let driverPollInterval = null, tripPollInterval = null, trackAnimInterval = null;
-let trackMap, trackDriverMarker;
+let trackMap = null, trackDriverMarker = null;
 
 async function bookRide() {
   const dest   = document.getElementById("dest-input").value.trim();
@@ -758,6 +767,8 @@ function initTrackMap(ride) {
   const dLat = ride.latitudeDestino  || (destLL ? destLL[0] : pLat + 0.03);
   const dLng = ride.longitudeDestino || (destLL ? destLL[1] : pLng + 0.03);
 
+  if (trackMap)   trackMap.remove(); trackMap = null;
+  
   if (!trackMap) {
     trackMap = L.map("track-map", { zoomControl:true, attributionControl:false });
   }
@@ -835,6 +846,19 @@ function resetBookingUI() {
   document.getElementById("searching-state").classList.add("hidden");
   activePedidoId = null;
   activeViagemId = null;
+  document.getElementById("fare-economy" ).textContent = "";
+  document.getElementById("fare-comfort" ).textContent = "";
+  document.getElementById("fare-premium" ).textContent = "";
+
+  document.getElementById("km-economy" ).textContent = "";
+  document.getElementById("km-comfort" ).textContent = "";
+  document.getElementById("km-premium" ).textContent = "";
+
+  document.getElementById("economy-time" ).textContent = "";
+  document.getElementById("comfort-time" ).textContent = "";
+  document.getElementById("premium-time" ).textContent = "";
+
+  document.getElementById("confirm-btn" ).textContent = "Confirm ride";
 }
 
 // ─────────────────────────────────────────────
@@ -854,13 +878,15 @@ function submitRating() {
   toast("✅ Payment valid!");
   resetBookingUI();
   if (destMarker) { map.removeLayer(destMarker); destMarker = null; }
+  if (pickupMarker) { map.removeLayer(pickupMarker); pickupMarker = null; }
   if (routeLine)  { map.removeLayer(routeLine);  routeLine  = null; }
   document.getElementById("dest-input").value = "";
   document.getElementById("pickup-input").value = "";
   document.getElementById("booking-sheet").classList.remove("expanded");
   destLL = null;
+  pickupLL = null;
   setTimeout(() => map && map.invalidateSize(), 100);
-  setPinMode("dest");
+  setPinMode("pickup");
   loadPedidos();
   loadViagens();
   goTab("home");
