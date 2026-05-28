@@ -56,7 +56,7 @@
     }
     .dark .online-toggle{background:#1e293b;border-color:#334155;color:#f1f5f9}
     .online-toggle.online{border-color:#22c55e;background:#f0fdf4}
-    .dark .online-toggle.online{background:rgba(34,197,94,.12);border-color:#22c55e}
+    .dark .online-toggle.online{ background:oklch(40.594% 0.03139 171.289);border-color:#22c55e}
     .online-dot{width:10px;height:10px;border-radius:50%;background:#94a3b8;transition:background .2s}
     .online-toggle.online .online-dot{background:#22c55e;animation:pulse-dot 1.4s infinite}
     @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.45}}
@@ -85,6 +85,11 @@
     /* pulsing ring for accepted state */
     @keyframes ping{75%,100%{transform:scale(1.6);opacity:0}}
     .ping{animation:ping 1.2s cubic-bezier(0,0,.2,1) infinite}
+
+    .nav-tab{color:#ffffff}
+    .nav-tab.active{background: oklch(69.6% 0.17 162.48)}
+    .dark .nav-tab.active{background: ooklch(69.6% 0.17 162.48)}
+    .nav-tab:hover:not(.active){background: oklch(59.6% 0.145 163.225)}
   </style>
 </head>
 <body class="bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100">
@@ -92,10 +97,15 @@
 
 <!-- HEADER -->
 <header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-20 flex-shrink-0" style="height:54px">
-  <a href="index" class="flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white">
-    <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold">L</div>Lisp
-  </a>
   <div class="flex items-center gap-2">
+    <a href="index" class="px-2 py-1.5 rounded-lg flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
+      <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
+      <span class="sora">Lisp</span>
+    </a>
+    <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Driver</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <button onclick="logout()" class="py-2 px-3 rounded-lg border border-slate-500 text-sm font-medium text-slate-400 hover:border-red-400  hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition">Logout</button>
     <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-emerald-400">🌙</button>
     <div class="relative">
       <button id="langToggle" class="text-sm px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800">EN ▾</button>
@@ -337,9 +347,6 @@
             <span class="text-slate-500">📅 Valid until</span><span id="profile-license-lifetime" class="font-medium text-slate-700 dark:text-slate-300"></span>
           </div>
         </div>
-        <button onclick="logout()" class="mt-4 w-full py-2.5 rounded-xl border border-red-200 dark:border-red-800 text-red-500 text-sm font-semibold sora hover:bg-red-50 dark:hover:bg-red-900/20">
-          Log out
-        </button>
       </div>
 
     </div>
@@ -348,16 +355,16 @@
 
 <!-- BOTTOM NAV -->
 <nav class="flex-shrink-0 grid grid-cols-4 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 z-20" style="height:56px">
-  <button onclick="goPanel('idle')"       class="flex flex-col items-center justify-center gap-0.5 text-emerald-500">
+  <button onclick="goPanel('idle')" id="nav-idle"      class="nav-tab active flex flex-col items-center justify-center gap-0.5 active">
     <span class="text-xl leading-none">🗺️</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Map</span>
   </button>
-  <button onclick="goPanel('management')" class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
+  <button onclick="goPanel('management')" id="nav-management" class="nav-tab flex flex-col items-center justify-center gap-0.5">
     <span class="text-xl leading-none">⚙️</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">Management</span>
   </button>
-  <button onclick="goPanel('history')"    class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
+  <button onclick="goPanel('history')"    id="nav-history"    class="nav-tab flex flex-col items-center justify-center gap-0.5">
     <span class="text-xl leading-none">📋</span><span class="sora text-[9px] font-semibold tracking-wider uppercase">History</span>
   </button>
-  <button onclick="goPanel('profile')"    class="flex flex-col items-center justify-center gap-0.5 text-slate-400 hover:text-emerald-500">
+  <button onclick="goPanel('profile')"    id="nav-profile"    class="nav-tab flex flex-col items-center justify-center gap-0.5">
     <span class="text-xl leading-none">👤</span><span id="profile-name2" class="sora text-[9px] font-semibold tracking-wider uppercase"></span>
   </button>
 </nav>

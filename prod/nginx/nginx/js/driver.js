@@ -25,6 +25,10 @@ async function api(method, path, body) {
 // TOAST
 // ─────────────────────────────────────────────
 let _tt;
+let routeLine = null;
+let pickupMarker = null;
+let destMarker = null;
+
 function toast(msg) {
   const el = document.getElementById("toast");
   el.textContent = msg;
@@ -115,7 +119,9 @@ function showPanel(id) {
 
 function showPanelInner(id) { showPanel(id); }
 
+const TABS = ["idle","management","history","profile"];
 function goPanel(name) {
+  TABS.forEach(t => document.getElementById("nav-" + t).classList.toggle("active", t === name));
   if (name === "idle")       { showPanel(isOnline ? "panel-waiting" : "panel-idle"); collapseSheet(); return; }
   if (name === "history")    { loadHistory(); showPanel("panel-history"); expandSheet(); return; }
   if (name === "management") { loadFaturas(); loadTurnos(); showPanel("panel-management"); expandSheet(); return; }
@@ -153,17 +159,36 @@ function toggleOnline() {
   isOnline = !isOnline;
   const tog = document.getElementById("online-toggle");
   tog.classList.toggle("online", isOnline);
-  document.getElementById("online-label").textContent = isOnline ? "Online" : "Go Online";
+  if (currentTurno) {
+          const horasInicio = new Date(currentTurno.inicio).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+hour12: false
+      });
 
+            const horasFim = new Date(currentTurno.fim).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    document.getElementById("online-label").textContent = isOnline ? "Online " + "(" + horasInicio + " - " + horasFim + ")" : "Go Online " + "(" + horasInicio + " - " + horasFim + ")";
+  } else { 
+    document.getElementById("online-label").textContent = isOnline ? "Online (Sem Turno)" : "Go Online (Sem Turno)";
+  }
+  console.log("Toggled online:", document.querySelector(".nav-tab.active"));
   if (isOnline) {
     toast("🟢 You are online — watching for rides");
-    showPanel("panel-waiting");
+    if (!document.getElementById("panel-idle").classList.contains("hidden")) {
+      showPanel("panel-waiting");
+    }
     collapseSheet();
     startRequestPolling();
   } else {
     stopRequestPolling();
     stopTripPolling();
-    showPanel("panel-idle");
+    if (!document.getElementById("panel-waiting").classList.contains("hidden")) {
+      showPanel("panel-idle");
+    }
     toast("🔴 You are offline");
   }
 }
@@ -191,7 +216,6 @@ async function fetchPendingRequests() {
   try {
     const rides = await api("GET", "/pedidos-taxi/pendentes");
     if (!rides.length) {
-      showPanel("panel-waiting");
       return;
     }
     console.log("Pending rides:", rides);
@@ -262,8 +286,9 @@ async function showRideRequest(r) {
     document.getElementById("req-eta").textContent = "5 min";
   });
 
-
-  showPanel("panel-request");
+  if (!document.getElementById("panel-waiting").classList.contains("hidden")) {
+    showPanel("panel-request");
+  }
   expandSheet();
 }
 
@@ -285,6 +310,8 @@ async function acceptRide() {
     // document.getElementById("acc-fare").textContent         = currentRequest.preco != null ? "€" + Number(currentRequest.preco).toFixed(2) : "—";
     showPanel("panel-accepted");
     expandSheet();
+    fetchRoute();
+    console.log("Ride accepted, waiting for client confirmation. Current request ID:", currentRequest);
 
     // Poll until a viagem is created (client's app confirmed the match)
     pollForViagem(currentRequest.id);
@@ -293,6 +320,49 @@ async function acceptRide() {
     console.error("acceptRide:", e);
     toast("❌ Failed to accept — already taken?");
   }
+}
+
+function fetchRoute() {
+  const url = `https://router.project-osrm.org/route/v1/driving/${currentRequest.longitudeOrigem},${currentRequest.latitudeOrigem};${currentRequest.longitudeDestino},${currentRequest.latitudeDestino}?overview=full&geometries=geojson`;
+  fetch(url).then(r => r.json()).then(data => {
+    console.log("OSRM route data:", data);
+    if (!data.routes?.length) return;
+    const coords = data.routes[0].geometry.coordinates.map(c => [c[1],c[0]]);
+    
+      // remove old route
+      if (routeLine) {
+        map.removeLayer(routeLine);
+      }
+
+      // remove old markers
+      if (pickupMarker) {
+        map.removeLayer(pickupMarker);
+      }
+
+      if (destMarker) {
+        map.removeLayer(destMarker);
+      }
+    routeLine = L.polyline(coords, { color:"#0ea5e9", weight:4, opacity:.85 }).addTo(map);
+    map.fitBounds(routeLine.getBounds(), { padding:[70,200] });
+        pickupMarker = L.marker([currentRequest.latitudeOrigem, currentRequest.longitudeOrigem], {
+          icon: pinIcon("#22c55e", "A")
+        }).addTo(map);
+
+        destMarker = L.marker([currentRequest.latitudeDestino, currentRequest.longitudeDestino], {
+          icon: pinIcon("#ef4444", "B")
+        }).addTo(map);
+    console.log(data);
+  }).catch(err => {
+    console.error("Error fetching route:", err);
+  });
+}
+
+function pinIcon(color, label) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;background:${color};transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);color:#fff;font-weight:700;font-size:9px">${label}</span></div>`,
+    iconSize: [26,26], iconAnchor: [13,26]
+  });
 }
 
 function pollForViagem(pedidoId) {
@@ -378,7 +448,19 @@ async function completeRide() {
 
   activeViagemId = null;
   currentRequest = null;
+      // remove old route
+      if (routeLine) {
+        map.removeLayer(routeLine);
+      }
 
+      // remove old markers
+      if (pickupMarker) {
+        map.removeLayer(pickupMarker);
+      }
+
+      if (destMarker) {
+        map.removeLayer(destMarker);
+      }
   if (isOnline) {
     showPanel("panel-waiting");
     startRequestPolling();
@@ -569,6 +651,25 @@ async function loadTurnos() {
     turnos.sort((a, b) => new Date(a.inicio) - new Date(b.inicio));
 
     currentTurno = turnos.find(t => isTurnoAtivo(t));
+
+    if (!currentTurno) {
+      document.getElementById("online-label").textContent =  "Go Online " + "(Sem Turno)";
+    } else {
+      const horasInicio = new Date(currentTurno.inicio).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+
+            const horasFim = new Date(currentTurno.fim).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+
+      document.getElementById("online-label").textContent =  "Go Online " + " (" + horasInicio + " - " + horasFim + ")";
+    }
+  
 
 container.innerHTML = turnos.map(t => {
   const ativo = isTurnoAtivo(t);

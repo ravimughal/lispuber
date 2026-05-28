@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gestor - LispUber</title>
+  <title>Manager - LispUber</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -138,11 +138,11 @@
   <header class="flex items-center justify-between bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 px-4 z-30 flex-shrink-0 sticky top-0" style="height:54px">
     <div class="flex items-center gap-3">
       <button id="mob-menu-btn" onclick="toggleMobileMenu()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base">☰</button>
-      <a href="index" class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+      <a href="index" class="px-2 py-1.5 rounded-lg flex items-center gap-2 font-heading font-semibold text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800">
         <div class="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center text-white text-xs font-bold sora">L</div>
         <span class="sora">Lisp</span>
       </a>
-      <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Gestor</span>
+      <span class="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-[10px] font-bold sora tracking-wider uppercase">Manager</span>
     </div>
     <div class="flex items-center gap-2">
       <button id="theme-btn" onclick="toggleTheme()" class="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-base hover:border-sky-400">🌙</button>
@@ -166,7 +166,7 @@
       </div>
       <div class="flex items-center gap-2 pl-2 border-l border-slate-100 dark:border-slate-800">
         <div id="user-avatar" class="w-7 h-7 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-sm">👤</div>
-        <span id="username" class="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 sora">Admin</span>
+        <span id="username" class="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 sora"></span>
       </div>
     </div>
   </header>
@@ -177,20 +177,21 @@
 
         <!-- <div class="nav-section">Dashboard</div> -->
         <div class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard')">
-          <span>📊</span><span>Visão Geral</span>
+          <span>📊</span><span>Overview</span>
         </div>
 
-        <div class="nav-section mt-2">Relatórios</div>
+        <div class="nav-section mt-2">Reports</div>
         <div class="nav-item" id="nav-rel-frota" onclick="showPanel('rel-frota')">
-          <span>📈</span><span>Táxis &amp; Motoristas</span>
+          <span>📈</span><span>Taxis &amp; Drivers</span>
         </div>
         <div class="nav-item" id="nav-rel-fat" onclick="showPanel('rel-fat')">
-          <span>💰</span><span>Clientes &amp; Faturação</span>
+          <span>💰</span><span>Customers &amp; Billing</span>
         </div>
+        <!-- Reabastecimentos
         <div class="nav-item" id="nav-reabast" onclick="showPanel('reabast')">
-          <span>⛽</span><span>Reabastecimentos</span>
+           <span>⛽</span><span>Refueling</span> 
         </div>
-
+        -->
         <!-- <div class="nav-section mt-2">Visualizar</div>
         <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
           <span>🗺️</span><span>Pedidos</span>
@@ -202,26 +203,26 @@
           <span>🧾</span><span>Faturas</span>
         </div> -->
 
-        <div class="nav-section mt-2">Ver, Definir e Editar</div>
+        <div class="nav-section mt-2">View, Define and Edit</div>
         <div class="nav-item" id="nav-viagens" onclick="showPanel('viagens')">
-          <span>🗺️</span><span>Viagens</span>
+          <span>🗺️</span><span>Trips</span>
         </div>
         <div class="nav-item" id="nav-taxis" onclick="showPanel('taxis')">
-          <span>🚕</span><span>Táxis</span>
+          <span>🚕</span><span>Taxis</span>
         </div>
         <div class="nav-item" id="nav-motoristas" onclick="showPanel('motoristas')">
-          <span>👨‍✈️</span><span>Motoristas</span>
+          <span>👨‍✈️</span><span>Drivers</span>
         </div>
         <!-- <div class="nav-item" id="nav-turnos" onclick="showPanel('turnos')">
           <span>🕐</span><span>Turnos</span>
         </div> -->
         <div class="nav-item" id="nav-precos" onclick="showPanel('precos')">
-          <span>💶</span><span>Preços</span>
+          <span>💶</span><span>Prices</span>
         </div>
       </div>
       <div class="p-3 border-t border-slate-100 dark:border-slate-800">
-        <button onclick="toast('👋 Sessão terminada'), logout()" class="w-full nav-item text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/20">
-          <span>🚪</span><span>Terminar sessão</span>
+        <button onclick="toast('👋 Session ended'), logout()" class="w-full nav-item text-red-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950/20">
+          <span>🚪</span><span>End Session</span>
         </button>
       </div>
     </aside>
@@ -233,7 +234,7 @@
       <div id="panel-dashboard" class="panel active px-4 sm:px-6 py-5 fade-in">
         <div class="flex items-center justify-between mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Visão Geral</h1>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Overview</h1>
           </div>
         </div>
 
@@ -242,25 +243,25 @@
           <div class="stat-card fade-in text-center">
             <div class="text-xl mb-1">🚕</div>
             <div id="total-taxis" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
-            <div class="text-s text-slate-400 mt-0.5">Total de Táxis</div>
-            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 1 este mês</div> -->
+            <div class="text-s text-slate-400 mt-0.5">Total Taxis</div>
+            <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 1 this month</div> -->
           </div>
           <div class="stat-card fade-in text-center" style="animation-delay:.06s">
             <div class="text-xl mb-1">👨‍✈️</div>
             <div id="total-motoristas" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
-            <div class="text-s text-slate-400 mt-0.5">Total de Motoristas</div>
+            <div class="text-s text-slate-400 mt-0.5">Total Drivers</div>
             <!-- <div class="mt-2 text-[11px] text-sky-500 font-medium">2 em turno</div> -->
           </div>
           <div class="stat-card fade-in text-center" style="animation-delay:.12s">
             <div class="text-xl mb-1">🗺️</div>
             <div id="total-viagens" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
-            <div class="text-s text-slate-400 mt-0.5">Total de Viagens</div>
+            <div class="text-s text-slate-400 mt-0.5">Total Trips</div>
             <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ vs ontem</div> -->
           </div>
           <div class="stat-card fade-in text-center" style="animation-delay:.18s">
             <div class="text-xl mb-1">💶</div>
             <div id="total-receita" class="sora font-bold text-2xl text-slate-900 dark:text-white"></div>
-            <div class="text-s text-slate-400 mt-0.5">Total de Receita</div>
+            <div class="text-s text-slate-400 mt-0.5">Total Revenue</div>
             <!-- <div class="mt-2 text-[11px] text-emerald-500 font-medium">↑ 14% vs ontem</div> -->
           </div>
         </div>
@@ -271,8 +272,8 @@
           <!-- Recent trips -->
           <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
             <div class="flex items-center justify-between mb-3">
-              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Últimas viagens</p>
-              <button onclick="showPanel('viagens')" class="text-[11px] text-sky-500 hover:underline">Ver todas →</button>
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Recent Trips</p>
+              <button onclick="showPanel('viagens')" class="text-[11px] text-sky-500 hover:underline">View All →</button>
             </div>
             <div id="last-viagens" class="space-y-2"></div>
           </div>
@@ -280,8 +281,8 @@
           <!-- Fleet status -->
           <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
             <div class="flex items-center justify-between mb-3">
-              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Táxis</p>
-              <button onclick="showPanel('taxis')" class="text-[11px] text-sky-500 hover:underline">Gerir →</button>
+              <p class="sora font-semibold text-sm text-slate-900 dark:text-white">Taxis</p>
+              <button onclick="showPanel('taxis')" class="text-[11px] text-sky-500 hover:underline">Manage →</button>
             </div>
             <div id="fleet-status" class="space-y-2.5"></div>
           </div>
@@ -289,10 +290,10 @@
 
         <!-- Driver activity -->
         <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Motoristas hoje</p>
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Drivers Today</p>
           <div class="overflow-x-auto">
             <table>
-              <thead><tr><th>Motorista</th><th>Turno</th><th>Viagens</th><th>Km</th><th>Receita</th><th>Estado</th></tr></thead>
+              <thead><tr><th>Driver</th><th>Shift</th><th>Trips</th><th>km</th><th>Revenue</th><th>Status</th></tr></thead>
               <tbody id="driver-activity"></tbody>
             </table>
           </div>
@@ -303,15 +304,15 @@
       <div id="panel-taxis" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Táxis</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Frota da empresa</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Taxis</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Company fleet</p>
           </div>
-          <button onclick="openModal('modal-criarTaxi')" class="btn btn-primary">+ Registar táxi</button>
+          <button onclick="openModal('modal-criarTaxi')" class="btn btn-primary">+ Register Taxi</button>
         </div>
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Matrícula</th><th>Marca / Modelo</th><th>Ano</th><th>Conforto</th><th>Motor</th><th>Estado</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Registration</th><th>Brand / Model</th><th>Year</th><th>Comfort</th><th>Engine</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="taxis-tbody">
 
             </tbody>
@@ -323,15 +324,15 @@
       <div id="panel-motoristas" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Motoristas</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Contas e dados pessoais</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Drivers</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Accounts and personal data</p>
           </div>
-          <button onclick="openModal('modal-criarMotorista')" class="btn btn-primary">+ Registar motorista</button>
+          <button onclick="openModal('modal-criarMotorista')" class="btn btn-primary">+ Register Driver</button>
         </div>
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nome</th><th>NIF</th><th>Nascimento</th><th>Carta</th><th>Morada</th><th>Estado</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Name</th><th>TIN</th><th>Birth Date</th><th>License</th><th>Address</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="motoristas-tbody"></tbody>
             </tbody>
           </table>
@@ -342,22 +343,22 @@
       <div id="panel-turnos" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Turnos</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Histórico de turnos e táxis reservados</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Shifts</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Shift and taxi reservation history</p>
           </div>
           <div class="flex gap-2">
             <input type="date" class="form-input text-xs py-1.5" id="turno-filter-date"/>
-            <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filtrar</button>
+            <button onclick="toast('🔍 Filtros aplicados')" class="btn btn-ghost btn-sm">Filter</button>
           </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Motorista</th><th>Táxi</th><th>Início</th><th>Fim</th><th>Duração</th><th>Viagens</th><th>Estado</th></tr></thead>
+            <thead><tr><th>Driver</th><th>Taxi</th><th>Start</th><th>End</th><th>Duration</th><th>Trips</th><th>Status</th></tr></thead>
             <tbody>
-              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">AA-12-BB</td><td>08:00</td><td>16:00</td><td>8h</td><td>5</td><td><span class="badge badge-green">Ativo</span></td></tr>
-              <tr><td class="font-medium">Ana Ferreira</td><td class="font-mono text-xs">CC-34-DD</td><td>09:00</td><td>17:00</td><td>8h</td><td>4</td><td><span class="badge badge-green">Ativo</span></td></tr>
-              <tr><td class="font-medium">Rui Santos</td><td class="font-mono text-xs">EE-56-FF</td><td>00:00</td><td>08:00</td><td>8h</td><td>3</td><td><span class="badge badge-slate">Terminado</span></td></tr>
-              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">GG-78-HH</td><td>16:00</td><td>00:00</td><td>8h</td><td>0</td><td><span class="badge badge-amber">Agendado</span></td></tr>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">AA-12-BB</td><td>08:00</td><td>16:00</td><td>8h</td><td>5</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td class="font-medium">Ana Ferreira</td><td class="font-mono text-xs">CC-34-DD</td><td>09:00</td><td>17:00</td><td>8h</td><td>4</td><td><span class="badge badge-green">Active</span></td></tr>
+              <tr><td class="font-medium">Rui Santos</td><td class="font-mono text-xs">EE-56-FF</td><td>00:00</td><td>08:00</td><td>8h</td><td>3</td><td><span class="badge badge-slate">Completed</span></td></tr>
+              <tr><td class="font-medium">Carlos Mendes</td><td class="font-mono text-xs">GG-78-HH</td><td>16:00</td><td>00:00</td><td>8h</td><td>0</td><td><span class="badge badge-amber">Scheduled</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -367,16 +368,16 @@
       <div id="panel-reabast" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Reabastecimentos</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Combustível e carregamentos elétricos</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Refuels</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Fuel and electric charging records</p>
           </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Táxi</th><th>Turno</th><th>Tipo</th><th>Início</th><th>Fim</th><th>Qtd.</th><th>€ Pago</th><th>Km táxi</th></tr></thead>
+            <thead><tr><th>Taxi</th><th>Shift</th><th>Type</th><th>Start</th><th>End</th><th>Quantity</th><th>€ Paid</th><th>Taxi Km</th></tr></thead>
             <tbody>
               <tr><td class="font-mono text-xs">AA-12-BB</td><td class="text-xs text-slate-400">#1001</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">10:00</td><td class="text-xs">10:20</td><td>42 L</td><td class="text-emerald-500 font-semibold">€68.04</td><td>48 320</td></tr>
-              <tr><td class="font-mono text-xs">EE-56-FF</td><td class="text-xs text-slate-400">#1003</td><td><span class="badge badge-green">⚡ Elét.</span></td><td class="text-xs">07:30</td><td class="text-xs">09:30</td><td>32 kWh</td><td class="text-emerald-500 font-semibold">€6.40</td><td>10 000</td></tr>
+              <tr><td class="font-mono text-xs">EE-56-FF</td><td class="text-xs text-slate-400">#1003</td><td><span class="badge badge-green">⚡ Elec.</span></td><td class="text-xs">07:30</td><td class="text-xs">09:30</td><td>32 kWh</td><td class="text-emerald-500 font-semibold">€6.40</td><td>10 000</td></tr>
               <tr><td class="font-mono text-xs">CC-34-DD</td><td class="text-xs text-slate-400">#1002</td><td><span class="badge badge-blue">⛽ Comb.</span></td><td class="text-xs">11:40</td><td class="text-xs">11:58</td><td>55 L</td><td class="text-emerald-500 font-semibold">€89.10</td><td>32 100</td></tr>
             </tbody>
           </table>
@@ -387,20 +388,20 @@
       <div id="panel-viagens" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Viagens</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Todas as viagens com clientes</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Trips</h1>
+            <p class="text-xs text-slate-400 mt-0.5">All trips with clients</p>
           </div>
         </div>
 
         <!-- Date range -->
         <div class="flex items-center gap-3 flex-wrap mb-3">
           <div class="flex items-center gap-1">
-            <label class="text-xs text-slate-500">De:</label>
+            <label class="text-xs text-slate-500">From:</label>
             <input id="filter-start" type="date" class="form-input text-xs"/>
           </div>
 
           <div class="flex items-center gap-1">
-            <label class="text-xs text-slate-500">Até:</label>
+            <label class="text-xs text-slate-500">To:</label>
             <input id="filter-end" type="date" class="form-input text-xs"/>
           </div>
 
@@ -414,22 +415,22 @@
             class="form-input text-xs w-24"/>
 
           <input id="filter-pax" type="number" min="1"
-            placeholder="Passageiros"
+            placeholder="Passengers"
             class="form-input text-xs w-32"/>
 
           <input id="filter-origin" type="text"
-            placeholder="Origem"
+            placeholder="Origin"
             class="form-input text-xs w-28"/>
 
           <input id="filter-dest" type="text"
-            placeholder="Destino"
+            placeholder="Destination"
             class="form-input text-xs w-28"/>
 
           <!-- Actions -->
           <div class="flex gap-2 ml-auto">
             <button onclick="applyFilters()"
               class="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg transition">
-              Filtrar
+              Filter
             </button>
 
             <button onclick="resetFilters()"
@@ -442,7 +443,7 @@
 
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Motorista</th><th>Táxi</th><th>Origem</th><th>Destino</th><th>Início</th><th>Fim</th><th>Km</th><th>Passageiros</th><th>Preço</th><th>Fatura</th></tr></thead>
+            <thead><tr><th>Driver</th><th>TTaxi</th><th>Origin</th><th>Destination</th><th>Start</th><th>End</th><th>Km</th><th>Passengers</th><th>Price</th><th>Invoice</th></tr></thead>
             <tbody id="viagens-body"></tbody>
             </tbody>
           </table>
@@ -453,13 +454,13 @@
       <div id="panel-faturas" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Faturas</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Documentos fiscais emitidos</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Invoices</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Fiscal documents issued</p>
           </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nº Fatura</th><th>Data</th><th>Cliente NIF</th><th>Cliente Nome</th><th>Viagem</th><th>Valor</th><th>Ações</th></tr></thead>
+            <thead><tr><th>Nº Invoice</th><th>Date</th><th>Customer NIF</th><th>Customer Name</th><th>Trip</th><th>Amount</th><th>Actions</th></tr></thead>
             <tbody>
               <tr><td class="sora font-bold text-sky-500">2026/0001</td><td class="text-xs">2026-04-16 12:32</td><td class="font-mono text-xs">123456789</td><td>Maria Costa</td><td class="text-xs text-slate-400">Aeroporto→Campo Grande</td><td class="text-emerald-500 font-semibold sora">€8.40</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
               <tr><td class="sora font-bold text-sky-500">2026/0002</td><td class="text-xs">2026-04-16 10:47</td><td class="font-mono text-xs">987654321</td><td>João Pinto</td><td class="text-xs text-slate-400">Chiado→Parque Nações</td><td class="text-emerald-500 font-semibold sora">€17.20</td><td><button onclick="toast('📄 A descarregar fatura…')" class="btn btn-ghost btn-sm">PDF</button></td></tr>
@@ -471,44 +472,44 @@
       <!-- ════ PREÇOS ════════════════════════════════════════════════════════ -->
       <div id="panel-precos" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="mb-5">
-          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Preços</h1>
-          <p class="text-xs text-slate-400 mt-0.5">Tarifas por nível de conforto e simulador (US3)</p>
+          <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Prices</h1>
+          <p class="text-xs text-slate-400 mt-0.5">Rates by level of comfort and simulator (US3)</p>
         </div>
 
         <!-- Price form -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">Tarifas base</p>
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-4">Base rates</p>
             <div class="space-y-4">
               <div>
-                <label class="form-label">💶 Básico — preço/minuto (€)</label>
+                <label class="form-label">💶 Basic — price/minute (€)</label>
                 <input id="price-basico" type="number" placeholder="0.00" step="0.01" class="form-input"/>
               </div>
               <div>
-                <label class="form-label">💶 Conforto — preço/minuto (€)</label>
+                <label class="form-label">💶 Confort — price/minute (€)</label>
                 <input id="price-conforto" type="number" placeholder="0.00" step="0.01" class="form-input"/>
               </div> 
               <div>
-                <label class="form-label">💶 Luxuoso — preço/minuto (€)</label>
+                <label class="form-label">💶 Luxury — price/minute (€)</label>
                 <input id="price-luxuoso" type="number" placeholder="0.00" step="0.01" class="form-input"/>
               </div>
               <div>
-                <label class="form-label">🌙 Taxa noturna (21h–6h) — %</label>
+                <label class="form-label">🌙 Night rate (21h–6h) — %</label>
                 <input id="price-noite" type="number" placeholder="0" step="1" class="form-input"/>
               </div>
-              <button onclick="savePrices()" class="btn btn-primary w-full">Guardar tarifas</button>
+              <button onclick="savePrices()" class="btn btn-primary w-full">Save rates</button>
             </div>
           </div>
 
           <!-- Current tariff table -->
           <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Tabela de tarifas atual</p>
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Current tariff table</p>
             <div class="table-wrap">
               <table>
-                <thead><tr><th>Nível</th><th>€/min diurno</th><th>€/min noturno</th><th>Exemplo 30 min</th></tr></thead>
+                <thead><tr><th>Level</th><th>€/min day</th><th>€/min night</th><th>Example 30 min</th></tr></thead>
                 <tbody id="tariff-table">
-                  <tr><td><span class="badge badge-slate">Básico</span></td><td class="sora font-semibold">€0.15</td><td class="sora font-semibold">€0.18</td><td class="text-slate-400">€4.50 diurno / €5.40 noturno</td></tr>
-                  <tr><td><span class="badge badge-amber">Luxuoso</span></td><td class="sora font-semibold">€0.25</td><td class="sora font-semibold">€0.30</td><td class="text-slate-400">€7.50 diurno / €9.00 noturno</td></tr>
+                  <tr><td><span class="badge badge-slate">Basic</span></td><td class="sora font-semibold">€0.15</td><td class="sora font-semibold">€0.18</td><td class="text-slate-400">€4.50 day / €5.40 night</td></tr>
+                  <tr><td><span class="badge badge-amber">Luxury</span></td><td class="sora font-semibold">€0.25</td><td class="sora font-semibold">€0.30</td><td class="text-slate-400">€7.50 day / €9.00 night</td></tr>
                 </tbody>
               </table>
             </div>
@@ -520,12 +521,12 @@
       <div id="panel-rel-frota" class="panel px-4 sm:px-6 py-5 fade-in">
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Táxis &amp; Motoristas</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Report</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Taxis &amp; Drivers</p>
           </div>
           <div class="flex gap-2">
-            De: <input type="date" id="rel-from" class="form-input text-xs py-1.5 mr-4" value="2026-04-16"/>
-            Até: <input type="date" id="rel-to"   class="form-input text-xs py-1.5 mr-6" value="2026-04-16"/>
+            From: <input type="date" id="rel-from" class="form-input text-xs py-1.5 mr-4" value="2026-04-16"/>
+            To: <input type="date" id="rel-to"   class="form-input text-xs py-1.5 mr-6" value="2026-04-16"/>
             <button onclick="updateRelatorio()" class="btn btn-primary btn-sm">
               Atualizar
             </button>
@@ -537,38 +538,38 @@
           <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('viagens')">
             <div class="text-2xl mb-1">🗺️</div>
             <div class="sora font-bold text-2xl text-sky-500" id="stat-viagens">0</div>
-            <div class="text-xs text-slate-400">Total viagens</div>
-            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+            <div class="text-xs text-slate-400">Total trips</div>
+            <div class="text-[10px] text-sky-500 mt-1">Click to see details ↓</div>
           </div>
           <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('horas')">
             <div class="text-2xl mb-1">⏱️</div>
             <div class="sora font-bold text-2xl text-sky-500" id="stat-horas">0h 00m</div>
-            <div class="text-xs text-slate-400">Total em viagens</div>
-            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+            <div class="text-xs text-slate-400">Total in trips</div>
+            <div class="text-[10px] text-sky-500 mt-1">Click to see details ↓</div>
           </div>
           <div class="stat-card text-center cursor-pointer hover:border-sky-300 transition" onclick="drillTotal('km')">
             <div class="text-2xl mb-1">📍</div>
             <div class="sora font-bold text-2xl text-sky-500" id="stat-km">0 km</div>
-            <div class="text-xs text-slate-400">Total quilómetros</div>
-            <div class="text-[10px] text-sky-500 mt-1">Clique para detalhe ↓</div>
+            <div class="text-xs text-slate-400">Total kilometers</div>
+            <div class="text-[10px] text-sky-500 mt-1">Click to see details ↓</div>
           </div>
         </div>
 
         <!-- Drill area -->
         <div id="drill-area" class="hidden bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4 mb-4 fade-in">
           <div class="flex items-center justify-between mb-3">
-            <p class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drill-title">Subtotais</p>
-            <button onclick="document.getElementById('drill-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600">✕ Fechar</button>
+            <p class="sora font-semibold text-sm text-slate-900 dark:text-white" id="drill-title">Subtotals</p>
+            <button onclick="document.getElementById('drill-area').classList.add('hidden')" class="text-xs text-slate-400 hover:text-slate-600">✕ Close</button>
           </div>
           <div id="drill-content"></div>
         </div>
 
         <!-- Per driver table -->
         <div class="bg-white dark:bg-slate-800/60 rounded-2xl border border-slate-100 dark:border-slate-700 p-4">
-          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">Por motorista</p>
+          <p class="sora font-semibold text-sm text-slate-900 dark:text-white mb-3">By Driver</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Motorista</th><th>Viagens</th><th>Horas</th><th>Km</th><th>Euros</th></tr></thead>
+              <thead><tr><th>Driver</th><th>Trips</th><th>Hours</th><th>Km</th><th>Euros</th></tr></thead>
               <tbody id="rel-frota-body"></tbody>
             </table>
           </div>
@@ -581,18 +582,18 @@
         <!-- HEADER -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Relatório</h1>
-            <p class="text-xs text-slate-400 mt-0.5">Clientes & Faturação</p>
+            <h1 class="sora font-bold text-xl text-slate-900 dark:text-white">Report</h1>
+            <p class="text-xs text-slate-400 mt-0.5">Clients & Billing</p>
           </div>
 
           <div class="flex gap-2 items-center">
-            De:
+            From:
             <input type="date" id="rel2-from" class="form-input text-xs" />
-            Até:
+            To:
             <input type="date" id="rel2-to" class="form-input text-xs" />
 
             <button onclick="updateRelatorioClientes()" class="btn btn-primary btn-sm">
-              Atualizar
+              Update
             </button>
           </div>
         </div>
@@ -603,17 +604,17 @@
           <div class="stat-card text-center cursor-pointer"
               onclick="drillClientes('total')">
             <div class="sora font-bold text-2xl text-emerald-500" id="fat-total">€0.00</div>
-            <div class="text-xs text-slate-400">Total faturado</div>
+            <div class="text-xs text-slate-400">Total billed</div>
           </div>
 
           <div class="stat-card text-center">
             <div class="sora font-bold text-2xl text-emerald-500" id="fat-clients">0</div>
-            <div class="text-xs text-slate-400">Clientes ativos</div>
+            <div class="text-xs text-slate-400">Active clients</div>
           </div>
 
           <div class="stat-card text-center">
             <div class="sora font-bold text-2xl text-emerald-500" id="fat-trips">0</div>
-            <div class="text-xs text-slate-400">Viagens</div>
+            <div class="text-xs text-slate-400">Trips</div>
           </div>
 
         </div>
@@ -632,8 +633,8 @@
           <table>
             <thead>
               <tr>
-                <th>Cliente</th>
-                <th>Viagens</th>
+                <th>Client</th>
+                <th>Trips</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -657,55 +658,55 @@
   <!-- Taxi form template -->
   <template id="tpl-editarTaxi">
     <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Editar Táxi</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Edit Taxi</p>
       <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
     </div>
     <div class="space-y-4">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Matrícula</label>
+          <label class="form-label">Registration</label>
           <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
           <input id="f-taxi-id" type="number" readonly hidden/>
         </div>
         <div>
-          <label class="form-label">Ano de compra</label>
+          <label class="form-label">Year of Purchase</label>
           <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Marca</label>
+          <label class="form-label">Brand</label>
           <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
         </div>
         <div>
-          <label class="form-label">Modelo</label>
+          <label class="form-label">Model</label>
           <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <label class="form-label">Nível de conforto</label>
+          <label class="form-label">Comfort Level</label>
           <select id="f-taxi-conforto" class="form-input">
-            <option value="BASICO">Básico</option>
-            <option value="CONFORTO">Conforto</option>
-            <option value="LUXUOSO">Luxuoso</option>
+            <option value="BASICO">Basic</option>
+            <option value="CONFORTO">Comfort</option>
+            <option value="LUXUOSO">Luxury</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Tipo de motor</label>
+          <label class="form-label">Motor Type</label>
           <select id="f-taxi-motor" class="form-input">
-            <option value="COMBUSTAO">⛽ Combustão</option>
-            <option value="ELETRICO">⚡ Elétrico</option>
+            <option value="COMBUSTAO">⛽ Combustion</option>
+            <option value="ELETRICO">⚡ Electric</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Kilómetros</label>
+          <label class="form-label">Kilometers</label>
           <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
         </div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-        <button onclick="saveTaxi()" class="btn btn-primary flex-1">Editar Táxi</button>
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
+        <button onclick="saveTaxi()" class="btn btn-primary flex-1">Edit Taxi</button>
       </div>
     </div>
   </template>
@@ -713,57 +714,57 @@
     <!-- Taxi form template -->
   <template id="tpl-criarTaxi">
     <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Criar Táxi</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-taxi-title">Create Taxi</p>
       <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600 text-lg">✕</button>
     </div>
     <div class="space-y-4">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Matrícula</label>
+          <label class="form-label">Registration</label>
           <input id="f-taxi-mat" type="text" placeholder="AA-12-BB" class="form-input"/>
-          <p class="text-[11px] text-red-400 mt-1 hidden" id="mat-err">Formato inválido</p>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="mat-err">Invalid format</p>
         </div>
         <div>
-          <label class="form-label">Ano de compra</label>
+          <label class="form-label">Year of Purchase</label>
           <input id="f-taxi-ano" type="number" placeholder="2023" min="1990" max="2026" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Marca</label>
+          <label class="form-label">Brand</label>
           <input id="f-taxi-marca" type="text" placeholder="Mercedes" class="form-input"/>
 
         </div>
         <div>
-          <label class="form-label">Modelo</label>
+          <label class="form-label">Model</label>
           <input id="f-taxi-modelo" type="text" placeholder="Class C" class="form-input"/>
 
         </div>
       </div>
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <label class="form-label">Nível de conforto</label>
+          <label class="form-label">Comfort Level</label>
           <select id="f-taxi-conforto" class="form-input">
-            <option value="BASICO">Básico</option>
-            <option value="CONFORTO">Conforto</option>
-            <option value="LUXUOSO">Luxuoso</option>
+            <option value="BASICO">Basic</option>
+            <option value="CONFORTO">Comfort</option>
+            <option value="LUXUOSO">Luxury</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Tipo de motor</label>
+          <label class="form-label">Motor Type</label>
           <select id="f-taxi-motor" class="form-input">
-            <option value="COMBUSTAO">⛽ Combustão</option>
-            <option value="ELETRICO">⚡ Elétrico</option>
+            <option value="COMBUSTAO">⛽ Combustion</option>
+            <option value="ELETRICO">⚡ Electric</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Kilómetros</label>
+          <label class="form-label">Kilometers</label>
           <input id="f-taxi-km" type="number" placeholder="370" class="form-input" />
         </div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-        <button onclick="criarTaxi()" class="btn btn-primary flex-1">Criar Táxi</button>
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
+        <button onclick="criarTaxi()" class="btn btn-primary flex-1">Create Taxi</button>
       </div>
     </div>
   </template>
@@ -771,58 +772,58 @@
   <!-- Motorista form template -->
   <template id="tpl-editarMotorista">
     <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Editar motorista</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Edit Driver</p>
       <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
     </div>
     <div class="space-y-3">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Nome completo</label>
-          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+          <label class="form-label">Full Name</label>
+          <input id="f-nome" type="text" placeholder="First Last" class="form-input"/>
           <input id="f-id" type="number" readonly hidden/>
         </div>
         <div>
-          <label class="form-label">Nº Carta de condução</label>
+          <label class="form-label">License Number</label>
           <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Género</label>
+          <label class="form-label">Gender</label>
           <select id="f-genero" class="form-input">
-            <option value="MASCULINO">Masculino</option>
-            <option value="FEMININO">Feminino</option>
-            <option value="NAO_INDICADO">Outro</option>
+            <option value="MASCULINO">Male</option>
+            <option value="FEMININO">Female</option>
+            <option value="NAO_INDICADO">Other</option>
           </select>
         </div>
         <div>
-          <label class="form-label">Data de nascimento</label>
+          <label class="form-label">Date of Birth</label>
           <input id="f-nasc" type="date" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Código postal</label>
+          <label class="form-label">Postal Code</label>
           <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
         </div>
         <div>
-          <label class="form-label">Número Rua</label>
+          <label class="form-label">Street Number</label>
           <input id="f-num" type="number" placeholder="37" class="form-input" />
         </div>
       </div>
       <div>
-        <label class="form-label">Rua</label>
-        <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
+        <label class="form-label">Street</label>
+        <input id="f-rua" type="text" placeholder="Example Street" class="form-input"/>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Senha</label>
+          <label class="form-label">Password</label>
           <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
         </div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-        <button onclick="saveMotorista()" class="btn btn-primary flex-1">Editar conta</button>
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
+        <button onclick="saveMotorista()" class="btn btn-primary flex-1">Edit Account</button>
       </div>
     </div>
   </template>
@@ -830,37 +831,37 @@
   <!-- Motorista form template -->
   <template id="tpl-criarMotorista">
     <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Criar motorista</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white" id="modal-mot-title">Create Driver</p>
       <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
     </div>
     <div class="space-y-3">
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Nome completo</label>
-          <input id="f-nome" type="text" placeholder="Nome Apelido" class="form-input"/>
+          <label class="form-label">Full Name</label>
+          <input id="f-nome" type="text" placeholder="First Last" class="form-input"/>
         </div>
         <div>
-          <label class="form-label">Data de nascimento</label>
+          <label class="form-label">Date of Birth</label>
           <input id="f-nasc" type="date" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Nº Carta de condução</label>
+          <label class="form-label">License Number</label>
           <input id="f-carta" type="text" placeholder="C-123456" class="form-input"/>
         </div>
         <div>
-          <label class="form-label">Validade Carta</label>
+          <label class="form-label">License Validity</label>
           <input id="f-validade-carta" type="date" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Género</label>
+          <label class="form-label">Gender</label>
           <select id="f-genero" class="form-input">
-            <option value="MASCULINO">Masculino</option>
-            <option value="FEMININO">Feminino</option>
-            <option value="NAO_INDICADO">Outro</option>
+            <option value="MASCULINO">Male</option>
+            <option value="FEMININO">Female</option>
+            <option value="NAO_INDICADO">Other</option>
           </select>
         </div>
         <div>
@@ -870,11 +871,11 @@
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Código postal</label>
+          <label class="form-label">Postal Code</label>
           <input id="f-cp" type="text" placeholder="1000-001" class="form-input" oninput="lookupPostal(this)"/>
         </div>
         <div>
-          <label class="form-label">Número Rua</label>
+          <label class="form-label">Street Number</label>
           <input id="f-num" type="number" placeholder="37" class="form-input" />
         </div>
       </div>
@@ -884,24 +885,24 @@
           <input id="f-nif" type="text" placeholder="123456789" class="form-input"/>
         </div>
         <div>
-          <label class="form-label">Rua</label>
+          <label class="form-label">Street</label>
           <input id="f-rua" type="text" placeholder="Rua Exemplo" class="form-input"/>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="form-label">Senha (mín. 6 - ABC123)</label>
+          <label class="form-label">Password (min. 6 - ABC123)</label>
           <input id="f-senha" type="password" placeholder="••••••" class="form-input" oninput="validateSenha(this)"/>
-          <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Mínimo 6 carateres com letras e dígitos</p>
+          <p class="text-[11px] text-red-400 mt-1 hidden" id="senha-err">Minimum 6 characters with letters and digits</p>
         </div>
         <div>
-          <label class="form-label">Confirmar Senha</label>
+          <label class="form-label">Confirm Password</label>
           <input id="f-senha2" type="password" placeholder="••••••" class="form-input"/>
         </div>
       </div>
       <div class="flex gap-2 pt-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-        <button onclick="createMotorista()" class="btn btn-primary flex-1">Criar conta</button>
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
+        <button onclick="createMotorista()" class="btn btn-primary flex-1">Create Account</button>
       </div>
     </div>
   </template>
@@ -909,34 +910,34 @@
   <!-- Viagem detail template -->
   <template id="tpl-viagem-detail">
     <div class="flex items-center justify-between mb-5">
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white">Detalhe da viagem</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white">Details of the trip</p>
       <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-400 text-lg">✕</button>
     </div>
     <div class="space-y-2.5 text-sm">
-      <div class="flex justify-between"><span class="text-slate-400">Motorista</span><span class="font-medium">Carlos Mendes</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Táxi</span><span class="font-mono font-medium">AA-12-BB · Toyota Corolla</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Origem</span><span class="font-medium">Aeroporto de Lisboa</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Destino</span><span class="font-medium">Campo Grande, Lisboa</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Início</span><span class="font-medium">12:00</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Fim</span><span class="font-medium">12:30</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Duração</span><span class="font-medium">30 minutos</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Km percorridos</span><span class="font-medium">5.0 km</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Nº passageiros</span><span class="font-medium">4</span></div>
-      <div class="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2.5 mt-2"><span class="font-semibold">Preço</span><span class="sora font-bold text-emerald-500 text-base">€8.40</span></div>
-      <div class="flex justify-between"><span class="text-slate-400">Fatura</span><span class="badge badge-green">2026/0001 ✓</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Driver</span><span class="font-medium">Carlos Mendes</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Taxi</span><span class="font-mono font-medium">AA-12-BB · Toyota Corolla</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Origin</span><span class="font-medium">Aeroporto de Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Destination</span><span class="font-medium">Campo Grande, Lisboa</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Start</span><span class="font-medium">12:00</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">End</span><span class="font-medium">12:30</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Duration</span><span class="font-medium">30 minutes</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Distance</span><span class="font-medium">5.0 km</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Nº passengers</span><span class="font-medium">4</span></div>
+      <div class="flex justify-between border-t border-slate-100 dark:border-slate-700 pt-2.5 mt-2"><span class="font-semibold">Price</span><span class="sora font-bold text-emerald-500 text-base">€8.40</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Invoice</span><span class="badge badge-green">2026/0001 ✓</span></div>
     </div>
-    <button onclick="closeModal()" class="w-full btn btn-primary mt-4">Fechar</button>
+    <button onclick="closeModal()" class="w-full btn btn-primary mt-4">Close</button>
   </template>
 
   <!-- Confirm delete template -->
   <template id="tpl-confirm">
     <div class="text-center py-2">
       <div class="text-4xl mb-3">⚠️</div>
-      <p class="sora font-bold text-lg text-slate-900 dark:text-white mb-2">Confirmar remoção</p>
-      <p class="text-sm text-slate-400 mb-5" id="confirm-msg">Tem a certeza que quer remover este item?</p>
+      <p class="sora font-bold text-lg text-slate-900 dark:text-white mb-2">Confirm removal</p>
+      <p class="text-sm text-slate-400 mb-5" id="confirm-msg">Are you sure you want to remove this item?</p>
       <div class="flex gap-2">
-        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancelar</button>
-        <button onclick="toast('🗑️ Removido com sucesso');closeModal()" class="btn btn-danger flex-1">Remover</button>
+        <button onclick="closeModal()" class="btn btn-ghost flex-1">Cancel</button>
+        <button onclick="toast('🗑️ Removed successfully');closeModal()" class="btn btn-danger flex-1">Remove</button>
       </div>
     </div>
   </template>

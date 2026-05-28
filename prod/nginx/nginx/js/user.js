@@ -132,54 +132,72 @@ function renderRidesList() {
       ? "Concluded"
       : "Pending";
 
-    const fare = p.preco != null ? "€" + Number(p.preco).toFixed(2) : "";
-    const date = new Date(p.dataSolicitacao).toLocaleString([], {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-    const tipo = mapTipo(p.conforto?.nivelConforto);
-    const icon = { economy:"🚗", comfort:"🛋️", premium:"👑" }[tipo];
-    const btn = document.createElement("button");
-    btn.className = "w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700";
-    btn.innerHTML = `
-      <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">${icon}</div>
-      <div class="flex-1 min-w-0">
-        <div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">  ${(p.ruaOrigem || "—").length > 20
-    ? (p.ruaOrigem || "—").slice(0, 20) + "..."
-    : (p.ruaOrigem || "—")} →   ${(p.ruaDestino || "—").length > 20
-    ? (p.ruaDestino || "—").slice(0, 20) + "..."
-    : (p.ruaDestino || "—")}</div>
-        <div class="text-xs text-slate-400 mt-0.5">${date} · ${status}</div>
-      </div>
-      <div class="text-right flex-shrink-0">
-        <div class="sora font-semibold text-sm text-slate-900 dark:text-white">${fare}</div>
-      </div>`;
-    btn.onclick = () => openReceipt(p);
-    el.appendChild(btn);
-  });
-  if (!pedidos.length) el.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No rides yet.</p>';
+const fare = p.preco != null ? "€" + Number(p.preco).toFixed(2) : "";
+const date = new Date(p.dataSolicitacao).toLocaleString([], {
+  day: "2-digit",
+  month: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false
+});
+const tipo = mapTipo(p.conforto?.nivelConforto);
+const icon = { economy:"🚗", comfort:"🛋️", premium:"👑" }[tipo];
+const btn = document.createElement("button");
+
+btn.className = "w-full flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-left hover:border-sky-300 dark:hover:border-sky-700";
+
+btn.innerHTML = `
+  <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800 flex items-center justify-center text-base flex-shrink-0">${icon}</div>
+  <div class="flex-1 min-w-0">
+    <div class="sora font-semibold text-sm text-slate-900 dark:text-white">
+      ${p.ruaOrigem || "—"} → ${p.ruaDestino || "—"}
+    </div>
+    <div class="text-xs text-slate-400 mt-0.5">${date} · ${status}</div>
+  </div>
+  <div class="text-right flex-shrink-0">
+    <div class="sora font-semibold text-sm text-slate-900 dark:text-white">${fare}</div>
+  </div>`;
+
+btn.onclick = () => openReceipt(p);
+el.appendChild(btn);
+});
+if (!pedidos.length) el.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No rides yet.</p>';
 }
 
 function openReceipt(p) {
   const fare = p.preco != null ? "€" + Number(p.preco).toFixed(2) : "—";
   const date = new Date(p.dataSolicitacao).toLocaleString();
+  
+  const statusAtual = p.estadoPedido === "CONCLUIDO" ? "Concluded" : "Pending";
+
   document.getElementById("receipt-body").innerHTML = `
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>From</span><span class="font-medium text-slate-900 dark:text-white">  ${(p.ruaOrigem || "—").length > 20
-    ? (p.ruaOrigem || "—").slice(0, 20) + "..."
-    : (p.ruaOrigem || "—")}</span></div>
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>To</span><span class="font-medium text-slate-900 dark:text-white">  ${(p.ruaDestino || "—").length > 20
-    ? (p.ruaDestino || "—").slice(0, 20) + "..."
-    : (p.ruaDestino || "—")}</span></div>
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Date</span><span>${date}</span></div>
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Comfort</span><span>${p.conforto?.nivelConforto || "—"}</span></div>
-    <div class="flex justify-between text-slate-600 dark:text-slate-300"><span>Status</span><span>${status}</span></div>
-    <div class="border-t border-slate-100 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-900 dark:text-white"><span>Total</span><span class="text-sky-500">${fare}</span></div>`;
+    <div class="flex justify-between text-slate-600 dark:text-slate-300 gap-4 mb-2">
+      <span class="flex-shrink-0">From</span>
+      <span class="font-medium text-slate-900 dark:text-white text-right">${p.ruaOrigem || "—"}</span>
+    </div>
+    <div class="flex justify-between text-slate-600 dark:text-slate-300 gap-4 mb-2">
+      <span class="flex-shrink-0">To</span>
+      <span class="font-medium text-slate-900 dark:text-white text-right">${p.ruaDestino || "—"}</span>
+    </div>
+    <div class="flex justify-between text-slate-600 dark:text-slate-300 mb-2">
+      <span>Date</span>
+      <span>${date}</span>
+    </div>
+    <div class="flex justify-between text-slate-600 dark:text-slate-300 mb-2">
+      <span>Comfort</span>
+      <span>${p.conforto?.nivelConforto || "—"}</span>
+    </div>
+    <div class="flex justify-between text-slate-600 dark:text-slate-300 mb-4">
+      <span>Status</span>
+      <span>${statusAtual}</span>
+    </div>
+    <div class="border-t border-slate-100 dark:border-slate-700 pt-2 flex justify-between font-bold text-slate-900 dark:text-white">
+      <span>Total</span>
+      <span class="text-sky-500">${fare}</span>
+    </div>`;
+    
   document.getElementById("receipt-modal").classList.remove("hidden");
 }
-
 // ─────────────────────────────────────────────
 // TRIPS — viagens
 // ─────────────────────────────────────────────
@@ -204,20 +222,16 @@ function renderViagens() {
     const date = v.inicio ? new Date(v.inicio).toLocaleString([], { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" }) : "—";
     const div = document.createElement("div");
     div.className = "flex items-center gap-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3";
+    
     div.innerHTML = `
       <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center text-base flex-shrink-0">✅</div>
       <div class="flex-1 min-w-0">
-<div class="sora font-semibold text-sm text-slate-900 dark:text-white truncate">
-  ${(v.pedido.ruaOrigem || "—").length > 20
-    ? (v.pedido.ruaOrigem || "—").slice(0, 20) + "..."
-    : (v.pedido.ruaOrigem || "—")}
-  →   ${(v.pedido.ruaDestino || "—").length > 20
-    ? (v.pedido.ruaDestino || "—").slice(0, 20) + "..."
-    : (v.pedido.ruaDestino || "—")}
-</div>
+        <div class="sora font-semibold text-sm text-slate-900 dark:text-white">
+          ${v.pedido?.ruaOrigem || "—"} → ${v.pedido?.ruaDestino || "—"}
+        </div>
         <div class="text-xs text-slate-400 mt-0.5">${date}</div>
       </div>
-      <div class="sora font-semibold text-sm text-slate-900 dark:text-white">${fare}</div>`;
+      <div class="sora font-semibold text-sm text-slate-900 dark:text-white flex-shrink-0">${fare}</div>`;
     el.appendChild(div);
   });
   if (!viagens.length) el.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">No completed trips yet.</p>';
@@ -366,7 +380,11 @@ function selectRide(type) {
   });
   
   const currentPrice = calculatedPrices[type] !== "0.00" ? calculatedPrices[type] : calcFare(type, routeKm);
-  document.getElementById("confirm-btn").textContent = "Confirm ride — €" + currentPrice;
+  if (!pickupLL || !destLL) {
+    document.getElementById("confirm-btn").textContent = "Confirm ride";
+  } else {
+    document.getElementById("confirm-btn").textContent = "Confirm ride — €" + currentPrice;
+  }
 }
 
 function setRouteKm(km, duration) {
@@ -407,16 +425,25 @@ function setPinMode(mode) {
   pill.classList.add("visible");
   clearTimeout(pillTimer);
   pillTimer = setTimeout(() => pill.classList.remove("visible"), 2800);
-  expandSheet("booking-sheet");
+  console.log("Pin mode set to:", mode);
+}
+
+let sheetOpen = false;
+
+function rotateArrow() {
+  const arrow = document.getElementById("sheet-arrow");
+  sheetOpen = !sheetOpen;
+
+  if (sheetOpen) {
+    arrow.style.transform = "rotate(180deg)";
+  } else {
+    arrow.style.transform = "rotate(0deg)";
+  }
 }
 
 function toggleSheet(id) {
   document.getElementById(id).classList.toggle("expanded");
   setTimeout(() => map && map.invalidateSize(), 320);
-}
-function expandSheet(id) {
-  const s = document.getElementById(id);
-  if (!s.classList.contains("expanded")) { s.classList.add("expanded"); setTimeout(() => map && map.invalidateSize(), 320); }
 }
 
 async function getAddress(lat, lng) {
@@ -433,70 +460,183 @@ function initBookingMap() {
   map = L.map("map", { zoomControl:true, attributionControl:false });
   map.setView(pickupLL, 14);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom:19, crossOrigin:true }).addTo(map);
-  pickupMarker = L.marker(pickupLL, { icon:pinIcon("#22c55e","A") }).addTo(map);
 
   map.on("click", async e => {
     const ll = [e.latlng.lat, e.latlng.lng];
     if (pinMode === "pickup") {
       pickupLL = ll;
-      if (pickupMarker) map.removeLayer(pickupMarker);
       pickupMarker = L.marker(pickupLL, { icon:pinIcon("#22c55e","A") }).addTo(map);
-const address = await getAddress(ll[0], ll[1]);
-document.getElementById("pickup-input").value =
-  address.length > 20 ? address.slice(0, 20) + "..." : address;      
+  const address = await getAddress(ll[0], ll[1]);
+  document.getElementById("pickup-input").value = address;
   setPinMode("dest");
     } else {
       destLL = ll;
       if (destMarker) map.removeLayer(destMarker);
       destMarker = L.marker(destLL, { icon:pinIcon("#ef4444","B") }).addTo(map);
       const address1 = await getAddress(ll[0], ll[1]);
-      document.getElementById("dest-input").value =
-        address1.length > 20 ? address1.slice(0, 20) + "..." : address1;
+  document.getElementById("dest-input").value = address1;
     }
     if (pickupLL && destLL) fetchRoute();
   });
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(p => {
-      pickupLL = [p.coords.latitude, p.coords.longitude];
-      if (pickupMarker) map.removeLayer(pickupMarker);
-      pickupMarker = L.marker(pickupLL, { icon:pinIcon("#22c55e","A") }).addTo(map);
-      map.setView(pickupLL, 14);
-      //document.getElementById("pickup-input").value = "My location";
-      setPinMode("dest");
-    }, () => setPinMode("pickup"));
-  } else { setPinMode("pickup"); }
+  setPinMode("pickup");
 }
+
+
+let debounceTimer;
+
+function setupAutocomplete(inputId, listId) {
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+
+  input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+
+    const query = input.value.trim();
+    if (!query) {
+      list.classList.add("hidden");
+      list.innerHTML = "";
+      return;
+    }
+
+    debounceTimer = setTimeout(async () => {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`;
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await res.json();
+
+        renderSuggestions(data, input, inputId, list);
+      } catch (err) {
+        console.error(err);
+      }
+    }, 300);
+  });
+}
+
+function renderSuggestions(data, input, inputId, list) {
+  list.innerHTML = "";
+
+  if (!data || data.length === 0) {
+    const empty = document.createElement("div");
+    empty.className =
+      "px-3 py-2 text-sm text-slate-400 dark:text-slate-500 italic";
+
+    empty.textContent = "No results found";
+
+    list.appendChild(empty);
+    list.classList.remove("hidden");
+    return;
+  }
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+
+    div.className =
+      "px-3 py-2 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700";
+
+    div.textContent = item.display_name;
+
+    div.onclick = () => {
+      input.value = item.display_name;
+      searchPlace(inputId);
+      list.classList.add("hidden");
+    };
+
+    list.appendChild(div);
+  });
+
+  list.classList.remove("hidden");
+}
+
+// init both inputs
+setupAutocomplete("pickup-input", "pickup-suggestions");
+setupAutocomplete("dest-input", "dest-suggestions");
+
+
 
 function fetchRoute() {
   if (!pickupLL || !destLL) return;
+  toggleSheet('booking-sheet');
   const url = `https://router.project-osrm.org/route/v1/driving/${pickupLL[1]},${pickupLL[0]};${destLL[1]},${destLL[0]}?overview=full&geometries=geojson`;
   fetch(url).then(r => r.json()).then(data => {
     if (!data.routes?.length) return;
     const coords = data.routes[0].geometry.coordinates.map(c => [c[1],c[0]]);
-    if (routeLine) map.removeLayer(routeLine);
-    routeLine = L.polyline(coords, { color:"#0ea5e9", weight:4, opacity:.85 }).addTo(map);
+      // remove old route
+      if (routeLine) {
+        map.removeLayer(routeLine);
+      }
+
+      // remove old markers
+      if (pickupMarker) {
+        map.removeLayer(pickupMarker);
+      }
+
+      if (destMarker) {
+        map.removeLayer(destMarker);
+      }
+      routeLine = L.polyline(coords, { color:"#0ea5e9", weight:4, opacity:.85 }).addTo(map);
     map.fitBounds(routeLine.getBounds(), { padding:[70,200] });
     console.log(data);
     setRouteKm(data.routes[0].distance / 1000, Math.round(data.routes[0].duration / 60));
   }).catch(() => setRouteKm(3.4, 5));
 }
 
-function searchDestination() {
-  const q = document.getElementById("dest-input").value.trim();
+function searchPlace(inputId) {
+  const input = document.getElementById(inputId);
+  let q = input.value.trim();
+
   if (!q) return;
-  fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`, { headers:{"Accept-Language":"en"} })
+
+  fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q)}`,
+    {
+      headers: {
+        "Accept-Language": "en"
+      }
+    }
+  )
     .then(r => r.json())
     .then(data => {
-      if (!data.length) { toast("⚠️ Location not found"); return; }
-      destLL = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      if (destMarker) map.removeLayer(destMarker);
-      destMarker = L.marker(destLL, { icon:pinIcon("#ef4444","B") }).addTo(map);
-      document.getElementById("dest-input").value = data[0].display_name.split(",").slice(0,2).join(",");
-      fetchRoute();
-    }).catch(() => toast("⚠️ Search unavailable — tap map"));
-}
+      if (!data || !data.length) {
+        toast("⚠️ Location not found");
+        return;
+      }
 
+      const place = data[0];
+      const ll = [parseFloat(place.lat), parseFloat(place.lon)];
+
+      // update correct field
+      if (inputId === "pickup-input") {
+        pickupLL = ll;
+
+        if (pickupMarker) map.removeLayer(pickupMarker);
+        pickupMarker = L.marker(ll, {
+          icon: pinIcon("#22c55e", "A")
+        }).addTo(map);
+      } else {
+        destLL = ll;
+
+        if (destMarker) map.removeLayer(destMarker);
+        destMarker = L.marker(ll, {
+          icon: pinIcon("#ef4444", "B")
+        }).addTo(map);
+      }
+
+      // shorten label
+      input.value = place.display_name.split(",").slice(0, 2).join(",");
+
+      // route if both exist
+      if (pickupLL && destLL) {
+        fetchRoute();
+      }
+    })
+    .catch(() => toast("⚠️ Search unavailable — tap map"));
+}
 function swapLocations() {
   const tmpLL  = pickupLL ? [...pickupLL] : null;
   const tmpTxt = document.getElementById("pickup-input").value;
