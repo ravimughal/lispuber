@@ -101,11 +101,6 @@ else
         
         if [[ "$STATUS" == "RUNNING" ]]; then
           echo "LB2 Running"
-            gcloud compute instances delete-access-config $PRIMARY \
-              --zone=$ZONE \
-              --access-config-name="external-nat" \
-              --quiet || true
-
           break
         fi
     fi

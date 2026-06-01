@@ -1,0 +1,45 @@
+
+Deixámos algumas vulnerabilidades para ver que as conseguimos descobrir
+e encontrar durante a avaliação, demonstarndo assim que é uma ferramenta
+util para descobrir vulnerabilidades
+
+
+
+Tipo: Bastion (rodar no bastion)
+
+nmap -Pn 10.204.0.11  #(para nginx1)
+nmap -Pn 10.204.0.21  #(para app1)
+nmap -Pn 10.204.0.31  #(para db1)
+
+
+
+Tipo: Nginx (rodar no nginx)
+
+nmap -Pn 10.204.0.2   #(para bastion1)
+nmap -Pn 10.204.0.21  #(para app1)
+nmap -Pn 10.204.0.31  #(para db1)
+
+nmap -Pn 10.204.0.12  #(para nginx2)
+
+
+
+Tipo: App (rodar no app)
+
+nmap -Pn 10.204.0.2   #(para bastion1)
+nmap -Pn 10.204.0.11  #(para nginx1)
+nmap -Pn 10.204.0.31  #(para db1)
+
+nmap -Pn 10.204.0.21  #(para app1)
+nmap -Pn 10.204.0.22  #(para app2)
+nmap -Pn 10.204.0.23  #(para app3)
+
+
+
+Tipo: DB (rodar no db)
+
+nmap -Pn 10.204.0.2   #(para bastion1)
+nmap -Pn 10.204.0.11  #(para nginx1)
+nmap -Pn 10.204.0.21  #(para app1)
+
+nmap -Pn 10.204.0.31  #(para db1)
+nmap -Pn 10.204.0.32  #(para db2)

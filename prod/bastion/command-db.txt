@@ -1,0 +1,28 @@
+PGPASSWORD='ptir_password' psql -U ptir_user -d ptir_db -h localhost
+
+
+
+select * from utilizador;
+
+
+
+INSERT INTO utilizador (nome,email,nif,genero,senha,data_nascimento)
+VALUES (
+'Joao Original',
+'joao@lisp.com',
+'111222443',
+'MASCULINO',
+'eee123321',
+'2000-01-10'
+);
+
+
+INSERT INTO utilizador (nome,email,nif,genero,senha,data_nascimento)
+VALUES (
+'Maria Original',
+'maria@lisp.com',
+'111222553',
+'MASCULINO',
+'eee123321',
+'2000-01-10'
+);
